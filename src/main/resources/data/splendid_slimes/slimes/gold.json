@@ -1,0 +1,19 @@
+{
+  "breed": "gold",
+  "name": "Gold",
+  "color": "#eb9f27",
+  "foods": [
+    {
+      "item": "minecraft:golden_carrot"
+    }
+  ],
+  "favorite_food": {
+    "item": "minecraft:golden_carrot"
+  },
+  "plort_resources":  [
+    {
+      "item": "minecraft:gold_nugget",
+      "count": 3
+    }
+  ]
+}

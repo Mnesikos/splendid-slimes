@@ -1,0 +1,19 @@
+{
+  "breed": "blasting",
+  "name": "Blasting",
+  "color": "#70DC5D",
+  "foods": [
+    {
+      "item": "minecraft:golden_carrot"
+    }
+  ],
+  "favorite_food": {
+    "item": "minecraft:golden_carrot"
+  },
+  "plort_resources":  [
+    {
+      "item": "minecraft:gold_nugget",
+      "count": 3
+    }
+  ]
+}
