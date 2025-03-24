@@ -20,12 +20,13 @@ import java.util.function.Supplier;
 
 public class SpawnEggItem  extends ForgeSpawnEggItem implements ITabFiller {
     public static final String SLIME = "EntityTag";
-    public static final String ID = "type";
+    public static final String ID = "Breed";
     public static final String DATA = "data";
-    public static int color;
+
     public SpawnEggItem(Supplier<? extends EntityType<? extends Mob>> type, int backgroundColor, int highlightColor, Item.Properties props) {
         super(type, backgroundColor, highlightColor, props);
     }
+
     @Override
     public void fillItemCategory(CreativeModeTab tab, CreativeModeTab.Output output) {
         SlimeBreedRegistry.INSTANCE.getKeys().stream().sorted().forEach(key -> {
@@ -34,8 +35,8 @@ public class SpawnEggItem  extends ForgeSpawnEggItem implements ITabFiller {
             output.accept(s);
         });
     }
-    @Override
 
+    @Override
     public Component getName(ItemStack pStack) {
         DynamicHolder<SlimeBreed> slime = getSlime(pStack);
         Component slimeName;
@@ -43,7 +44,6 @@ public class SpawnEggItem  extends ForgeSpawnEggItem implements ITabFiller {
             slimeName = Component.literal("BROKEN").withStyle(ChatFormatting.OBFUSCATED);
         }
         else slimeName = slime.get().name();
-        color = slime.get().getColor();
         return Component.translatable(this.getDescriptionId(pStack), slimeName);
     }
 
@@ -59,18 +59,15 @@ public class SpawnEggItem  extends ForgeSpawnEggItem implements ITabFiller {
         stack.removeTagKey(SLIME);
         stack.getOrCreateTagElement(SLIME).putString(ID, slime.toString());
     }
-    @Override
-    public int getColor(int tintIndex) {
-        return color;
-    }
+
     @Nonnull
     @Override
     public EntityType<?> getType(CompoundTag compound) {
         if (compound != null && compound.contains("EntityTag", 10)) {
             CompoundTag entityTag = compound.getCompound("EntityTag");
 
-            if (entityTag.contains("type", 8)) {
-                return EntityType.byString(entityTag.getString("type")).orElse(getDefaultType());
+            if (entityTag.contains("Breed", 8)) {
+                return EntityType.byString(entityTag.getString("Breed")).orElse(getDefaultType());
             }
         }
         return getDefaultType();

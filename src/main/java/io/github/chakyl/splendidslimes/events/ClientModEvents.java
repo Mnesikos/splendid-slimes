@@ -97,6 +97,7 @@ public class ClientModEvents {
             e.getModels().put(key, new PlortModel(oldModel, e.getModelBakery()));
         }
     }
+
     @SubscribeEvent
     public static void colors(RegisterColorHandlersEvent.Item e) {
         e.register((stack, tint) -> {
