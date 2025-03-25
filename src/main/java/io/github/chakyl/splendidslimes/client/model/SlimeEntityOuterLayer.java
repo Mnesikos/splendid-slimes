@@ -33,7 +33,7 @@ public class SlimeEntityOuterLayer<T extends SlimeEntityBase> extends RenderLaye
             ((SlimeEntityModel)this.getParentModel()).copyPropertiesTo(this.model);
             this.model.prepareMobModel(pLivingEntity, pLimbSwing, pLimbSwingAmount, pPartialTicks);
             this.model.setupAnim(pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
-            this.model.renderToBuffer(pPoseStack, vertexConsumer, pPackedLight, LivingEntityRenderer.getOverlayCoords(pLivingEntity, 0.0F), pLivingEntity.getSlimeColor());
+            this.model.renderToBuffer(pPoseStack, vertexConsumer, pPackedLight, LivingEntityRenderer.getOverlayCoords(pLivingEntity, 0.0F), pLivingEntity.getSlimeColor(), pLivingEntity.getSecondarySlimeColor());
         }
     }
 

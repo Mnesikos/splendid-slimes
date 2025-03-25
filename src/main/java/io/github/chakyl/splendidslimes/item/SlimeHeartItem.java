@@ -1,7 +1,5 @@
 package io.github.chakyl.splendidslimes.item;
 
-import java.util.List;
-
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import dev.shadowsoffire.placebo.tabs.ITabFiller;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
@@ -16,20 +14,22 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
+import java.util.List;
+
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
 
-public class PlortItem extends Item implements ITabFiller {
-    public static final String PLORT = "plort";
+public class SlimeHeartItem extends Item implements ITabFiller {
+    public static final String SLIME_HEART = "plort";
     public static final String ID = "id";
     public static final String DATA = "data";
 
-    public PlortItem(Properties pProperties) {
+    public SlimeHeartItem(Properties pProperties) {
         super(pProperties);
     }
 
     @Override
     public void appendHoverText(ItemStack pStack, Level pLevel, List<Component> list, TooltipFlag pFlag) {
-        list.add(Component.translatable("info.splendid_slimes.plort"));
+        list.add(Component.translatable("info.splendid_slimes.slime_heart"));
     }
 
     @Override
@@ -43,7 +43,7 @@ public class PlortItem extends Item implements ITabFiller {
 
     @Override
     public Component getName(ItemStack pStack) {
-        DynamicHolder<SlimeBreed> slime = getSlimeData(pStack, PLORT);
+        DynamicHolder<SlimeBreed> slime = getSlimeData(pStack, SLIME_HEART);
         Component plortName;
         if (!slime.isBound()) {
             plortName = Component.literal("BROKEN").withStyle(ChatFormatting.OBFUSCATED);
@@ -57,17 +57,17 @@ public class PlortItem extends Item implements ITabFiller {
     }
 
     public static void setStoredPlort(ItemStack stack, ResourceLocation plort) {
-        stack.removeTagKey(PLORT);
-        stack.getOrCreateTagElement(PLORT).putString(ID, plort.toString());
+        stack.removeTagKey(SLIME_HEART);
+        stack.getOrCreateTagElement(SLIME_HEART).putString(ID, plort.toString());
     }
 
     public static int getData(ItemStack stack) {
-        CompoundTag tag = stack.getTagElement(PLORT);
+        CompoundTag tag = stack.getTagElement(SLIME_HEART);
         return stack.isEmpty() || tag == null ? 0 : tag.getInt(DATA);
     }
 
     public static void setData(ItemStack stack, int data) {
-        stack.getOrCreateTagElement(PLORT).putInt(DATA, data);
+        stack.getOrCreateTagElement(SLIME_HEART).putInt(DATA, data);
     }
 
 }

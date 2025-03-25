@@ -27,6 +27,7 @@ public class SlimeEntityBase extends Slime {
     private static final EntityDataAccessor<Integer> SIZE = SynchedEntityData.defineId(SlimeEntityBase.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> HAS_SPLIT = SynchedEntityData.defineId(SlimeEntityBase.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<String> BREED = SynchedEntityData.defineId(SlimeEntityBase.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<String> SECONDARY_BREED = SynchedEntityData.defineId(SlimeEntityBase.class, EntityDataSerializers.STRING);
 
     public SlimeEntityBase(EntityType<? extends Slime> entityType, Level level) {
         super(entityType, level);
@@ -39,12 +40,21 @@ public class SlimeEntityBase extends Slime {
                 .add(Attributes.FOLLOW_RANGE, 16.0D);
     }
 
-    public void setSlimeType(String data) {
+
+    public void setSlimeBreed(String data) {
         this.entityData.set(BREED, data);
     }
 
-    public String getSlimeType() {
+    public String getSlimeBreed() {
         return this.entityData.get(BREED);
+    }
+
+    public void setSlimeSecondaryBreed(String data) {
+        this.entityData.set(SECONDARY_BREED, data);
+    }
+
+    public String getSlimeSecondaryBreed() {
+        return this.entityData.get(SECONDARY_BREED);
     }
 
     public void setHasSplit(Boolean data) {
@@ -58,21 +68,39 @@ public class SlimeEntityBase extends Slime {
     @Override
     protected @NotNull Component getTypeName() {
         DynamicHolder<SlimeBreed> slime = getSlime();
+        DynamicHolder<SlimeBreed> secondarySlime = getSecondarySlime();
         Component slimeName;
         if (!slime.isBound()) {
             slimeName = Component.literal("BROKEN").withStyle(ChatFormatting.OBFUSCATED);
         }
         else slimeName = slime.get().name();
+        if (secondarySlime.isBound()) {
+            return Component.translatable("entity.splendid_slimes.largo_splendid_slime", slimeName, secondarySlime.get().name());
+        }
         return Component.translatable("entity.splendid_slimes.splendid_slime", slimeName);
     }
 
     public int getSlimeColor() {
         DynamicHolder<SlimeBreed> slime = getSlime();
+        if (!slime.isBound()) return 0xFFFFFF;
+        return slime.get().getColor();
+    }
+    public int getSecondarySlimeColor() {
+        DynamicHolder<SlimeBreed> slime = getSecondarySlime();
+        if (!slime.isBound()) return -1;
         return slime.get().getColor();
     }
 
     public DynamicHolder<SlimeBreed> getSlime() {
-        String type = getSlimeType();
+        String type = getSlimeBreed();
+        if (type.isEmpty()) {
+            return SlimeBreedRegistry.INSTANCE.emptyHolder();
+        }
+        return SlimeBreedRegistry.INSTANCE.holder(new ResourceLocation(type));
+    }
+
+    public DynamicHolder<SlimeBreed> getSecondarySlime() {
+        String type = getSlimeSecondaryBreed();
         if (type.isEmpty()) {
             return SlimeBreedRegistry.INSTANCE.emptyHolder();
         }
@@ -83,6 +111,7 @@ public class SlimeEntityBase extends Slime {
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(BREED, "");
+        this.entityData.define(SECONDARY_BREED, "");
         this.entityData.define(HAS_SPLIT, false);
     }
 
@@ -97,14 +126,16 @@ public class SlimeEntityBase extends Slime {
     @Override
     public void readAdditionalSaveData(@Nonnull CompoundTag nbt) {
         super.readAdditionalSaveData(nbt);
-        setSlimeType(nbt.getString("Breed"));
+        setSlimeBreed(nbt.getString("Breed"));
+        setSlimeSecondaryBreed(nbt.getString("SecondaryBreed"));
         setHasSplit(nbt.getBoolean("HasSplit"));
     }
 
     @Override
     public void addAdditionalSaveData(@Nonnull CompoundTag nbt) {
         super.addAdditionalSaveData(nbt);
-        nbt.putString("Breed", getSlimeType());
+        nbt.putString("Breed", getSlimeBreed());
+        nbt.putString("SecondaryBreed", getSlimeSecondaryBreed());
         nbt.putBoolean("HasSplit", getHasSplit());
     }
 
@@ -132,7 +163,7 @@ public class SlimeEntityBase extends Slime {
                     if (this.isPersistenceRequired()) {
                         slime.setPersistenceRequired();
                     }
-                    slime.setSlimeType(this.getSlimeType());
+                    slime.setSlimeBreed(this.getSlimeBreed());
                     slime.setHasSplit(true);
                     slime.setCustomName(component);
                     slime.setNoAi(flag);

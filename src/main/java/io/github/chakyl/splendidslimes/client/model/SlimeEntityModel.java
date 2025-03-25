@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import net.minecraft.client.model.HierarchicalModel;
-import net.minecraft.client.model.SlimeModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -13,7 +12,6 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
-import java.awt.*;
 
 public class SlimeEntityModel<T extends Entity> extends HierarchicalModel<T> {
 	public static final ModelLayerLocation SLIME_LOCATION = new ModelLayerLocation(new ResourceLocation(SplendidSlimes.MODID, "textures/entity/gold_slime.png"), "main");
@@ -40,7 +38,7 @@ public class SlimeEntityModel<T extends Entity> extends HierarchicalModel<T> {
 		return LayerDefinition.create(meshDefinition, 64, 32);
 	}
 
-	public void renderToBuffer(PoseStack pPoseStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, int hexCode) {
+	public void renderToBuffer(PoseStack pPoseStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, int hexCode, int secondaryHexCode) {
 		int red = (hexCode >> 16) & 0xFF;
 		int green = (hexCode >> 8) & 0xFF;
 		int blue = hexCode & 0xFF;
@@ -48,7 +46,14 @@ public class SlimeEntityModel<T extends Entity> extends HierarchicalModel<T> {
 		float normalizedRed = red / 255.0f;
 		float normalizedGreen = green / 255.0f;
 		float normalizedBlue = blue / 255.0f;
-
+		if (secondaryHexCode != -1) {
+			int red2 = (secondaryHexCode >> 16) & 0xFF;
+			int green2 = (secondaryHexCode >> 8) & 0xFF;
+			int blue2 = secondaryHexCode & 0xFF;
+			normalizedRed = ((float) (red + red2) / 2) / 255.0f;
+			normalizedGreen = ((float) (green + green2) / 2)  / 255.0f;
+			normalizedBlue = ((float) (blue + blue2) / 2)  / 255.0f;
+		}
 		super.renderToBuffer(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, normalizedRed, normalizedGreen, normalizedBlue, normalizedAlpha);
 	}
 

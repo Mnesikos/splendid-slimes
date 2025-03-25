@@ -5,12 +5,12 @@ import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -22,9 +22,9 @@ public class SplendidSlime extends SlimeEntityBase  {
     public static final String SLIME = "slime";
     public static final String ID = "id";
     public static final String DATA = "data";
-    public boolean aiItemFlag = false;
+    public static final int SLIME_EAT_COOLDOWN = 20;
+    private int eatingCooldown = 0;
     private final EntityType<SlimeEntityBase> entityType;
-    public static final EntityDataAccessor<String> TYPE = SynchedEntityData.defineId(SlimeEntityBase.class, EntityDataSerializers.STRING);
 
     public SplendidSlime(EntityType<SlimeEntityBase> entityType, Level level) {
         super(entityType, level);
@@ -34,6 +34,16 @@ public class SplendidSlime extends SlimeEntityBase  {
     protected void registerGoals() {
         super.registerGoals();
         this.targetSelector.addGoal(1, new SplendidSlime.SlimeTargetItemGoal(this));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal(this, Chicken.class, true));
+    }
+
+    public void tick() {
+        super.tick();
+        if (!this.level().isClientSide) {
+            if(eatingCooldown > 0){
+                eatingCooldown--;
+            }
+        }
     }
 
     public EntityType<SlimeEntityBase> getEntityType() {
@@ -45,8 +55,17 @@ public class SplendidSlime extends SlimeEntityBase  {
     }
 
     public boolean wantsToPickUp(ItemStack pStack) {
+        if (this.eatingCooldown > 0) return false;
+        if (!getSlime().isBound()) return false;
         Item pickUpItem = pStack.getItem();
         SlimeBreed slime = getSlime().get();
+        if (pickUpItem == ModElements.Items.PLORT.get() && pStack.hasTag()) {
+            CompoundTag plortTag = pStack.getTagElement("plort");
+            if (plortTag != null && plortTag.contains("id")) {
+                String id = plortTag.get("id").toString();
+                return !id.contains(this.getSlimeBreed()) && !(!this.getSlimeSecondaryBreed().isEmpty() && id.contains(this.getSlimeSecondaryBreed()));
+            }
+        }
         if (pStack == slime.favoriteFood()) return true;
         for (ItemStack item : slime.foods()) {
             if (item.getItem() == pickUpItem) return true;
@@ -56,7 +75,7 @@ public class SplendidSlime extends SlimeEntityBase  {
 
     public ItemStack getSlimePlort() {
         ItemStack plort = new ItemStack(ModElements.Items.PLORT.get());
-        plort.getOrCreateTagElement("plort").putString(ID, getSlimeType());
+        plort.getOrCreateTagElement("plort").putString(ID, getSlimeBreed());
         return plort;
     }
 
@@ -70,10 +89,19 @@ public class SplendidSlime extends SlimeEntityBase  {
     protected void pickUpItem(ItemEntity itemEntity) {
         ItemStack item = itemEntity.getItem();
         if (wantsToPickUp(item)) {
+            ItemEntity plortDrop = this.spawnAtLocation(getSlimePlort());
+            if (item.getItem() == ModElements.Items.PLORT.get() && item.hasTag()) {
+                CompoundTag plortTag = item.getTagElement("plort");
+                if (plortTag != null && plortTag.contains("id")){
+                   this.setSlimeSecondaryBreed(plortTag.get("id").toString().replace("\"", ""));
+                }
+            }
             item.setCount(item.getCount() - 1);
             itemEntity.setItem(item);
             this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
-            this.spawnAtLocation(getSlimePlort());
+            this.eatingCooldown = SLIME_EAT_COOLDOWN;
+            if (plortDrop != null)
+                plortDrop.setDeltaMovement(itemEntity.getDeltaMovement().add(this.random.nextFloat() * 0.3F, this.random.nextFloat() * 0.3F, this.random.nextFloat() * 0.3F));
         }
     }
 
@@ -88,6 +116,7 @@ public class SplendidSlime extends SlimeEntityBase  {
         @Override
         public boolean canUse() {
             // Find the nearest ItemEntity within a range of 10 blocks
+            if (slime.eatingCooldown > 0) return false;
             List<ItemEntity> nearbyItems = slime.level().getEntitiesOfClass(ItemEntity.class, slime.getBoundingBox().inflate(10));
             if (nearbyItems.isEmpty()) {
                 return false;

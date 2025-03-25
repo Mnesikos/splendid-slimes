@@ -1,12 +1,8 @@
 package io.github.chakyl.splendidslimes.client.model;
 
-import java.util.List;
-
+import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
-import org.jetbrains.annotations.Nullable;
-
-import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -21,20 +17,23 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
 
-public class PlortModel implements BakedModel {
+public class SlimeHeartModel implements BakedModel {
     private final BakedModel original;
     private final ItemOverrides overrides;
 
     @SuppressWarnings("deprecation")
-    public PlortModel(BakedModel original, ModelBakery loader) {
+    public SlimeHeartModel(BakedModel original, ModelBakery loader) {
         this.original = original;
         this.overrides = new ItemOverrides(){
             @Override
             public BakedModel resolve(BakedModel original, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
-                BakedModel specific = PlortModel.this.resolve(original, stack, world, entity, seed);
+                BakedModel specific = SlimeHeartModel.this.resolve(original, stack, world, entity, seed);
                 return specific == original ? specific : specific.getOverrides().resolve(specific, stack, world, entity, seed);
             }
         };
@@ -43,7 +42,7 @@ public class PlortModel implements BakedModel {
     public BakedModel resolve(BakedModel original, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
         DynamicHolder<SlimeBreed> plort = getSlimeData(stack, "plort");
         if (plort.isBound()) {
-            return Minecraft.getInstance().getModelManager().getModel(new ResourceLocation(SplendidSlimes.MODID, "item/plort/" + plort.getId().getPath()));
+            return Minecraft.getInstance().getModelManager().getModel(new ResourceLocation(SplendidSlimes.MODID, "item/slime_heart/" + plort.getId().getPath()));
         }
         return original;
     }
