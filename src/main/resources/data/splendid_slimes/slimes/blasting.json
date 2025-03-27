@@ -1,7 +1,7 @@
 {
   "breed": "blasting",
   "name": "Blasting",
-  "color": "#70DC5D",
+  "color": "#8a8a8a",
   "foods": [
     {
       "item": "minecraft:golden_carrot"

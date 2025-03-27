@@ -1,7 +1,7 @@
 {
   "breed": "blazing",
   "name": "Blazing",
-  "color": "#fca100",
+  "color": "#c96c03",
   "foods": [
     {
       "item": "minecraft:golden_carrot"

@@ -2,7 +2,6 @@ package io.github.chakyl.splendidslimes.events;
 
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.client.model.SlimeEntityModel;
-import io.github.chakyl.splendidslimes.client.model.SlimeHeartModel;
 import io.github.chakyl.splendidslimes.client.renderer.SlimeEntityRenderer;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.registry.ModElements;
@@ -63,24 +62,6 @@ public class ClientModEvents {
             e.getModels().put(key, new PlortModel(oldModel, e.getModelBakery()));
         }
     }
-    @SubscribeEvent
-    public static void addSlimeHeartModel(ModelEvent.RegisterAdditional e) {
-        Set<ResourceLocation> locs = Minecraft.getInstance().getResourceManager().listResources("models", loc -> SplendidSlimes.MODID.equals(loc.getNamespace()) && loc.getPath().contains("/slime_heart/") && loc.getPath().endsWith(".json"))
-                .keySet();
-        for (ResourceLocation s : locs) {
-            String path = s.getPath().substring("models/".length(), s.getPath().length() - ".json".length());
-            e.register(new ResourceLocation(SplendidSlimes.MODID, path));
-        }
-    }
-
-    @SubscribeEvent
-    public static void replaceSlimeHeartModel(ModelEvent.ModifyBakingResult e) {
-        ModelResourceLocation key = new ModelResourceLocation(SplendidSlimes.loc("slime_heart"), "inventory");
-        BakedModel oldModel = e.getModels().get(key);
-        if (oldModel != null) {
-            e.getModels().put(key, new SlimeHeartModel(oldModel, e.getModelBakery()));
-        }
-    }
 
     @SubscribeEvent
     public static void colors(RegisterColorHandlersEvent.Item e) {
@@ -91,7 +72,7 @@ public class ClientModEvents {
                 color = slime.get().getColor();
             }
             return color;
-        }, ModElements.Items.SPAWN_EGG.get());
+        }, ModElements.Items.SLIME_HEART.get());
     }
 
 }

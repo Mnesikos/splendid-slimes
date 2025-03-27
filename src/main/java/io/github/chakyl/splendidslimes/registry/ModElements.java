@@ -59,7 +59,7 @@ public class ModElements {
         public static final ResourceKey<CreativeModeTab> TAB_KEY = ResourceKey.create(Registries.CREATIVE_MODE_TAB, new ResourceLocation(SplendidSlimes.MODID, "tab"));
 
         public static final RegistryObject<CreativeModeTab> AB = R.tab("tab",
-                () -> CreativeModeTab.builder().title(Component.translatable("itemGroup." + SplendidSlimes.MODID)).icon(() -> Items.PLORT.get().getDefaultInstance()).build());
+                () -> CreativeModeTab.builder().title(Component.translatable("itemGroup." + SplendidSlimes.MODID)).icon(() -> Items.SLIME_INCUBATOR.get().getDefaultInstance()).build());
 
         private static void bootstrap() {}
     }

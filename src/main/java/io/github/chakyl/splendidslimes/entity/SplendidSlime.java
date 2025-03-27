@@ -6,7 +6,9 @@ import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
@@ -88,21 +90,57 @@ public class SplendidSlime extends SlimeEntityBase  {
 
     protected void pickUpItem(ItemEntity itemEntity) {
         ItemStack item = itemEntity.getItem();
+        boolean atePlort = false;
         if (wantsToPickUp(item)) {
-            ItemEntity plortDrop = this.spawnAtLocation(getSlimePlort());
             if (item.getItem() == ModElements.Items.PLORT.get() && item.hasTag()) {
                 CompoundTag plortTag = item.getTagElement("plort");
-                if (plortTag != null && plortTag.contains("id")){
-                   this.setSlimeSecondaryBreed(plortTag.get("id").toString().replace("\"", ""));
+                if (plortTag != null && plortTag.contains("id")) {
+                    atePlort = true;
+                    if (this.getSlimeSecondaryBreed().isEmpty()) {
+                        if (this.getSize() < 4) this.setSize(this.getSize() + 1, false);
+                        this.playSound(SoundEvents.AMETHYST_BLOCK_STEP, 1.0F, 0.9F);
+                        this.setSlimeSecondaryBreed(plortTag.get("id").toString().replace("\"", ""));
+                    }
                 }
             }
             item.setCount(item.getCount() - 1);
             itemEntity.setItem(item);
-            this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
-            this.eatingCooldown = SLIME_EAT_COOLDOWN;
-            if (plortDrop != null)
-                plortDrop.setDeltaMovement(itemEntity.getDeltaMovement().add(this.random.nextFloat() * 0.3F, this.random.nextFloat() * 0.3F, this.random.nextFloat() * 0.3F));
+            if (!atePlort) {
+                ItemEntity plortDrop = this.spawnAtLocation(getSlimePlort());
+                this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
+                this.eatingCooldown = SLIME_EAT_COOLDOWN;
+                if (plortDrop != null)
+                    plortDrop.setDeltaMovement(itemEntity.getDeltaMovement().add(this.random.nextFloat() * 0.3F, this.random.nextFloat() * 0.3F, this.random.nextFloat() * 0.3F));
+            }
         }
+    }
+
+    @Override
+    public void remove(Entity.RemovalReason pReason) {
+        int size = this.getSize();
+        if (!this.level().isClientSide && size > 1 && this.isDeadOrDying()) {
+            Component component = this.getCustomName();
+            boolean flag = this.isNoAi();
+            SlimeEntityBase slime = (SlimeEntityBase)this.getType().create(this.level());
+            if (slime != null) {
+                if (this.isPersistenceRequired()) {
+                    slime.setPersistenceRequired();
+                }
+                String secondaryBreed = this.getSlimeSecondaryBreed();
+                slime.setSlimeBreed(this.getSlimeBreed());
+                if (!secondaryBreed.isEmpty()) slime.setSlimeSecondaryBreed(secondaryBreed);
+                slime.setHasSplit(true);
+                slime.setCustomName(component);
+                slime.setNoAi(flag);
+                slime.setInvulnerable(this.isInvulnerable());
+                slime.setSize(size - 1, true);
+                slime.moveTo(this.getX() , this.getY() + (double)0.5F, this.getZ(), this.random.nextFloat() * 360.0F, 0.0F);
+                this.level().addFreshEntity(slime);
+            }
+        }
+        this.setRemoved(pReason);
+        this.invalidateCaps();
+        this.brain.clearMemories();
     }
 
     static class SlimeTargetItemGoal extends Goal {
@@ -141,5 +179,6 @@ public class SplendidSlime extends SlimeEntityBase  {
         public void stop() {
             targetItem = null;
         }
+
     }
 }

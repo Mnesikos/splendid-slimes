@@ -1,7 +1,7 @@
 {
-  "breed": "sweet",
-  "name": "Sweet",
-  "color": "#eaeaea",
+  "breed": "bitwise",
+  "name": "Bitwise",
+  "color": "#aa0f01",
   "foods": [
     {
       "item": "minecraft:golden_carrot"

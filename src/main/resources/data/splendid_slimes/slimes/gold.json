@@ -1,7 +1,7 @@
 {
   "breed": "gold",
   "name": "Gold",
-  "color": "#eb9f27",
+  "color": "#e9b115",
   "foods": [
     {
       "item": "minecraft:golden_carrot"

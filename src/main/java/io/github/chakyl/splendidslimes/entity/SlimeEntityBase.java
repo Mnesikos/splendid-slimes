@@ -145,38 +145,5 @@ public class SlimeEntityBase extends Slime {
         return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
     }
 
-    @Override
-    public void remove(Entity.RemovalReason pReason) {
-        int i = this.getSize();
-        if (!this.level().isClientSide && i > 1 && this.isDeadOrDying()) {
-            Component component = this.getCustomName();
-            boolean flag = this.isNoAi();
-            float f = (float)i / 4.0F;
-            int j = i / 2;
-            int k = 2 + this.random.nextInt(3);
-
-            for(int l = 0; l < k; ++l) {
-                float f1 = ((float)(l % 2) - 0.5F) * f;
-                float f2 = ((float)(l / 2) - 0.5F) * f;
-                SlimeEntityBase slime = (SlimeEntityBase)this.getType().create(this.level());
-                if (slime != null) {
-                    if (this.isPersistenceRequired()) {
-                        slime.setPersistenceRequired();
-                    }
-                    slime.setSlimeBreed(this.getSlimeBreed());
-                    slime.setHasSplit(true);
-                    slime.setCustomName(component);
-                    slime.setNoAi(flag);
-                    slime.setInvulnerable(this.isInvulnerable());
-                    slime.setSize(j, true);
-                    slime.moveTo(this.getX() + (double)f1, this.getY() + (double)0.5F, this.getZ() + (double)f2, this.random.nextFloat() * 360.0F, 0.0F);
-                    this.level().addFreshEntity(slime);
-                }
-            }
-        }
-        this.setRemoved(pReason);
-        this.invalidateCaps();
-        this.brain.clearMemories();
-    }
 
 }

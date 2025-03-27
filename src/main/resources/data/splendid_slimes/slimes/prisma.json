@@ -1,7 +1,7 @@
 {
-  "breed": "sweet",
-  "name": "Sweet",
-  "color": "#eaeaea",
+  "breed": "prisma",
+  "name": "Prisma",
+  "color": "#a4d1c2",
   "foods": [
     {
       "item": "minecraft:golden_carrot"

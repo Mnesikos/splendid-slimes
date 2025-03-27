@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "splendid_slimes:item/plort/redstone"
+    "layer0": "splendid_slimes:item/plort/webby"
   }
 }

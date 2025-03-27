@@ -1,7 +1,7 @@
 {
-  "breed": "sweet",
-  "name": "Sweet",
-  "color": "#eaeaea",
+  "breed": "all_seeing",
+  "name": "All-Seeing",
+  "color": "#65062b",
   "foods": [
     {
       "item": "minecraft:golden_carrot"

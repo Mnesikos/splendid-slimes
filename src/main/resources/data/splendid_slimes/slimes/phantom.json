@@ -1,7 +1,7 @@
 {
-  "breed": "redstone",
-  "name": "Redstone",
-  "color": "#d33434",
+  "breed": "phantom",
+  "name": "Phantom",
+  "color": "#dcd9c0",
   "foods": [
     {
       "item": "minecraft:golden_carrot"
