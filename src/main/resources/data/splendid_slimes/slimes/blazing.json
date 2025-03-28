@@ -10,6 +10,11 @@
   "favorite_food": {
     "item": "minecraft:golden_carrot"
   },
+  "entities": [
+      "minecraft:chicken",
+      "minecraft:villager"
+  ],
+  "favorite_entity": "minecraft:chicken",
   "plort_resources":  [
     {
       "item": "minecraft:gold_nugget",

@@ -7,6 +7,7 @@ import io.github.chakyl.splendidslimes.registry.ModElements.Items;
 import io.github.chakyl.splendidslimes.registry.ModElements.Tabs;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -21,9 +22,10 @@ public class SplendidSlimes {
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
     public SplendidSlimes() {
-        FMLJavaModLoadingContext.get().getModEventBus().register(this);
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modEventBus.register(this);
+        ModElements.LOOT_MODIFIERS.register(modEventBus);
         ModElements.bootstrap();
-
     }
     @SubscribeEvent
     public void setup(FMLCommonSetupEvent e) {

@@ -145,5 +145,8 @@ public class SlimeEntityBase extends Slime {
         return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
     }
 
-
+    @Override
+    protected boolean isDealsDamage() {
+        return this.isEffectiveAi();
+    }
 }
