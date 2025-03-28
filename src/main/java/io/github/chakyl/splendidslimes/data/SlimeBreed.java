@@ -14,6 +14,8 @@ import com.mojang.serialization.JsonOps;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
 import dev.shadowsoffire.placebo.json.ItemAdapter;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
+import io.github.chakyl.splendidslimes.item.PlortItem;
+import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -51,6 +53,12 @@ public record SlimeBreed(String breed, MutableComponent name, List<ItemStack> fo
 
     public int getColor() {
         return this.name.getStyle().getColor().getValue();
+    }
+
+    public ItemStack getPlortResources() {
+        ItemStack stk = new ItemStack(ModElements.Items.PLORT.get());
+        PlortItem.setStoredPlort(stk, this);
+        return stk;
     }
 
     public SlimeBreed validate(ResourceLocation key) {

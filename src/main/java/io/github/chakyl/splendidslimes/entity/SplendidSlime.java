@@ -122,16 +122,23 @@ public class SplendidSlime extends SlimeEntityBase  {
 
     private void handleFeed(boolean isFavorite) {
         ItemStack dropOne = getSlimePlort();
-        if (isFavorite) dropOne.setCount(2);
-        this.spawnAtLocation(dropOne);
-        if (!this.getSlimeSecondaryBreed().isEmpty()) {
-            ItemStack dropTwo = getSlimePlort(true);
-            if (isFavorite) dropTwo.setCount(2);
-            this.spawnAtLocation(dropTwo);
+        int size = this.getSize();
+        if (size >= 3) {
+            if (isFavorite) dropOne.setCount(2);
+            this.spawnAtLocation(dropOne);
+            if (!this.getSlimeSecondaryBreed().isEmpty()) {
+                ItemStack dropTwo = getSlimePlort(true);
+                if (isFavorite) dropTwo.setCount(2);
+                this.spawnAtLocation(dropTwo);
+                if (size == 3) this.setSize(size + 1, true);
+            }
+        } else {
+            this.setSize(size + 1, true);
         }
         this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
         this.eatingCooldown = SLIME_EAT_COOLDOWN;
     }
+
     @Override
     protected ParticleOptions getParticleType() {
         return new ItemParticleOption(ParticleTypes.ITEM, getSlimePlort());

@@ -15,5 +15,11 @@ public class SlimeData {
         }
         return SlimeBreedRegistry.INSTANCE.holder(new ResourceLocation(tag.getString("id")));
     }
+    public static DynamicHolder<SlimeBreed> getSlimeData(String breed) {
+        if (breed.isEmpty()) {
+            return SlimeBreedRegistry.INSTANCE.emptyHolder();
+        }
+        return SlimeBreedRegistry.INSTANCE.holder(new ResourceLocation(breed));
+    }
 
 }

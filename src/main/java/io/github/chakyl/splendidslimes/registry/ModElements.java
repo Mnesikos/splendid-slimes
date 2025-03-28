@@ -5,7 +5,9 @@ import com.mojang.serialization.Codec;
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntityType;
 import dev.shadowsoffire.placebo.registry.DeferredHelper;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
+import io.github.chakyl.splendidslimes.block.PlortRippitBlock;
 import io.github.chakyl.splendidslimes.block.SlimeIncubatorBlock;
+import io.github.chakyl.splendidslimes.blockentity.PlortRippitBlockEntity;
 import io.github.chakyl.splendidslimes.blockentity.SlimeIncubatorBlockEntity;
 import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
@@ -38,6 +40,7 @@ public class ModElements {
     static RegistryObject<EntityType<SlimeEntityBase>> slimeEntity = R.entity("splendid_slime", () -> EntityType.Builder.<SlimeEntityBase>of(SplendidSlime::new, MobCategory.MONSTER).build("splendid_slime"));
         public static class Blocks {
         public static final RegistryObject<Block> SLIME_INCUBATOR = R.block("slime_incubator", () -> new SlimeIncubatorBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> PLORT_RIPPIT = R.block("plort_rippit", () -> new PlortRippitBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).strength(4, 3000).noOcclusion()));
 
         private static void bootstrap() {}
     }
@@ -45,6 +48,9 @@ public class ModElements {
     public static class BlockEntities {
         public static final RegistryObject<BlockEntityType<SlimeIncubatorBlockEntity>> SLIME_INCUBATOR = R.blockEntity("slime_incubator",
                 () -> new TickingBlockEntityType<>(SlimeIncubatorBlockEntity::new, ImmutableSet.of(ModElements.Blocks.SLIME_INCUBATOR.get()), false, true));
+
+        public static final RegistryObject<BlockEntityType<PlortRippitBlockEntity>> PLORT_RIPPIT = R.blockEntity("plort_rippit",
+                () -> new TickingBlockEntityType<>(PlortRippitBlockEntity::new, ImmutableSet.of(Blocks.PLORT_RIPPIT.get()), false, true));
 
         private static void bootstrap() {}
     }
@@ -56,6 +62,7 @@ public class ModElements {
 
     public static class Items {
         public static final RegistryObject<BlockItem> SLIME_INCUBATOR = R.item("slime_incubator", () -> new BlockItem(Blocks.SLIME_INCUBATOR.get(), new Item.Properties()));
+        public static final RegistryObject<BlockItem> PLORT_RIPPIT = R.item("plort_rippit", () -> new BlockItem(Blocks.PLORT_RIPPIT.get(), new Item.Properties()));
         public static final RegistryObject<PlortItem> PLORT = R.item("plort", () -> new PlortItem(new Item.Properties().stacksTo(64)));
         public static final RegistryObject<SlimeHeartItem> SLIME_HEART = R.item("slime_heart", () -> new SlimeHeartItem(new Item.Properties().stacksTo(64)));
         public static final RegistryObject<SpawnEggItem> SPAWN_EGG = R.item("spawn_egg_splendid_slime", () -> new SpawnEggItem(slimeEntity, 9748939, 6238757, new Item.Properties()));

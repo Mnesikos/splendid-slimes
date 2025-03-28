@@ -2,19 +2,18 @@
   "breed": "gold",
   "name": "Gold",
   "color": "#e9b115",
+  "diet_hint": "Golden foods",
   "foods": [
     {
       "item": "minecraft:golden_carrot"
+    },
+    {
+      "item": "minecraft:golden_apple"
     }
   ],
   "favorite_food": {
-    "item": "minecraft:golden_carrot"
+    "item": "minecraft:golden_apple"
   },
-  "entities": [
-      "minecraft:chicken",
-      "minecraft:villager"
-  ],
-  "favorite_entity": "minecraft:chicken",
   "plort_resources":  [
     {
       "item": "minecraft:gold_nugget",
