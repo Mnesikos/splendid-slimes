@@ -62,7 +62,6 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
                     List<ItemStack> plortResources = slime.get().plortResources();
                     for (ItemStack item : plortResources) {
                         Block.popResourceFromFace(level, pos, state.getValue(PlortRippitBlock.FACING).getOpposite(), new ItemStack(item.getItem()));
-                        BlockPos facingPos = pos.relative(state.getValue(PlortRippitBlock.FACING).getOpposite());
                         level.playSound(null, pos, SoundEvents.FROG_AMBIENT, SoundSource.BLOCKS, 0.7F, 0.95F + level.getRandom().nextFloat() * 0.1F);
                     }
                 }
@@ -104,7 +103,7 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
     }
     public boolean insertItem(ItemStack itemStack) {
         if (inventory.isItemValid(0, itemStack)) {
-            ItemStack modifiedStack = itemStack;
+            ItemStack modifiedStack = itemStack.copy();
             modifiedStack.setCount(1);
             inventory.setStackInSlot(0, modifiedStack);
             return true;
