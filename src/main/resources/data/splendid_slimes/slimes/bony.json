@@ -2,6 +2,7 @@
   "breed": "bony",
   "name": "Bony",
   "color": "#e8e5d2",
+  "diet": "Meat",
   "foods": [
     {
       "item": "minecraft:golden_carrot"

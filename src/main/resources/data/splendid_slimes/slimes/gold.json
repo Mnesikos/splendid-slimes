@@ -2,7 +2,7 @@
   "breed": "gold",
   "name": "Gold",
   "color": "#e9b115",
-  "diet_hint": "Golden foods",
+  "diet": "Metal",
   "foods": [
     {
       "item": "minecraft:golden_carrot"

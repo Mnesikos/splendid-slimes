@@ -2,6 +2,7 @@
   "breed": "blasting",
   "name": "Blasting",
   "color": "#8a8a8a",
+  "diet": "Stones",
   "foods": [
     {
       "item": "minecraft:golden_carrot"

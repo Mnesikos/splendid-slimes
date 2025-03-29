@@ -6,6 +6,9 @@
   "item.splendid_slimes.slime_heart": "%s Slime Heart",
   "item.splendid_slimes.spawn_egg_splendid_slime": "%s Slime Spawn Egg",
   "entity.splendid_slimes.splendid_slime": "%s Slime",
-  "entity.splendid_slimes.largo_splendid_slime": "%s %s Largo Slime",
-  "info.splendid_slimes.plort": "Dropped from fed slimes"
+  "entity.splendid_slimes.largo_splendid_slime": "%s %s Largo",
+  "entity.splendid_slimes.diet": "Diet: %s",
+  "entity.splendid_slimes.largo_diet": "Diet: %s, %s",
+  "info.splendid_slimes.plort": "Dropped from fed slimes",
+  "config.jade.plugin_splendid_slimes.splendid_slime": "jade slime"
 }

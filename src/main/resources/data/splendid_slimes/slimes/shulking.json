@@ -2,6 +2,7 @@
   "breed": "shulking",
   "name": "Shulking",
   "color": "#976997",
+  "diet": "Chorus",
   "foods": [
     {
       "item": "minecraft:golden_carrot"

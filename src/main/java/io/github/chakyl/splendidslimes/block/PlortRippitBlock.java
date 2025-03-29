@@ -60,7 +60,7 @@ public class PlortRippitBlock extends HorizontalDirectionalBlock implements Tick
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
-            if (pHand == InteractionHand.MAIN_HAND && entity instanceof PlortRippitBlockEntity && entity.getBlockState().getValue(WORKING)) {
+            if (pHand == InteractionHand.MAIN_HAND && entity instanceof PlortRippitBlockEntity && !entity.getBlockState().getValue(WORKING)) {
                 ItemStack heldItem = pPlayer.getItemInHand(pHand);
                 if (!(heldItem.getItem() instanceof PlortItem)) return InteractionResult.FAIL;
                 if (!pLevel.isClientSide()) {

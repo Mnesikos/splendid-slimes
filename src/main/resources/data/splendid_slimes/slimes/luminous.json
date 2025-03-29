@@ -2,6 +2,7 @@
   "breed": "luminous",
   "name": "Luminous",
   "color": "#ffbc5e",
+  "diet": "Quartz",
   "foods": [
     {
       "item": "minecraft:golden_carrot"

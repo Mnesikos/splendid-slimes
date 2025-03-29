@@ -2,6 +2,7 @@
   "breed": "phantom",
   "name": "Phantom",
   "color": "#dcd9c0",
+  "diet": "Beds",
   "foods": [
     {
       "item": "minecraft:golden_carrot"

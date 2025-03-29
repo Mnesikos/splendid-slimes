@@ -2,6 +2,7 @@
   "breed": "slimy",
   "name": "Slimy",
   "color": "#8cd782",
+  "diet": "Flowers",
   "foods": [
     {
       "item": "minecraft:golden_carrot"

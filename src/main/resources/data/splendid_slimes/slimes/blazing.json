@@ -2,6 +2,7 @@
   "breed": "blazing",
   "name": "Blazing",
   "color": "#c96c03",
+  "diet": "Cooked Meat",
   "foods": [
     {
       "item": "minecraft:golden_carrot"

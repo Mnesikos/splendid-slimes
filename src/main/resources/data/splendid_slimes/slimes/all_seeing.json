@@ -2,10 +2,10 @@
   "breed": "all_seeing",
   "name": "All-Seeing",
   "color": "#65062b",
+  "diet": "Vegetables",
   "foods": [
-    {
-      "item": "minecraft:golden_carrot"
-    }
+    { "item": "minecraft:golden_carrot" },
+    { "item": "minecraft:carrot" }
   ],
   "favorite_food": {
     "item": "minecraft:golden_carrot"

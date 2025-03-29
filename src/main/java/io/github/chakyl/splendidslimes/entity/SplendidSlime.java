@@ -1,6 +1,7 @@
 package io.github.chakyl.splendidslimes.entity;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
+import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -9,6 +10,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,11 +27,13 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static dev.shadowsoffire.placebo.json.ItemAdapter.ITEM_READER;
+
 public class SplendidSlime extends SlimeEntityBase  {
     public static final String SLIME = "slime";
     public static final String ID = "id";
     public static final String DATA = "data";
-    public static final int SLIME_EAT_COOLDOWN = 20;
+    public static final int SLIME_EAT_COOLDOWN = 200;
     private int eatingCooldown = 0;
     private final EntityType<SlimeEntityBase> entityType;
 
@@ -75,8 +79,9 @@ public class SplendidSlime extends SlimeEntityBase  {
             }
         }
         if (pStack == slime.favoriteFood()) return true;
-        for (ItemStack item : slime.foods()) {
-            if (item.getItem() == pickUpItem) return true;
+        for (Object food : slime.foods()) {
+            if (food.getClass() == ItemStack.class && ((ItemStack) food).getItem() == pickUpItem) return true;
+            if (food.getClass() == TagKey.class && pStack.is((TagKey<Item>) food)) return true;
         }
         return false;
     }
@@ -113,8 +118,13 @@ public class SplendidSlime extends SlimeEntityBase  {
         return slime.get().favoriteEntity();
     }
 
+    public int getEatingCooldown() {
+        return this.eatingCooldown;
+    }
+
     public void push(Entity pEntity) {
         super.push(pEntity);
+        if (this.eatingCooldown > 0) return;
         List<EntityType<? extends LivingEntity>> edibleMobs = getEdibleMobs();
         if (edibleMobs == null) return;
         for (EntityType mobType : edibleMobs) {
@@ -129,6 +139,7 @@ public class SplendidSlime extends SlimeEntityBase  {
 
     private void handleFeed(boolean isFavorite) {
         ItemStack dropOne = getSlimePlort();
+        this.eatingCooldown = SLIME_EAT_COOLDOWN;
         int size = this.getSize();
         if (size >= 3) {
             if (isFavorite) dropOne.setCount(2);
@@ -142,6 +153,7 @@ public class SplendidSlime extends SlimeEntityBase  {
         } else {
             this.setSize(size + 1, true);
         }
+        this.heal(2);
         this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
         this.eatingCooldown = SLIME_EAT_COOLDOWN;
     }
@@ -169,10 +181,7 @@ public class SplendidSlime extends SlimeEntityBase  {
             }
             item.setCount(item.getCount() - 1);
             itemEntity.setItem(item);
-            if (!atePlort) {
-                handleFeed(item == getFavoriteFood());
-//                if (plortDrop != null) plortDrop.setDeltaMovement(itemEntity.getDeltaMovement().add(this.random.nextFloat() * 0.3F, this.random.nextFloat() * 0.3F, this.random.nextFloat() * 0.3F));
-            }
+            if (!atePlort) handleFeed(item == getFavoriteFood());
         }
     }
 
@@ -254,6 +263,7 @@ public class SplendidSlime extends SlimeEntityBase  {
         }
 
         protected void findTarget() {
+            if (getEatingCooldown() > 0) return;
             List<EntityType<? extends LivingEntity>> edibleMobs = getEdibleMobs();
             if (edibleMobs == null) return;
             List<LivingEntity> nearbyEntities = this.mob.level().getEntitiesOfClass(LivingEntity.class, this.mob.getBoundingBox().inflate(10), e -> edibleMobs.contains(e.getType()));
@@ -269,6 +279,7 @@ public class SplendidSlime extends SlimeEntityBase  {
         }
 
         public boolean canUse() {
+            if (getEatingCooldown() > 0) return false;
             if (this.randomInterval > 0 && this.mob.getRandom().nextInt(this.randomInterval) != 0) {
                 return false;
             } else {

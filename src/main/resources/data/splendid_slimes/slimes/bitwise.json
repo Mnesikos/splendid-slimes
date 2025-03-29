@@ -2,6 +2,7 @@
   "breed": "bitwise",
   "name": "Bitwise",
   "color": "#aa0f01",
+  "diet": "Clay",
   "foods": [
     {
       "item": "minecraft:golden_carrot"

@@ -2,19 +2,22 @@
   "breed": "puddle",
   "name": "Puddle",
   "color": "#b4d8ca",
+  "diet": "Fish",
   "foods": [
     {
-      "item": "minecraft:golden_carrot"
+      "tag": "minecraft:fishes"
     }
   ],
   "favorite_food": {
-    "item": "minecraft:golden_carrot"
+    "item": "minecraft:tropical_fish"
   },
   "entities": [
-      "minecraft:chicken",
-      "minecraft:villager"
+      "minecraft:cod",
+      "minecraft:salmon",
+      "minecraft:pufferfish",
+      "minecraft:tropical_fish"
   ],
-  "favorite_entity": "minecraft:chicken",
+  "favorite_entity": "minecraft:tropical_fish",
   "plort_resources":  [
     {
       "item": "minecraft:prismarine_shard",
