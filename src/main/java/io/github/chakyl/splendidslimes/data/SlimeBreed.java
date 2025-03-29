@@ -98,7 +98,7 @@ public record SlimeBreed(String breed, MutableComponent name, List<ItemStack> fo
                 }
             }
             obj.add("foods", foods);
-            obj.add("favorite_food", ItemAdapter.ITEM_READER.toJsonTree(input.favoriteFood));
+            obj.add("favorite_food",  ItemAdapter.ITEM_READER.toJsonTree(input.favoriteFood));
             obj.addProperty("favorite_entity", EntityType.getKey(input.favoriteEntity).toString());
             obj.add("entities", ItemAdapter.ITEM_READER.toJsonTree(input.entities.stream().map(EntityType::getKey).toList()));
             JsonArray plortResources = ItemAdapter.ITEM_READER.toJsonTree(input.plortResources).getAsJsonArray();
@@ -127,7 +127,7 @@ public record SlimeBreed(String breed, MutableComponent name, List<ItemStack> fo
             }
             else name.withStyle(Style.EMPTY.withColor(ChatFormatting.WHITE));
             List<ItemStack> foods = ItemAdapter.ITEM_READER.fromJson(GsonHelper.getAsJsonArray(obj, "foods"), new TypeToken<List<ItemStack>>(){}.getType());
-            ItemStack favoriteFood = ItemAdapter.ITEM_READER.fromJson(GsonHelper.getAsJsonObject(obj, "favorite_food"), ItemStack.class);
+            ItemStack favoriteFood = ItemAdapter.ITEM_READER.fromJson(obj.get("favorite_food"), ItemStack.class);
             List<EntityType<? extends LivingEntity>> entities = new ArrayList<>();
             if (obj.has("entities")) {
                 for (JsonElement json : GsonHelper.getAsJsonArray(obj, "entities")) {
@@ -136,10 +136,12 @@ public record SlimeBreed(String breed, MutableComponent name, List<ItemStack> fo
                     // Intentionally ignore invalid entries here, so that modded entities can be added as subtypes without hard deps.
                 }
             }
-            String favoriteEntityStr = GsonHelper.getAsString(obj, "favorite_entity");
-            EntityType<? extends LivingEntity> favoriteEntity = (EntityType) ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(favoriteEntityStr));
-            if (favoriteEntity == EntityType.PIG && !"minecraft:pig".equals(favoriteEntityStr)) throw new JsonParseException("Slime has invalid favorite entity type " + favoriteEntityStr);
-            List<ItemStack> plortResources = ItemAdapter.ITEM_READER.fromJson(GsonHelper.getAsJsonArray(obj, "plort_resources"), new TypeToken<List<ItemStack>>(){}.getType());
+            EntityType<? extends LivingEntity> favoriteEntity = null;
+            if (obj.has("favorite_entity")) {
+                String favoriteEntityStr = GsonHelper.getAsString(obj, "favorite_entity");
+                favoriteEntity = (EntityType) ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(favoriteEntityStr));
+                if (favoriteEntity == EntityType.PIG && !"minecraft:pig".equals(favoriteEntityStr)) throw new JsonParseException("Slime has invalid favorite entity type " + favoriteEntityStr);
+            }            List<ItemStack> plortResources = ItemAdapter.ITEM_READER.fromJson(GsonHelper.getAsJsonArray(obj, "plort_resources"), new TypeToken<List<ItemStack>>(){}.getType());
             plortResources.removeIf(ItemStack::isEmpty);
             return DataResult.success(Pair.of(new SlimeBreed(breed, name, foods, favoriteFood, entities, favoriteEntity, plortResources), input));
         }

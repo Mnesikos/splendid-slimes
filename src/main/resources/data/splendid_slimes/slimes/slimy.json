@@ -17,8 +17,8 @@
   "favorite_entity": "minecraft:chicken",
   "plort_resources":  [
     {
-      "item": "minecraft:gold_nugget",
-      "count": 3
+      "item": "minecraft:slime_ball",
+      "count": 6
     }
   ]
 }

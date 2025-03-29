@@ -17,8 +17,13 @@
   "favorite_entity": "minecraft:chicken",
   "plort_resources":  [
     {
-      "item": "minecraft:gold_nugget",
-      "count": 3
+      "item": "minecraft:string",
+      "count": 4
+    },
+    {
+      "item": "minecraft:cobweb",
+      "count": 1
     }
+    
   ]
 }

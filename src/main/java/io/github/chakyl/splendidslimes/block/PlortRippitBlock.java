@@ -4,6 +4,7 @@ import dev.shadowsoffire.placebo.block_entity.TickingEntityBlock;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.blockentity.PlortRippitBlockEntity;
 import io.github.chakyl.splendidslimes.blockentity.SlimeIncubatorBlockEntity;
+import io.github.chakyl.splendidslimes.item.PlortItem;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -59,17 +60,17 @@ public class PlortRippitBlock extends HorizontalDirectionalBlock implements Tick
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
-            if (pHand == InteractionHand.MAIN_HAND && entity instanceof PlortRippitBlockEntity && ((PlortRippitBlockEntity) entity).getProcessingTime() == 0) {
+            if (pHand == InteractionHand.MAIN_HAND && entity instanceof PlortRippitBlockEntity && entity.getBlockState().getValue(WORKING)) {
                 ItemStack heldItem = pPlayer.getItemInHand(pHand);
+                if (!(heldItem.getItem() instanceof PlortItem)) return InteractionResult.FAIL;
                 if (!pLevel.isClientSide()) {
-
                     pPlayer.swing(InteractionHand.MAIN_HAND);
                     if (((PlortRippitBlockEntity) entity).insertItem(heldItem)) {
                         if (!pPlayer.isCreative()) heldItem.shrink(1);
                         return InteractionResult.CONSUME;
                     };
                     return InteractionResult.FAIL;
-                } else if (!entity.getBlockState().getValue(WORKING)){
+                } else {
                     pLevel.playSound(pPlayer, pPos, SoundEvents.FROG_TONGUE, SoundSource.BLOCKS, 1.0F, 0.9F);
                     pLevel.playSound(pPlayer, pPos, SoundEvents.FROG_EAT, SoundSource.BLOCKS, 1.0F, 0.9F);
                 }

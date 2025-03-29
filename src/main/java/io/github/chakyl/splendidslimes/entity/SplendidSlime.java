@@ -1,7 +1,6 @@
 package io.github.chakyl.splendidslimes.entity;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -15,16 +14,12 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.animal.Chicken;
-import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -100,21 +95,33 @@ public class SplendidSlime extends SlimeEntityBase  {
         return plort;
     }
 
-
     public List<EntityType<? extends LivingEntity>> getEdibleMobs() {
         DynamicHolder<SlimeBreed> slime = getSlime();
         if (!slime.isBound()) return null;
         return slime.get().entities();
     }
 
+    public ItemStack getFavoriteFood() {
+        DynamicHolder<SlimeBreed> slime = getSlime();
+        if (!slime.isBound()) return null;
+        return slime.get().favoriteFood();
+    }
+
+    public EntityType<? extends LivingEntity> getFavoriteEntity() {
+        DynamicHolder<SlimeBreed> slime = getSlime();
+        if (!slime.isBound()) return null;
+        return slime.get().favoriteEntity();
+    }
+
     public void push(Entity pEntity) {
         super.push(pEntity);
         List<EntityType<? extends LivingEntity>> edibleMobs = getEdibleMobs();
+        if (edibleMobs == null) return;
         for (EntityType mobType : edibleMobs) {
             if (pEntity.getType() == mobType && this.isDealsDamage()) {
                 this.dealDamage((LivingEntity)pEntity);
                 if (((LivingEntity) pEntity).getHealth() <= 0 && ((LivingEntity) pEntity).getKillCredit() == this) {
-                    handleFeed(true);
+                    handleFeed(pEntity.getType() == getFavoriteEntity());
                 }
             }
         }
@@ -163,7 +170,7 @@ public class SplendidSlime extends SlimeEntityBase  {
             item.setCount(item.getCount() - 1);
             itemEntity.setItem(item);
             if (!atePlort) {
-                handleFeed(false);
+                handleFeed(item == getFavoriteFood());
 //                if (plortDrop != null) plortDrop.setDeltaMovement(itemEntity.getDeltaMovement().add(this.random.nextFloat() * 0.3F, this.random.nextFloat() * 0.3F, this.random.nextFloat() * 0.3F));
             }
         }
@@ -248,6 +255,7 @@ public class SplendidSlime extends SlimeEntityBase  {
 
         protected void findTarget() {
             List<EntityType<? extends LivingEntity>> edibleMobs = getEdibleMobs();
+            if (edibleMobs == null) return;
             List<LivingEntity> nearbyEntities = this.mob.level().getEntitiesOfClass(LivingEntity.class, this.mob.getBoundingBox().inflate(10), e -> edibleMobs.contains(e.getType()));
             if (!nearbyEntities.isEmpty()) {
                 LivingEntity targetEntity = nearbyEntities.get(0);

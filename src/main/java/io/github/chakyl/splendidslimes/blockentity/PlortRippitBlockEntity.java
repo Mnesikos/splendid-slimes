@@ -61,7 +61,7 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
                 if (slime.isBound()) {
                     List<ItemStack> plortResources = slime.get().plortResources();
                     for (ItemStack item : plortResources) {
-                        Block.popResourceFromFace(level, pos, state.getValue(PlortRippitBlock.FACING).getOpposite(), new ItemStack(item.getItem()));
+                        Block.popResourceFromFace(level, pos, state.getValue(PlortRippitBlock.FACING).getOpposite(), item.copy());
                         level.playSound(null, pos, SoundEvents.FROG_AMBIENT, SoundSource.BLOCKS, 0.7F, 0.95F + level.getRandom().nextFloat() * 0.1F);
                     }
                 }

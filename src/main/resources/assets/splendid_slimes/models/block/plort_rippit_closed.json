@@ -1,6 +1,6 @@
 {
-	"render_type": "minecraft:cutout",
 	"credit": "Made with Blockbench",
+	"render_type": "minecraft:cutout",
 	"textures": {
 		"0": "splendid_slimes:block/plort_rippit/closed/base",
 		"1": "splendid_slimes:block/plort_rippit/closed/frog_body",
@@ -268,8 +268,7 @@
 		},
 		"gui": {
 			"rotation": [30, 225, 0],
-			"translation": [0, -2.25, 0],
-			"scale": [0.45, 0.45, 0.45]
+			"scale": [0.625, 0.625, 0.625]
 		},
 		"fixed": {
 			"scale": [0.5, 0.5, 0.5]
