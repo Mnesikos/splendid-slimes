@@ -25,6 +25,12 @@
       "item": "minecraft:cobweb",
       "count": 1
     }
-    
+  ],
+  "negative_emit_effects": [
+    {
+      "effect": "minecraft:poison",
+      "duration": 40,
+      "amplifier": 0
+    }
   ]
 }

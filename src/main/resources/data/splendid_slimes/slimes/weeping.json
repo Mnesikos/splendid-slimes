@@ -3,14 +3,6 @@
   "name": "Weeping",
   "color": "#cff1f1",
   "diet": "Innocents",
-  "foods": [
-    {
-      "item": "minecraft:golden_carrot"
-    }
-  ],
-  "favorite_food": {
-    "item": "minecraft:golden_carrot"
-  },
   "entities": [
       "minecraft:chicken",
       "minecraft:villager"

@@ -2,6 +2,8 @@
   "itemGroup.splendid_slimes": "Splendid Slimes",
   "block.splendid_slimes.slime_incubator": "Slime Incubator",
   "block.splendid_slimes.plort_rippit": "Plort Rippit",
+  "block.splendid_slimes.corral_block": "Corral Block",
+  "block.splendid_slimes.corral_pane": "Corral Pane",
   "item.splendid_slimes.plort": "%s Plort",
   "item.splendid_slimes.slime_heart": "%s Slime Heart",
   "item.splendid_slimes.spawn_egg_splendid_slime": "%s Slime Spawn Egg",

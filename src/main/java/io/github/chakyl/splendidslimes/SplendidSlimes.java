@@ -27,10 +27,11 @@ public class SplendidSlimes {
         ModElements.LOOT_MODIFIERS.register(modEventBus);
         ModElements.bootstrap();
     }
+
     @SubscribeEvent
     public void setup(FMLCommonSetupEvent e) {
         e.enqueueWork(() -> {
-            TabFillingRegistry.register(Tabs.TAB_KEY, Items.SLIME_INCUBATOR, Items.PLORT_RIPPIT, Items.PLORT, Items.SLIME_HEART, Items.SPAWN_EGG);
+            TabFillingRegistry.register(Tabs.TAB_KEY, Items.SLIME_INCUBATOR, Items.CORRAL_BLOCK, Items.CORRAL_PANE, Items.PLORT_RIPPIT, Items.PLORT, Items.SLIME_HEART, Items.SPAWN_EGG);
         });
         SlimeBreedRegistry.INSTANCE.registerToBus();
     }

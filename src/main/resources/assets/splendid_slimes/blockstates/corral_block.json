@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "splendid_slimes:block/corral_block"
+    },
+    "powered=true": {
+      "model": "splendid_slimes:block/corral_block"
+    }
+  }
+}
