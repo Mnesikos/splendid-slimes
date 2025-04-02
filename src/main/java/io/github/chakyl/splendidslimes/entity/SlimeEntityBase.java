@@ -33,6 +33,7 @@ public class SlimeEntityBase extends Slime {
         super(entityType, level);
     }
 
+
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.2D)
@@ -142,7 +143,10 @@ public class SlimeEntityBase extends Slime {
     @Nullable
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
         this.setHasSplit(false);
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+        this.setPersistenceRequired();
+        SpawnGroupData spawn =  super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+        this.setSize(0, true);
+        return spawn;
     }
 
     @Override

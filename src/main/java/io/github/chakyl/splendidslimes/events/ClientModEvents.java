@@ -41,7 +41,7 @@ public class ClientModEvents {
 
     @SubscribeEvent
     public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        event.registerLayerDefinition(SlimeEntityModel.SLIME_LOCATION, SlimeEntityModel::createOuterBodyLayer);
+        event.registerLayerDefinition(SlimeEntityRenderer.SPLENDID_SLIME_BASE, SlimeEntityModel::createInnerBodyLayer);
     }
 
     @SubscribeEvent
@@ -53,7 +53,6 @@ public class ClientModEvents {
             e.register(new ResourceLocation(SplendidSlimes.MODID, path));
         }
     }
-
     @SubscribeEvent
     public static void replacePlortModel(ModelEvent.ModifyBakingResult e) {
         ModelResourceLocation key = new ModelResourceLocation(SplendidSlimes.loc("plort"), "inventory");
