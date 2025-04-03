@@ -35,11 +35,11 @@ public class PlortRippitCategory implements IRecipeCategory<PlortRippingRecipe> 
         this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Blocks.PLORT_RIPPIT.get()));
         this.name = Component.translatable(ModElements.Blocks.PLORT_RIPPIT.get().getDescriptionId());
     }
-
-    @Override
-    public IDrawable getBackground() {
-        return this.background;
-    }
+//
+//    @Override
+//    public IDrawable getBackground() {
+//        return this.background;
+//    }
 
     @Override
     public IDrawable getIcon() {

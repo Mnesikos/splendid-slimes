@@ -2,6 +2,7 @@ package io.github.chakyl.splendidslimes.item;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import dev.shadowsoffire.placebo.tabs.ITabFiller;
+import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
 import net.minecraft.ChatFormatting;
@@ -19,7 +20,7 @@ import java.util.List;
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
 
 public class SlimeHeartItem extends Item implements ITabFiller {
-    public static final String SLIME_HEART = "plort";
+    public static final String SLIME_HEART = "slime";
     public static final String ID = "id";
     public static final String DATA = "data";
 

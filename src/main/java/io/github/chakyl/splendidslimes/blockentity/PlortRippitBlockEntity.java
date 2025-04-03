@@ -74,21 +74,6 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
         else this.processingTime = 0;
     }
 
-    @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("inventory", this.inventory.serializeNBT());
-        tag.putInt("processingTime", this.processingTime);
-        tag.putString("slimeType", this.slimeType);
-    }
-
-    @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        this.inventory.deserializeNBT(tag.getCompound("inventory"));
-        this.processingTime = tag.getInt("processingTime");
-        this.slimeType = tag.getString("slimeType");
-    }
 
     public void setSlimeType(String type) {
         this.slimeType = type;
@@ -114,6 +99,22 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
     public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
         if (cap == ForgeCapabilities.ITEM_HANDLER) return LazyOptional.of(() -> this.inventory).cast();
         return super.getCapability(cap, side);
+    }
+
+    @Override
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        tag.put("inventory", this.inventory.serializeNBT());
+        tag.putInt("processingTime", this.processingTime);
+        tag.putString("slimeType", this.slimeType);
+    }
+
+    @Override
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        this.inventory.deserializeNBT(tag.getCompound("inventory"));
+        this.processingTime = tag.getInt("processingTime");
+        this.slimeType = tag.getString("slimeType");
     }
 
     public class RippitItemHandler extends InternalItemHandler {

@@ -35,16 +35,10 @@ public class PlortRippitBlock extends HorizontalDirectionalBlock implements Tick
         super(props);
         this.registerDefaultState(this.defaultBlockState().setValue(FACING, Direction.NORTH));
     }
-//
-//    @Override
-//    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-//        return SHAPE;
-//    }
 
     @Override
     protected void createBlockStateDefinition(Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(FACING);
-        pBuilder.add(WORKING);
+        pBuilder.add(FACING, WORKING);
     }
 
     @Override

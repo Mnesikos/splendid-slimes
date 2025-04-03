@@ -2,6 +2,7 @@ package io.github.chakyl.splendidslimes;
 
 import dev.shadowsoffire.placebo.tabs.TabFillingRegistry;
 import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
+import io.github.chakyl.splendidslimes.recipe.ModRecipes;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import io.github.chakyl.splendidslimes.registry.ModElements.Items;
 import io.github.chakyl.splendidslimes.registry.ModElements.Tabs;
@@ -26,6 +27,7 @@ public class SplendidSlimes {
         modEventBus.register(this);
         ModElements.LOOT_MODIFIERS.register(modEventBus);
         ModElements.bootstrap();
+        ModRecipes.register(modEventBus);
     }
 
     @SubscribeEvent

@@ -3,7 +3,9 @@ package io.github.chakyl.splendidslimes.registry;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntityType;
+import dev.shadowsoffire.placebo.menu.MenuUtil;
 import dev.shadowsoffire.placebo.registry.DeferredHelper;
+import dev.shadowsoffire.placebo.util.PlaceboUtil;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.block.PlortPressBlock;
 import io.github.chakyl.splendidslimes.block.PlortRippitBlock;
@@ -18,6 +20,8 @@ import io.github.chakyl.splendidslimes.entity.SplendidSlime;
 import io.github.chakyl.splendidslimes.item.PlortItem;
 import io.github.chakyl.splendidslimes.item.SlimeHeartItem;
 import io.github.chakyl.splendidslimes.item.SpawnEggItem;
+import io.github.chakyl.splendidslimes.recipe.PlortPressRecipe;
+import io.github.chakyl.splendidslimes.screen.PlortPressMenu;
 import io.github.chakyl.splendidslimes.util.SlimeLootModifier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -25,13 +29,16 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -60,16 +67,9 @@ public class ModElements {
         public static final RegistryObject<BlockEntityType<SlimeIncubatorBlockEntity>> SLIME_INCUBATOR = R.blockEntity("slime_incubator",
                 () -> new TickingBlockEntityType<>(SlimeIncubatorBlockEntity::new, ImmutableSet.of(ModElements.Blocks.SLIME_INCUBATOR.get()), false, true));
         public static final RegistryObject<BlockEntityType<PlortPressBlockEntity>> PLORT_PRESS = R.blockEntity("plort_press",
-                () -> new TickingBlockEntityType<>(PlortPressBlockEntity::new, ImmutableSet.of(ModElements.Blocks.SLIME_INCUBATOR.get()), false, true));
+                () -> new TickingBlockEntityType<>(PlortPressBlockEntity::new, ImmutableSet.of(Blocks.PLORT_PRESS.get()), false, true));
         public static final RegistryObject<BlockEntityType<PlortRippitBlockEntity>> PLORT_RIPPIT = R.blockEntity("plort_rippit",
                 () -> new TickingBlockEntityType<>(PlortRippitBlockEntity::new, ImmutableSet.of(Blocks.PLORT_RIPPIT.get()), false, true));
-
-        private static void bootstrap() {
-        }
-    }
-
-    public static class Entities {
-        public static final RegistryObject<EntityType<SlimeEntityBase>> SPLENDID_SLIME = slimeEntity;
 
         private static void bootstrap() {
         }
@@ -89,6 +89,27 @@ public class ModElements {
         }
     }
 
+    public static class Entities {
+        public static final RegistryObject<EntityType<SlimeEntityBase>> SPLENDID_SLIME = slimeEntity;
+
+        private static void bootstrap() {
+        }
+    }
+
+    public static class Menus {
+        public static final RegistryObject<MenuType<PlortPressMenu>> PLORT_PRESS_MENU = R.menu("plort_press_menu", () -> MenuUtil.bufType(PlortPressMenu::new));
+        private static void bootstrap() {
+        }
+    }
+//    public static class Recipes {
+//
+//
+//        public static final RegistryObject<RecipeType<PlortPressRecipe>> CUTTING = RECIPE_TYPES.register("cutting", () -> registerRecipeType("cutting"));
+//
+//        public static final RegistryObject<RecipeType<PlortPressRecipe>> FLETCHING = PlaceboUtil.makeRecipeType(SplendidSlimes.MODID + ":plort_pressing");
+//        private static void bootstrap() {
+//        }
+//    }
     public static class Tabs {
         public static final ResourceKey<CreativeModeTab> TAB_KEY = ResourceKey.create(Registries.CREATIVE_MODE_TAB, new ResourceLocation(SplendidSlimes.MODID, "tab"));
 
@@ -104,6 +125,8 @@ public class ModElements {
         BlockEntities.bootstrap();
         Items.bootstrap();
         Entities.bootstrap();
+        Menus.bootstrap();
+//        Recipes.bootstrap();
         Tabs.bootstrap();
     }
 }

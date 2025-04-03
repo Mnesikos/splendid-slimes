@@ -1,15 +1,15 @@
 package io.github.chakyl.splendidslimes.block;
 
 import dev.shadowsoffire.placebo.block_entity.TickingEntityBlock;
-import io.github.chakyl.splendidslimes.blockentity.SlimeIncubatorBlockEntity;
-import io.github.chakyl.splendidslimes.registry.ModElements;
+import io.github.chakyl.splendidslimes.SplendidSlimes;
+import io.github.chakyl.splendidslimes.blockentity.PlortPressBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -23,6 +23,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.network.NetworkHooks;
 
 public class PlortPressBlock extends HorizontalDirectionalBlock implements TickingEntityBlock {
     public static final BooleanProperty WORKING = BooleanProperty.create("working");
@@ -40,8 +41,7 @@ public class PlortPressBlock extends HorizontalDirectionalBlock implements Ticki
 
     @Override
     protected void createBlockStateDefinition(Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(FACING);
-        pBuilder.add(WORKING);
+        pBuilder.add(FACING, WORKING);
     }
 
     @Override
@@ -51,31 +51,30 @@ public class PlortPressBlock extends HorizontalDirectionalBlock implements Ticki
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new SlimeIncubatorBlockEntity(pPos, pState);
+        return new PlortPressBlockEntity(pPos, pState);
+    }
+
+    @Override
+    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
+        if (pState.getBlock() != pNewState.getBlock()) {
+            BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
+            if (blockEntity instanceof PlortPressBlockEntity) {
+                ((PlortPressBlockEntity) blockEntity).drops();
+            }
+        }
+        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
     }
 
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (!pLevel.isClientSide) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
-            if (pHand == InteractionHand.MAIN_HAND && entity instanceof SlimeIncubatorBlockEntity && ((SlimeIncubatorBlockEntity) entity).getIncubationTime() == 0) {
-                ItemStack heldItem = pPlayer.getItemInHand(pHand);
-                if (heldItem.getItem() == ModElements.Items.SLIME_HEART.get() && heldItem.hasTag()) {
-                    CompoundTag plortTag = heldItem.getTagElement("plort");
-                    if (plortTag != null && plortTag.contains("id")){
-                        if (!pPlayer.isCreative()) heldItem.shrink(1);
-
-                        BlockState newState = pState.setValue(WORKING, true);
-                        pLevel.setBlock(pPos, newState, 2);
-
-                        ((SlimeIncubatorBlockEntity) entity).setSlimeType(plortTag.get("id").toString().replace("\"", ""));
-                        return InteractionResult.CONSUME;
-                    }
-                }
+            if (entity instanceof  PlortPressBlockEntity) {
+                NetworkHooks.openScreen((ServerPlayer) pPlayer, (MenuProvider) entity, pPos);
+            } else {
+                throw new IllegalStateException("No Container Provider for Plort Press!");
             }
-            return InteractionResult.FAIL;
-        } else {
-            return InteractionResult.SUCCESS;
         }
+        return InteractionResult.sidedSuccess(pLevel.isClientSide());
     }
 }

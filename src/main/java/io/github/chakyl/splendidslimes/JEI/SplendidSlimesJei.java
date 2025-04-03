@@ -30,6 +30,8 @@ public class SplendidSlimesJei implements IModPlugin {
     @Override
     public void registerItemSubtypes(ISubtypeRegistration reg) {
         reg.registerSubtypeInterpreter(ModElements.Items.PLORT.get(), new ModelSubtypes());
+        reg.registerSubtypeInterpreter(ModElements.Items.SLIME_HEART.get(), new ModelSubtypes());
+        reg.registerSubtypeInterpreter(ModElements.Items.SPAWN_EGG.get(), new ModelSubtypes());
     }
 
     @Override

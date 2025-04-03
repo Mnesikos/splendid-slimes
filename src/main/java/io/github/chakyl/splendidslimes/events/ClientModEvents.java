@@ -5,6 +5,8 @@ import io.github.chakyl.splendidslimes.client.model.SlimeEntityModel;
 import io.github.chakyl.splendidslimes.client.renderer.SlimeEntityRenderer;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.registry.ModElements;
+import io.github.chakyl.splendidslimes.screen.PlortPressScreen;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -35,6 +37,7 @@ public class ClientModEvents {
     public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             EntityRenderers.register(ModElements.Entities.SPLENDID_SLIME.get(), SlimeEntityRenderer::new);
+            MenuScreens.register(ModElements.Menus.PLORT_PRESS_MENU.get(), PlortPressScreen::new);
         });
 
     }
@@ -65,7 +68,7 @@ public class ClientModEvents {
     @SubscribeEvent
     public static void colors(RegisterColorHandlersEvent.Item e) {
         e.register((stack, tint) -> {
-            DynamicHolder<SlimeBreed> slime = getSlimeData(stack, "plort");
+            DynamicHolder<SlimeBreed> slime = getSlimeData(stack, "slime");
             int color = 0xFFFFFF;
             if (slime.isBound()) {
                 color = slime.get().getColor();
