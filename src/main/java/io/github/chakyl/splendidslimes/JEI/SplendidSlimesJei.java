@@ -21,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
+import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeFromEgg;
 
 @JeiPlugin
 public class SplendidSlimesJei implements IModPlugin {
@@ -57,9 +58,18 @@ public class SplendidSlimesJei implements IModPlugin {
 
         @Override
         public String apply(ItemStack stack, UidContext context) {
-            DynamicHolder<SlimeBreed> dm = getSlimeData(stack, "plort");
-            if (!dm.isBound()) return "NULL";
-            return dm.getId().toString();
+            DynamicHolder<SlimeBreed> slimeData;
+            String accessor = "slime";
+            if (stack.getItem() == ModElements.Items.PLORT.get()) {
+                accessor = "plort";
+            }
+            if (stack.getItem() == ModElements.Items.SPAWN_EGG.get()) {
+                slimeData = getSlimeFromEgg(stack);
+            } else {
+                slimeData = getSlimeData(stack, accessor);
+            }
+            if (!slimeData.isBound()) return "NULL";
+            return slimeData.getId().toString();
         }
 
     }

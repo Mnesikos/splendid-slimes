@@ -26,6 +26,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
@@ -174,15 +175,20 @@ public record SlimeBreed(String breed, MutableComponent name, MutableComponent d
                 var color = TextColor.parseColor(colorStr);
                 name = name.withStyle(Style.EMPTY.withColor(color));
             } else name.withStyle(Style.EMPTY.withColor(ChatFormatting.WHITE));
-            JsonArray parsedFood = GsonHelper.getAsJsonArray(obj, "foods");
             List<Object> foods = new ArrayList<>();
-            for (JsonElement e : parsedFood) {
-                if (e.getAsJsonObject().has("item"))
-                    foods.add(ItemAdapter.ITEM_READER.fromJson(e.getAsJsonObject(), ItemStack.class));
-                else if (e.getAsJsonObject().has("tag"))
-                    foods.add(TagKey.create(Registries.ITEM, new ResourceLocation(e.getAsJsonObject().get("tag").getAsString())));
+            if (obj.has("foods")) {
+                JsonArray parsedFood = GsonHelper.getAsJsonArray(obj, "foods");
+                for (JsonElement e : parsedFood) {
+                    if (e.getAsJsonObject().has("item"))
+                        foods.add(ItemAdapter.ITEM_READER.fromJson(e.getAsJsonObject(), ItemStack.class));
+                    else if (e.getAsJsonObject().has("tag"))
+                        foods.add(TagKey.create(Registries.ITEM, new ResourceLocation(e.getAsJsonObject().get("tag").getAsString())));
+                }
             }
-            ItemStack favoriteFood = ItemAdapter.ITEM_READER.fromJson(obj.get("favorite_food"), ItemStack.class);
+            ItemStack favoriteFood = new ItemStack(Items.AIR);
+            if (obj.has("favorite_food")) {
+                favoriteFood = ItemAdapter.ITEM_READER.fromJson(obj.get("favorite_food"), ItemStack.class);
+            }
             List<EntityType<? extends LivingEntity>> entities = new ArrayList<>();
             if (obj.has("entities")) {
                 for (JsonElement json : GsonHelper.getAsJsonArray(obj, "entities")) {
