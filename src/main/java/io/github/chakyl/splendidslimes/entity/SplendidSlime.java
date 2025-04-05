@@ -66,12 +66,11 @@ public class SplendidSlime extends SlimeEntityBase {
                     for (LivingEntity entity : nearbyEntities) {
                         applyNegativeEffects(entity);
                     }
-                }
-
-            } else {
-                List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(10));
-                for (LivingEntity entity : nearbyEntities) {
-                    applyPositiveEffects(entity);
+                } else {
+                    List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(10));
+                    for (LivingEntity entity : nearbyEntities) {
+                        applyPositiveEffects(entity);
+                    }
                 }
             }
         }

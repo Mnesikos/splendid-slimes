@@ -1,0 +1,29 @@
+{
+  "type": "splendid_slimes:plort_pressing",
+  "ingredients": [
+    {
+      "item": "splendid_slimes:slime_heart",
+      "nbt": {
+        "slime": {
+          "id": "splendid_slimes:luminous"
+        }
+      }
+    }
+  ],
+  "output": {
+    "item": "splendid_slimes:slime_heart",
+    "nbt": {
+      "slime": {
+        "id": "splendid_slimes:webby"
+      }
+    }
+  },
+  "result": {
+    "item": "splendid_slimes:slime_heart",
+    "nbt": {
+      "slime": {
+        "id": "splendid_slimes:all_seeing"
+      }
+    }
+  }
+}

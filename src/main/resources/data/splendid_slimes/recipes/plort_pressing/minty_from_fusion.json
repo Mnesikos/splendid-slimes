@@ -1,0 +1,24 @@
+{
+  "type": "splendid_slimes:plort_pressing",
+  "ingredients": [
+    {
+      "item": "minecraft:dragon_head"
+    }
+  ],
+  "output": {
+    "item": "splendid_slimes:slime_heart",
+    "nbt": {
+      "slime": {
+        "id": "splendid_slimes:ender"
+      }
+    }
+  },
+  "result": {
+    "item": "splendid_slimes:slime_heart",
+    "nbt": {
+      "slime": {
+        "id": "splendid_slimes:minty"
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
   "breed": "puddle",
   "name": "Puddle",
-  "color": "#b4d8ca",
+  "color": "#68c9ff",
   "diet": "Fish",
   "foods": [
     {
@@ -22,6 +22,13 @@
     {
       "item": "minecraft:prismarine_shard",
       "count": 4
+    }
+  ],
+  "positive_emit_effects": [
+    {
+      "effect": "minecraft:water_breathing",
+      "duration": 600,
+      "amplifier": 0
     }
   ]
 }

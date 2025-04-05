@@ -106,7 +106,7 @@ public record SlimeBreed(String breed, MutableComponent name, MutableComponent d
             duration = jsonElement.getAsJsonObject().get("duration").getAsInt();
         if (jsonElement.getAsJsonObject().has("amplifier"))
             amplifier = jsonElement.getAsJsonObject().get("amplifier").getAsInt();
-        return new MobEffectInstance(postiveEffect, duration, amplifier);
+        return new MobEffectInstance(postiveEffect, duration, amplifier, false, false);
     }
 
     public static class SlimeBreedCodec implements Codec<SlimeBreed> {

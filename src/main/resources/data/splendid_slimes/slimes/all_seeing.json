@@ -5,20 +5,32 @@
   "diet": "Vegetables",
   "foods": [
     { "item": "minecraft:golden_carrot" },
-    { "item": "minecraft:carrot" }
+    { "item": "minecraft:carrot" },
+    { "item": "minecraft:potato" },
+    { "item": "minecraft:beetroot" },
+    { "item": "minecraft:poisonous_potato" }
   ],
   "favorite_food": {
     "item": "minecraft:golden_carrot"
   },
-  "entities": [
-      "minecraft:chicken",
-      "minecraft:villager"
-  ],
-  "favorite_entity": "minecraft:chicken",
-  "plort_resources":  [
+  "plort_resources": [
     {
       "item": "minecraft:spider_eye",
       "count": 3
+    }
+  ],
+  "negative_emit_effects": [
+    {
+      "effect": "minecraft:poison",
+      "duration": 120,
+      "amplifier": 0
+    }
+  ],
+  "positive_emit_effects": [
+    {
+      "effect": "minecraft:night_vision",
+      "duration": 300,
+      "amplifier": 0
     }
   ]
 }

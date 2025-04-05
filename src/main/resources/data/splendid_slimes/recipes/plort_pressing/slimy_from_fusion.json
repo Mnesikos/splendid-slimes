@@ -1,0 +1,19 @@
+{
+  "type": "splendid_slimes:plort_pressing",
+  "ingredients": [
+    {
+      "item": "minecraft:eye_of_ender"
+    }
+  ],
+  "output": {
+    "item": "minecraft:slime_block"
+  },
+  "result": {
+    "item": "splendid_slimes:slime_heart",
+    "nbt": {
+      "slime": {
+        "id": "splendid_slimes:slimy"
+      }
+    }
+  }
+}

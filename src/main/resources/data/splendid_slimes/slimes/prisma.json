@@ -18,10 +18,29 @@
     "minecraft:tropical_fish"
   ],
   "favorite_entity": "minecraft:tropical_fish",
-  "plort_resources":  [
-  {
-    "item": "minecraft:prismarine_crystals",
-    "count": 1
-  }
+  "plort_resources": [
+    {
+      "item": "minecraft:prismarine_crystals",
+      "count": 1
+    }
+  ],
+  "negative_emit_effects": [
+    {
+      "effect": "minecraft:mining_fatigue",
+      "duration": 120,
+      "amplifier": 0
+    }
+  ],
+  "positive_emit_effects": [
+    {
+      "effect": "minecraft:dolphins_grace",
+      "duration": 600,
+      "amplifier": 0
+    },
+    {
+      "effect": "minecraft:conduit_power",
+      "duration": 600,
+      "amplifier": 0
+    }
   ]
 }

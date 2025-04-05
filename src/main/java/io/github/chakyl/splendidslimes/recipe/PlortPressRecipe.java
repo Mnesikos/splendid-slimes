@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.crafting.StrictNBTIngredient;
@@ -20,18 +21,20 @@ public class PlortPressRecipe implements Recipe<SimpleContainer> {
     private final NonNullList<Ingredient> inputItems;
     private final ItemStack input;
     private final ItemStack output;
+    private final ItemStack result;
     private final ResourceLocation id;
 
-    public PlortPressRecipe(NonNullList<Ingredient> inputItems, ItemStack input, ItemStack output, ResourceLocation id) {
+    public PlortPressRecipe(NonNullList<Ingredient> inputItems, ItemStack input, ItemStack output, ItemStack result, ResourceLocation id) {
         this.inputItems = inputItems;
         this.input = input;
         this.output = output;
+        this.result = result;
         this.id = id;
     }
 
     @Override
     public boolean matches(SimpleContainer pContainer, Level pLevel) {
-        if(pLevel.isClientSide()) {
+        if (pLevel.isClientSide()) {
             return false;
         }
 
@@ -40,7 +43,7 @@ public class PlortPressRecipe implements Recipe<SimpleContainer> {
 
     @Override
     public ItemStack assemble(SimpleContainer pContainer, RegistryAccess pRegistryAccess) {
-        return output.copy();
+        return result.copy();
     }
 
     @Override
@@ -51,9 +54,15 @@ public class PlortPressRecipe implements Recipe<SimpleContainer> {
     public ItemStack getInputItem(RegistryAccess pRegistryAccess) {
         return input.copy();
     }
+
+    public ItemStack getOutputItem(RegistryAccess pRegistryAccess) {
+        if (output != null) return output.copy();
+        return Items.AIR.getDefaultInstance();
+    }
+
     @Override
     public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
-        return output.copy();
+        return result.copy();
     }
 
     @Override
@@ -82,41 +91,47 @@ public class PlortPressRecipe implements Recipe<SimpleContainer> {
 
         @Override
         public PlortPressRecipe fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {
-            ItemStack output = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "output"));
+            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "result"));
 
             JsonArray ingredients = GsonHelper.getAsJsonArray(pSerializedRecipe, "ingredients");
             NonNullList<Ingredient> inputs = NonNullList.withSize(1, Ingredient.EMPTY);
 
-            for(int i = 0; i < inputs.size(); i++) {
+            for (int i = 0; i < inputs.size(); i++) {
                 inputs.set(i, Ingredient.fromJson(ingredients.get(i)));
             }
             ItemStack inputItem = ItemAdapter.ITEM_READER.fromJson(ingredients.get(0), ItemStack.class);
+            ItemStack outputItem = null;
+            if (pSerializedRecipe.has("output")) {
+                outputItem = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "output"));
+            }
 
-            return new PlortPressRecipe(inputs, inputItem, output, pRecipeId);
+            return new PlortPressRecipe(inputs, inputItem, outputItem, result, pRecipeId);
         }
 
         @Override
         public @Nullable PlortPressRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
             NonNullList<Ingredient> inputs = NonNullList.withSize(pBuffer.readInt(), Ingredient.EMPTY);
 
-            for(int i = 0; i < inputs.size(); i++) {
+            for (int i = 0; i < inputs.size(); i++) {
                 inputs.set(i, Ingredient.fromNetwork(pBuffer));
             }
 
             ItemStack input = pBuffer.readItem();
             ItemStack output = pBuffer.readItem();
-            return new PlortPressRecipe(inputs, inputs.get(0).getItems()[0], output, pRecipeId);
+            ItemStack result = pBuffer.readItem();
+            return new PlortPressRecipe(inputs, inputs.get(0).getItems()[0], output, result, pRecipeId);
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf pBuffer, PlortPressRecipe pRecipe) {
             pBuffer.writeInt(pRecipe.inputItems.size());
 
-            for (Ingredient ingredient :pRecipe .getIngredients()) {
+            for (Ingredient ingredient : pRecipe.getIngredients()) {
                 ingredient.toNetwork(pBuffer);
             }
 
             pBuffer.writeItemStack(pRecipe.getInputItem(null), false);
+            pBuffer.writeItemStack(pRecipe.getOutputItem(null), false);
             pBuffer.writeItemStack(pRecipe.getResultItem(null), false);
         }
     }

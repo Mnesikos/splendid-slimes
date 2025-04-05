@@ -58,7 +58,8 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
                 switch (pIndex) {
                     case 0 -> PlortPressBlockEntity.this.progress = pValue;
                     case 1 -> PlortPressBlockEntity.this.maxProgress = pValue;
-                };
+                }
+                ;
             }
 
             @Override
@@ -93,6 +94,7 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
         return new PlortPressMenu(pContainerId, pPlayerInventory, this, this.data);
     }
+
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state) {
         if (hasRecipe()) {
@@ -111,16 +113,21 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
         Optional<PlortPressRecipe> recipe = getCurrentRecipe();
         ItemStack output = recipe.get().getResultItem(null);
 
-        this.itemHandler.extractItem(INPUT_SLOT, 1, false);
+        this.itemHandler.extractItem(INPUT_SLOT, recipe.get().getInputItem(null).getCount(), false);
         this.itemHandler.setStackInSlot(OUTPUT_SLOT, output.copy());
     }
 
     private boolean hasRecipe() {
         Optional<PlortPressRecipe> recipe = getCurrentRecipe();
         if (recipe.isEmpty()) return false;
-        ItemStack output = recipe.get().getResultItem(getLevel().registryAccess());
         ItemStack input = recipe.get().getInputItem(getLevel().registryAccess());
-        return (canIncrementOutput(output.getCount()) && canInsertOutput(output.getItem()));
+        ItemStack output = recipe.get().getOutputItem(getLevel().registryAccess());
+        ItemStack result = recipe.get().getResultItem(getLevel().registryAccess());
+        ItemStack outputSlot = this.itemHandler.getStackInSlot(OUTPUT_SLOT);
+        if (this.itemHandler.getStackInSlot(INPUT_SLOT).is(input.getItem()) && outputSlot.is(output.getItem())) {
+            return true;
+        }
+        return false;
     }
 
     private Optional<PlortPressRecipe> getCurrentRecipe() {
