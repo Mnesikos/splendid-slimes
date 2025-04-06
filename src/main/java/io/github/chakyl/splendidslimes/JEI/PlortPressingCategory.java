@@ -1,26 +1,24 @@
 package io.github.chakyl.splendidslimes.JEI;
 
 import io.github.chakyl.splendidslimes.SplendidSlimes;
+import io.github.chakyl.splendidslimes.recipe.PlortPressingRecipe;
+import io.github.chakyl.splendidslimes.recipe.PlortRippingRecipe;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 
-public class PlortRippitCategory implements IRecipeCategory<PlortRippingRecipe> {
+public class PlortPressingCategory implements IRecipeCategory<PlortPressingRecipe> {
 
-    public static final RecipeType<PlortRippingRecipe> TYPE = RecipeType.create(SplendidSlimes.MODID, "plort_ripping", PlortRippingRecipe.class);
+    public static final RecipeType<PlortPressingRecipe> TYPE = RecipeType.create(SplendidSlimes.MODID, "plort_pressing", PlortPressingRecipe.class);
     public static final ResourceLocation TEXTURES = new ResourceLocation(SplendidSlimes.MODID, "textures/jei/splendid.png");
 
     private final IDrawable background;
@@ -30,16 +28,17 @@ public class PlortRippitCategory implements IRecipeCategory<PlortRippingRecipe> 
     private int ticks = 0;
     private long lastTickTime = 0;
 
-    public PlortRippitCategory(IGuiHelper guiHelper) {
+    public PlortPressingCategory(IGuiHelper guiHelper) {
         this.background = guiHelper.createDrawable(TEXTURES, 0, 0, 128, 30);
-        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Blocks.PLORT_RIPPIT.get()));
-        this.name = Component.translatable(ModElements.Blocks.PLORT_RIPPIT.get().getDescriptionId());
+        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Blocks.PLORT_PRESS.get()));
+        this.name = Component.translatable(ModElements.Blocks.PLORT_PRESS.get().getDescriptionId());
     }
-//
-//    @Override
-//    public IDrawable getBackground() {
-//        return this.background;
-//    }
+
+    @Override
+    public IDrawable getBackground() {
+        return this.background;
+    }
+
 
     @Override
     public IDrawable getIcon() {
@@ -52,16 +51,16 @@ public class PlortRippitCategory implements IRecipeCategory<PlortRippingRecipe> 
     }
 
     @Override
-    public RecipeType<PlortRippingRecipe> getRecipeType() {
+    public RecipeType<PlortPressingRecipe> getRecipeType() {
         return TYPE;
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, PlortRippingRecipe recipe, IFocusGroup focuses) {
-        builder.addSlot(RecipeIngredientRole.INPUT, 9, 7).addIngredient(VanillaTypes.ITEM_STACK, recipe.input);
-        for (int i = 0; i < recipe.outputs.toArray().length; i++) {
-            builder.addSlot(RecipeIngredientRole.OUTPUT, 64 + (i*(16 + 2)), 7).addIngredient(VanillaTypes.ITEM_STACK, recipe.outputs.get(i));
-        }
+    public void setRecipe(IRecipeLayoutBuilder builder, PlortPressingRecipe recipe, IFocusGroup focuses) {
+        builder.addSlot(RecipeIngredientRole.INPUT, 0, 7).addItemStack(recipe.getInputItem(null));
+        builder.addSlot(RecipeIngredientRole.INPUT, 20, 7).addItemStack(recipe.getOutputItem(null));
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 60, 7).addItemStack(recipe.getResultItem(null));
+
     }
 
 //    @Override

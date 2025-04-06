@@ -16,12 +16,6 @@
       "minecraft:villager"
   ],
   "favorite_entity": "minecraft:chicken",
-  "plort_resources":  [
-    {
-      "item": "minecraft:shulker_shell",
-      "count": 1
-    }
-  ],
   "negative_emit_effects": [
     {
       "effect": "minecraft:levitation",

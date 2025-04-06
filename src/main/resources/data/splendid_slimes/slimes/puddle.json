@@ -18,12 +18,6 @@
       "minecraft:tropical_fish"
   ],
   "favorite_entity": "minecraft:tropical_fish",
-  "plort_resources":  [
-    {
-      "item": "minecraft:prismarine_shard",
-      "count": 4
-    }
-  ],
   "positive_emit_effects": [
     {
       "effect": "minecraft:water_breathing",

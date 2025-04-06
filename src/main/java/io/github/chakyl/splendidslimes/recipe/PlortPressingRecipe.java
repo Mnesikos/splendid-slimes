@@ -14,17 +14,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.crafting.StrictNBTIngredient;
 import org.jetbrains.annotations.Nullable;
 
-public class PlortPressRecipe implements Recipe<SimpleContainer> {
+public class PlortPressingRecipe implements Recipe<SimpleContainer> {
     private final NonNullList<Ingredient> inputItems;
     private final ItemStack input;
     private final ItemStack output;
     private final ItemStack result;
     private final ResourceLocation id;
 
-    public PlortPressRecipe(NonNullList<Ingredient> inputItems, ItemStack input, ItemStack output, ItemStack result, ResourceLocation id) {
+    public PlortPressingRecipe(NonNullList<Ingredient> inputItems, ItemStack input, ItemStack output, ItemStack result, ResourceLocation id) {
         this.inputItems = inputItems;
         this.input = input;
         this.output = output;
@@ -80,17 +79,17 @@ public class PlortPressRecipe implements Recipe<SimpleContainer> {
         return Type.INSTANCE;
     }
 
-    public static class Type implements RecipeType<PlortPressRecipe> {
+    public static class Type implements RecipeType<PlortPressingRecipe> {
         public static final Type INSTANCE = new Type();
         public static final String ID = "plort_pressing";
     }
 
-    public static class Serializer implements RecipeSerializer<PlortPressRecipe> {
+    public static class Serializer implements RecipeSerializer<PlortPressingRecipe> {
         public static final Serializer INSTANCE = new Serializer();
         public static final ResourceLocation ID = new ResourceLocation(SplendidSlimes.MODID, "plort_pressing");
 
         @Override
-        public PlortPressRecipe fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {
+        public PlortPressingRecipe fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {
             ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "result"));
 
             JsonArray ingredients = GsonHelper.getAsJsonArray(pSerializedRecipe, "ingredients");
@@ -105,11 +104,11 @@ public class PlortPressRecipe implements Recipe<SimpleContainer> {
                 outputItem = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "output"));
             }
 
-            return new PlortPressRecipe(inputs, inputItem, outputItem, result, pRecipeId);
+            return new PlortPressingRecipe(inputs, inputItem, outputItem, result, pRecipeId);
         }
 
         @Override
-        public @Nullable PlortPressRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
+        public @Nullable PlortPressingRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
             NonNullList<Ingredient> inputs = NonNullList.withSize(pBuffer.readInt(), Ingredient.EMPTY);
 
             for (int i = 0; i < inputs.size(); i++) {
@@ -119,11 +118,11 @@ public class PlortPressRecipe implements Recipe<SimpleContainer> {
             ItemStack input = pBuffer.readItem();
             ItemStack output = pBuffer.readItem();
             ItemStack result = pBuffer.readItem();
-            return new PlortPressRecipe(inputs, inputs.get(0).getItems()[0], output, result, pRecipeId);
+            return new PlortPressingRecipe(inputs, input, output, result, pRecipeId);
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf pBuffer, PlortPressRecipe pRecipe) {
+        public void toNetwork(FriendlyByteBuf pBuffer, PlortPressingRecipe pRecipe) {
             pBuffer.writeInt(pRecipe.inputItems.size());
 
             for (Ingredient ingredient : pRecipe.getIngredients()) {

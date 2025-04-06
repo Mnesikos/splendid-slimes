@@ -10,11 +10,5 @@
   "favorite_food": {
     "item": "minecraft:golden_carrot"
   },
-  "favorite_entity": "minecraft:chicken",
-  "plort_resources":  [
-    {
-      "item": "minecraft:ghast_tear",
-      "count": 1
-    }
-  ]
+  "favorite_entity": "minecraft:chicken"
 }

@@ -1,0 +1,17 @@
+{
+  "type": "splendid_slimes:plort_ripping",
+  "ingredient": {
+    "item": "splendid_slimes:plort",
+    "nbt": {
+      "plort": {
+        "id": "splendid_slimes:bitwise"
+      }
+    }
+  },
+  "results": [
+    {
+      "item": "minecraft:redstone",
+      "count": 8
+    }
+  ]
+}

@@ -16,12 +16,6 @@
       "minecraft:villager"
   ],
   "favorite_entity": "minecraft:chicken",
-  "plort_resources":  [
-    {
-      "item": "minecraft:dragon_breath",
-      "count": 1
-    }
-  ],
   "positive_emit_effects": [
     {
       "effect": "minecraft:regeneration",

@@ -13,11 +13,5 @@
   ],
   "favorite_food": {
     "item": "minecraft:golden_apple"
-  },
-  "plort_resources":  [
-    {
-      "item": "minecraft:gold_nugget",
-      "count": 3
-    }
-  ]
+  }
 }

@@ -15,11 +15,5 @@
       "minecraft:chicken",
       "minecraft:villager"
   ],
-  "favorite_entity": "minecraft:chicken",
-  "plort_resources":  [
-    {
-      "item": "minecraft:phantom_membrane",
-      "count": 1
-    }
-  ]
+  "favorite_entity": "minecraft:chicken"
 }

@@ -11,8 +11,10 @@ public class ModRecipes {
     public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS =
             DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, SplendidSlimes.MODID);
 
-    public static final RegistryObject<RecipeSerializer<PlortPressRecipe>> PLORT_PRESSING_SERIALIZER =
-            SERIALIZERS.register("plort_pressing", () -> PlortPressRecipe.Serializer.INSTANCE);
+    public static final RegistryObject<RecipeSerializer<PlortPressingRecipe>> PLORT_PRESSING_SERIALIZER =
+            SERIALIZERS.register("plort_pressing", () -> PlortPressingRecipe.Serializer.INSTANCE);
+    public static final RegistryObject<RecipeSerializer<PlortRippingRecipe>> PLORT_RIPPING_SERIALIZER =
+            SERIALIZERS.register("plort_ripping", () -> PlortRippingRecipe.Serializer.INSTANCE);
 
     public static void register(IEventBus eventBus) {
         SERIALIZERS.register(eventBus);

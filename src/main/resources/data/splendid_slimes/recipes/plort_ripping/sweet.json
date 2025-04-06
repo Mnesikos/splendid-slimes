@@ -1,0 +1,17 @@
+{
+  "type": "splendid_slimes:plort_ripping",
+  "ingredient": {
+    "item": "splendid_slimes:plort",
+    "nbt": {
+      "plort": {
+        "id": "splendid_slimes:sweet"
+      }
+    }
+  },
+  "results": [
+    {
+      "item": "minecraft:sugar",
+      "count": 4
+    }
+  ]
+}

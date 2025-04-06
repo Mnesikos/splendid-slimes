@@ -2,7 +2,7 @@
   "type": "splendid_slimes:plort_pressing",
   "ingredients": [
     {
-      "item": "minecraft:eye_of_ender"
+      "item": "minecraft:ender_eye"
     }
   ],
   "output": {

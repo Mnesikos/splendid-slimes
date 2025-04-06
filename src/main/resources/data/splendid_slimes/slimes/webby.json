@@ -13,16 +13,6 @@
   "favorite_food": {
     "item": "minecraft:beetroot"
   },
-  "plort_resources":  [
-    {
-      "item": "minecraft:string",
-      "count": 4
-    },
-    {
-      "item": "minecraft:cobweb",
-      "count": 1
-    }
-  ],
   "negative_emit_effects": [
     {
       "effect": "minecraft:slowness",

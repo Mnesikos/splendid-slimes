@@ -1,0 +1,23 @@
+{
+  "type": "splendid_slimes:plort_ripping",
+  "ingredient": {
+    "item": "splendid_slimes:plort",
+    "nbt": {
+      "plort": {
+        "id": "splendid_slimes:weeping"
+      }
+    }
+  },
+  "results": [
+    {
+      "item": "minecraft:ghast_tear",
+      "count": 1,
+      "weight": 3
+    },
+    {
+      "item": "minecraft:crying_obsidian",
+      "count": 1,
+      "weight": 1
+    }
+  ]
+}

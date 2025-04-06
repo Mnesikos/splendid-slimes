@@ -13,12 +13,6 @@
   "favorite_food": {
     "item": "minecraft:golden_carrot"
   },
-  "plort_resources": [
-    {
-      "item": "minecraft:spider_eye",
-      "count": 3
-    }
-  ],
   "negative_emit_effects": [
     {
       "effect": "minecraft:poison",

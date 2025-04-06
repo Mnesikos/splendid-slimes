@@ -15,11 +15,5 @@
       "minecraft:chicken",
       "minecraft:villager"
   ],
-  "favorite_entity": "minecraft:chicken",
-  "plort_resources":  [
-    {
-      "item": "minecraft:bone",
-      "count": 4
-    }
-  ]
+  "favorite_entity": "minecraft:chicken"
 }

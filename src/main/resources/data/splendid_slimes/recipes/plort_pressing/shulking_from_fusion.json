@@ -2,7 +2,7 @@
   "type": "splendid_slimes:plort_pressing",
   "ingredients": [
     {
-      "item": "splendid_slimes:chorus_flower"
+      "item": "minecraft:chorus_flower"
     }
   ],
   "output": {

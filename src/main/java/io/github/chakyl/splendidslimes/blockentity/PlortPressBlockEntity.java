@@ -1,8 +1,7 @@
 package io.github.chakyl.splendidslimes.blockentity;
 
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntity;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
-import io.github.chakyl.splendidslimes.recipe.PlortPressRecipe;
+import io.github.chakyl.splendidslimes.recipe.PlortPressingRecipe;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import io.github.chakyl.splendidslimes.screen.PlortPressMenu;
 import net.minecraft.core.BlockPos;
@@ -16,7 +15,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -110,7 +108,7 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
     }
 
     private void craftItem() {
-        Optional<PlortPressRecipe> recipe = getCurrentRecipe();
+        Optional<PlortPressingRecipe> recipe = getCurrentRecipe();
         ItemStack output = recipe.get().getResultItem(null);
 
         this.itemHandler.extractItem(INPUT_SLOT, recipe.get().getInputItem(null).getCount(), false);
@@ -118,11 +116,10 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
     }
 
     private boolean hasRecipe() {
-        Optional<PlortPressRecipe> recipe = getCurrentRecipe();
+        Optional<PlortPressingRecipe> recipe = getCurrentRecipe();
         if (recipe.isEmpty()) return false;
         ItemStack input = recipe.get().getInputItem(getLevel().registryAccess());
         ItemStack output = recipe.get().getOutputItem(getLevel().registryAccess());
-        ItemStack result = recipe.get().getResultItem(getLevel().registryAccess());
         ItemStack outputSlot = this.itemHandler.getStackInSlot(OUTPUT_SLOT);
         if (this.itemHandler.getStackInSlot(INPUT_SLOT).is(input.getItem()) && outputSlot.is(output.getItem())) {
             return true;
@@ -130,20 +127,12 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
         return false;
     }
 
-    private Optional<PlortPressRecipe> getCurrentRecipe() {
+    private Optional<PlortPressingRecipe> getCurrentRecipe() {
         SimpleContainer inventory = new SimpleContainer(this.itemHandler.getSlots());
         for (int i = 0; i < itemHandler.getSlots(); i++) {
             inventory.setItem(i, this.itemHandler.getStackInSlot(i));
         }
-        return this.level.getRecipeManager().getRecipeFor(PlortPressRecipe.Type.INSTANCE, inventory, level);
-    }
-
-    private boolean canInsertOutput(Item item) {
-        return this.itemHandler.getStackInSlot(OUTPUT_SLOT).isEmpty() || this.itemHandler.getStackInSlot(OUTPUT_SLOT).is(item);
-    }
-
-    private boolean canIncrementOutput(int count) {
-        return this.itemHandler.getStackInSlot(OUTPUT_SLOT).getCount() + count <= this.itemHandler.getStackInSlot(OUTPUT_SLOT).getMaxStackSize();
+        return this.level.getRecipeManager().getRecipeFor(PlortPressingRecipe.Type.INSTANCE, inventory, level);
     }
 
     @Override

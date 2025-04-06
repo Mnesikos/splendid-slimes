@@ -1,13 +1,12 @@
 package io.github.chakyl.splendidslimes.JEI;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
-import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
+import io.github.chakyl.splendidslimes.recipe.PlortPressingRecipe;
+import io.github.chakyl.splendidslimes.recipe.PlortRippingRecipe;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -17,8 +16,10 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeManager;
 
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeFromEgg;
@@ -37,21 +38,25 @@ public class SplendidSlimesJei implements IModPlugin {
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration reg) {
-        reg.addRecipeCategories(new PlortRippitCategory(reg.getJeiHelpers().getGuiHelper()));
+        reg.addRecipeCategories(new PlortRippingCategory(reg.getJeiHelpers().getGuiHelper()));
+        reg.addRecipeCategories(new PlortPressingCategory(reg.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
-    public void registerRecipes(IRecipeRegistration reg) {
-               List<PlortRippingRecipe> plortRippingRecipes = new ArrayList<>();
-        for (SlimeBreed breed : SlimeBreedRegistry.INSTANCE.getValues()) {
-            plortRippingRecipes.add(new PlortRippingRecipe(breed));
-        }
-        reg.addRecipes(PlortRippitCategory.TYPE, plortRippingRecipes);
+    public void registerRecipes(IRecipeRegistration registration) {
+        RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
+
+        List<PlortRippingRecipe> rippingRecipes = recipeManager.getAllRecipesFor(PlortRippingRecipe.Type.INSTANCE);
+        registration.addRecipes(PlortRippingCategory.TYPE, rippingRecipes);
+        List<PlortPressingRecipe> pressingRecipes = recipeManager.getAllRecipesFor(PlortPressingRecipe.Type.INSTANCE);
+        registration.addRecipes(PlortPressingCategory.TYPE, pressingRecipes);
     }
+
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration reg) {
-        reg.addRecipeCatalyst(new ItemStack(ModElements.Blocks.PLORT_RIPPIT.get()), PlortRippitCategory.TYPE);
+        reg.addRecipeCatalyst(new ItemStack(ModElements.Blocks.PLORT_RIPPIT.get()), PlortRippingCategory.TYPE);
+        reg.addRecipeCatalyst(new ItemStack(ModElements.Blocks.PLORT_PRESS.get()), PlortPressingCategory.TYPE);
     }
 
     private static class ModelSubtypes implements IIngredientSubtypeInterpreter<ItemStack> {

@@ -1,25 +1,21 @@
 package io.github.chakyl.splendidslimes.blockentity;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntity;
 import dev.shadowsoffire.placebo.cap.InternalItemHandler;
-import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.block.PlortRippitBlock;
-import io.github.chakyl.splendidslimes.block.SlimeIncubatorBlock;
-import io.github.chakyl.splendidslimes.data.SlimeBreed;
-import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
 import io.github.chakyl.splendidslimes.item.PlortItem;
+import io.github.chakyl.splendidslimes.recipe.PlortRippingRecipe;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -27,9 +23,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import oshi.hardware.SoundCard;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 import static io.github.chakyl.splendidslimes.block.PlortRippitBlock.WORKING;
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
@@ -45,35 +42,68 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
 
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state) {
-        if (!inventory.getStackInSlot(0).isEmpty()) {
+        if (!this.inventory.getStackInSlot(0).isEmpty() && hasRecipe()) {
             if (this.processingTime == 0 && !state.getValue(WORKING)) {
                 BlockState newState = state.setValue(WORKING, true);
                 level.setBlock(pos, newState, 2);
-                this.setSlimeType(inventory.getStackInSlot(0).getTagElement("plort").get("id").toString().replace("\"", ""));
+                this.setSlimeType(this.inventory.getStackInSlot(0).getTagElement("plort").get("id").toString().replace("\"", ""));
                 level.playSound(null, pos, SoundEvents.FROG_TONGUE, SoundSource.BLOCKS, 1.0F, 0.9F);
                 level.playSound(null, pos, SoundEvents.FROG_EAT, SoundSource.BLOCKS, 1.0F, 0.9F);
             } else if (this.processingTime == 100) {
-                DynamicHolder<SlimeBreed> slime = getSlimeData(slimeType);
-                BlockState newState = state.setValue(WORKING, false);
-                level.setBlockAndUpdate(pos, newState);
-                inventory.getStackInSlot(0).shrink(1);
-                this.slimeType = "";
-                if (slime.isBound()) {
-                    List<ItemStack> plortResources = slime.get().plortResources();
-                    for (ItemStack item : plortResources) {
-                        Block.popResourceFromFace(level, pos, state.getValue(PlortRippitBlock.FACING).getOpposite(), item.copy());
-                        level.playSound(null, pos, SoundEvents.FROG_AMBIENT, SoundSource.BLOCKS, 0.7F, 0.95F + level.getRandom().nextFloat() * 0.1F);
-                    }
-                }
+                craftItem(pos, state);
                 setChanged();
-            }
-            else {
+            } else {
                 this.processingTime++;
             }
-        }
-        else this.processingTime = 0;
+        } else this.processingTime = 0;
     }
 
+    private boolean hasRecipe() {
+        Optional<PlortRippingRecipe> recipe = getCurrentRecipe();
+        if (recipe.isEmpty()) return false;
+        ItemStack input = recipe.get().getInputItem(getLevel().registryAccess());
+
+        return this.inventory.getStackInSlot(0).is(input.getItem());
+    }
+
+    private Optional<PlortRippingRecipe> getCurrentRecipe() {
+        SimpleContainer newInventory = new SimpleContainer(this.inventory.getSlots());
+        newInventory.setItem(0, this.inventory.getStackInSlot(0));
+        return this.level.getRecipeManager().getRecipeFor(PlortRippingRecipe.Type.INSTANCE, newInventory, level);
+    }
+
+    private void craftItem(BlockPos pos, BlockState state) {
+        Optional<PlortRippingRecipe> recipe = getCurrentRecipe();
+        NonNullList<ItemStack> results = recipe.get().getResults(null);
+        ItemStack outputItem = Items.AIR.getDefaultInstance();
+        List<Integer> weights = recipe.get().getWeights(null);
+        int weightTotal = 0;
+        int currentWeight = 0;
+        for (Integer weight : weights) weightTotal += weight;
+        int result = 1;
+        if (weightTotal > 1) {
+            Random r = new Random();
+            result = r.nextInt(weightTotal) + 1;
+        }
+
+        for (int i = 0; i < results.size(); i++) {
+            currentWeight += weights.get(i);
+            SplendidSlimes.LOGGER.info("TOTAL: ");
+            SplendidSlimes.LOGGER.info(currentWeight);
+            SplendidSlimes.LOGGER.info(result);
+            if (currentWeight >= result) {
+                outputItem = results.get(i);
+                break;
+            }
+
+        }
+        BlockState newState = state.setValue(WORKING, false);
+        level.setBlockAndUpdate(pos, newState);
+        this.inventory.getStackInSlot(0).shrink(1);
+        this.slimeType = "";
+        Block.popResourceFromFace(level, pos, state.getValue(PlortRippitBlock.FACING).getOpposite(), outputItem.copy());
+        level.playSound(null, pos, SoundEvents.FROG_AMBIENT, SoundSource.BLOCKS, 0.7F, 0.95F + level.getRandom().nextFloat() * 0.1F);
+    }
 
     public void setSlimeType(String type) {
         this.slimeType = type;
@@ -86,15 +116,18 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
     public int getProcessingTime() {
         return this.processingTime;
     }
+
     public boolean insertItem(ItemStack itemStack) {
-        if (inventory.isItemValid(0, itemStack)) {
+        if (this.inventory.isItemValid(0, itemStack)) {
             ItemStack modifiedStack = itemStack.copy();
             modifiedStack.setCount(1);
-            inventory.setStackInSlot(0, modifiedStack);
+            this.inventory.setStackInSlot(0, modifiedStack);
             return true;
-        };
+        }
+        ;
         return false;
     }
+
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
         if (cap == ForgeCapabilities.ITEM_HANDLER) return LazyOptional.of(() -> this.inventory).cast();
@@ -128,7 +161,8 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
             if (this.getStackInSlot(0).isEmpty() && stack.getItem() instanceof PlortItem && stack.hasTag()) {
                 CompoundTag plortTag = stack.getTagElement("plort");
                 return plortTag != null && plortTag.contains("id");
-            };
+            }
+            ;
             return false;
         }
 
