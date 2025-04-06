@@ -1,7 +1,6 @@
 package io.github.chakyl.splendidslimes.util;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
 import net.minecraft.nbt.CompoundTag;

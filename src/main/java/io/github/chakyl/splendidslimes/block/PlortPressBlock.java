@@ -1,7 +1,6 @@
 package io.github.chakyl.splendidslimes.block;
 
 import dev.shadowsoffire.placebo.block_entity.TickingEntityBlock;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.blockentity.PlortPressBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

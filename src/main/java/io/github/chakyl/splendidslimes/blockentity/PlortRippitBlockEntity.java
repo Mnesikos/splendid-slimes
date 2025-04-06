@@ -2,7 +2,6 @@ package io.github.chakyl.splendidslimes.blockentity;
 
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntity;
 import dev.shadowsoffire.placebo.cap.InternalItemHandler;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.block.PlortRippitBlock;
 import io.github.chakyl.splendidslimes.item.PlortItem;
 import io.github.chakyl.splendidslimes.recipe.PlortRippingRecipe;
@@ -29,7 +28,6 @@ import java.util.Optional;
 import java.util.Random;
 
 import static io.github.chakyl.splendidslimes.block.PlortRippitBlock.WORKING;
-import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
 
 public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockEntity {
     protected int processingTime = 0;

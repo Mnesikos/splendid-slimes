@@ -1,19 +1,16 @@
 package io.github.chakyl.splendidslimes.jade;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
-import io.github.chakyl.splendidslimes.entity.SplendidSlime;
-import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import snownee.jade.api.*;
+import snownee.jade.api.EntityAccessor;
+import snownee.jade.api.IEntityComponentProvider;
+import snownee.jade.api.IServerDataProvider;
+import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.IElement;
-import snownee.jade.api.ui.IElementHelper;
 
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
 
