@@ -1,16 +1,36 @@
 {
   "itemGroup.splendid_slimes": "Splendid Slimes",
+
   "block.splendid_slimes.slime_incubator": "Slime Incubator",
   "block.splendid_slimes.plort_rippit": "Plort Rippit",
+  "block.splendid_slimes.plort_press": "Plort Press",
   "block.splendid_slimes.corral_block": "Corral Block",
   "block.splendid_slimes.corral_pane": "Corral Pane",
+
   "item.splendid_slimes.plort": "%s Plort",
+  "splendid_slimes.item.default_plort": "Any",
+  "splendid_slimes.item.default_heart": "Any",
   "item.splendid_slimes.slime_heart": "%s Slime Heart",
   "item.splendid_slimes.spawn_egg_splendid_slime": "%s Slime Spawn Egg",
+
   "entity.splendid_slimes.splendid_slime": "%s Slime",
   "entity.splendid_slimes.largo_splendid_slime": "%s %s Largo",
   "entity.splendid_slimes.diet": "Diet: %s",
   "entity.splendid_slimes.largo_diet": "Diet: %s, %s",
+
   "info.splendid_slimes.plort": "Dropped from fed slimes",
-  "config.jade.plugin_splendid_slimes.splendid_slime": "jade slime"
+  "config.jade.plugin_splendid_slimes.splendid_slime": "jade slime",
+
+  "splendid_slimes.advancement.root.title": "Splendid Slimes",
+  "splendid_slimes.advancement.root.description": "Ranching slimes for resources!",
+  "splendid_slimes.advancement.obtain_press.title": "Im-Pressive Slimes",
+  "splendid_slimes.advancement.obtain_press.description": "Craft a Plort Press to press Slime Hearts",
+  "splendid_slimes.advancement.obtain_incubator.title": "The Birth of Slime",
+  "splendid_slimes.advancement.obtain_incubator.description": "Craft a Slime Incubator to incubate Slime Hearts into Slimes",
+  "splendid_slimes.advancement.obtain_plort.title": "Slime... Waste?",
+  "splendid_slimes.advancement.obtain_plort.description": "Feed a Slime and collect a Plort",
+  "splendid_slimes.advancement.obtain_rippit.title": "Let it Rip!",
+  "splendid_slimes.advancement.obtain_rippit.description": "Craft a Plort Rippit to turn Plorts into usable resources",
+  "splendid_slimes.advancement.obtain_corral.title": "Herding Slimes",
+  "splendid_slimes.advancement.obtain_corral.description": "Use Corral Blocks to keep Slimes contained"
 }

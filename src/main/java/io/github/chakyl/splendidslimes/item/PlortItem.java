@@ -46,7 +46,7 @@ public class PlortItem extends Item implements ITabFiller {
         DynamicHolder<SlimeBreed> slime = getSlimeData(pStack, PLORT);
         Component plortName;
         if (!slime.isBound()) {
-            plortName = Component.literal("BROKEN").withStyle(ChatFormatting.OBFUSCATED);
+            plortName = Component.translatable("splendid_slimes.item.default_plort");
         }
         else plortName = slime.get().name();
         return Component.translatable(this.getDescriptionId(pStack), plortName);

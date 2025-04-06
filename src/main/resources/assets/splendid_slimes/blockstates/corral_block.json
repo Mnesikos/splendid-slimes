@@ -1,10 +1,52 @@
 {
   "variants": {
-    "powered=false": {
+    "power=0": {
       "model": "splendid_slimes:block/corral_block"
     },
-    "powered=true": {
-      "model": "splendid_slimes:block/corral_block"
+    "power=1": {
+      "model": "splendid_slimes:block/corral_block_powered"
+    },
+	  "power=2": {
+      "model": "splendid_slimes:block/corral_block_powered"
+    },
+    "power=3": {
+      "model": "splendid_slimes:block/corral_block_powered"
+    },
+    "power=4": {
+      "model": "splendid_slimes:block/corral_block_powered"
+    },
+    "power=5": {
+      "model": "splendid_slimes:block/corral_block_powered"
+    },
+    "power=6": {
+      "model": "splendid_slimes:block/corral_block_powered"
+    },
+    "power=7": {
+      "model": "splendid_slimes:block/corral_block_powered"
+    },
+    "power=8": {
+      "model": "splendid_slimes:block/corral_block_powered"
+    },
+    "power=9": {
+      "model": "splendid_slimes:block/corral_block_powered"
+    },
+    "power=10": {
+      "model": "splendid_slimes:block/corral_block_powered"
+    },
+    "power=11": {
+      "model": "splendid_slimes:block/corral_block_powered"
+    },
+    "power=12": {
+      "model": "splendid_slimes:block/corral_block_powered"
+    },
+    "power=13": {
+      "model": "splendid_slimes:block/corral_block_powered"
+    },
+    "power=14": {
+      "model": "splendid_slimes:block/corral_block_powered"
+    },
+    "power=15": {
+      "model": "splendid_slimes:block/corral_block_powered"
     }
   }
 }

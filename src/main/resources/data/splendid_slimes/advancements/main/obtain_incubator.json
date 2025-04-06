@@ -1,0 +1,38 @@
+{
+  "parent": "splendid_slimes:main/obtain_press",
+  "criteria": {
+    "incubator": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "splendid_slimes:slime_incubator"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "splendid_slimes.advancement.obtain_incubator.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "splendid_slimes:slime_incubator"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "splendid_slimes.advancement.obtain_incubator.title"
+    }
+  },
+  "requirements": [
+    [
+      "incubator"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

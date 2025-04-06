@@ -3,6 +3,7 @@ package io.github.chakyl.splendidslimes.block.corral;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -14,7 +15,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -23,11 +24,11 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 public class CorralBlock extends HalfTransparentBlock implements Corral {
-    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+    public static final IntegerProperty POWER = BlockStateProperties.POWER;
 
     public CorralBlock(BlockBehaviour.Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(POWERED, Boolean.valueOf(false)));
+        this.registerDefaultState(this.stateDefinition.any().setValue(POWER, 0));
     }
 
     @Override
@@ -54,8 +55,7 @@ public class CorralBlock extends HalfTransparentBlock implements Corral {
     public boolean shouldIgnoreEntityCollisionAt(BlockState state, BlockGetter level, BlockPos pos, Entity entity) {
         if (entity instanceof SplendidSlime) return false;
         if (entity instanceof Player) return true;
-        if (state.getValue(POWERED)) return false;
-        return true;
+        return state.getValue(POWER) <= 0;
     }
 
     @Override
@@ -73,11 +73,34 @@ public class CorralBlock extends HalfTransparentBlock implements Corral {
     public BlockState getStateForPlacement(BlockPlaceContext pContext) {
         BlockPos blockpos = pContext.getClickedPos();
         Level level = pContext.getLevel();
-        boolean flag = level.hasNeighborSignal(blockpos) || level.hasNeighborSignal(blockpos.above());
-        return this.defaultBlockState().setValue(POWERED, Boolean.valueOf(flag));
+        BlockState state = level.getBlockState(blockpos);
+        return this.defaultBlockState().setValue(POWER, this.getNearbyPower(state, level, blockpos));
     }
+
+    @Override
+    public void neighborChanged(BlockState pState, Level pLevel, BlockPos pPos, Block pNeighborBlock, BlockPos pNeighborPos, boolean pMovedByPiston) {
+        super.neighborChanged(pState, pLevel, pPos, pNeighborBlock, pNeighborPos, pMovedByPiston);
+        if (!pLevel.isClientSide()) {
+            pLevel.setBlock(pPos, pState.setValue(POWER, this.getNearbyPower(pState, pLevel, pPos)), 1 | 2 | 4);
+        }
+    }
+
+    @Override
+    public boolean isSignalSource(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getSignal(BlockState pBlockState, BlockGetter pBlockAccess, BlockPos pPos, Direction pSide) {
+        return Math.max(0, pBlockState.getValue(POWER) - 1);
+    }
+
+    public int getNearbyPower(BlockState state, Level level, BlockPos pos) {
+        return Mth.clamp(level.getBestNeighborSignal(pos), 0, 15);
+    }
+
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(POWERED);
+        pBuilder.add(POWER);
     }
 
 }

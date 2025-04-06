@@ -45,12 +45,12 @@ public class SlimeHeartItem extends Item implements ITabFiller {
     @Override
     public Component getName(ItemStack pStack) {
         DynamicHolder<SlimeBreed> slime = getSlimeData(pStack, SLIME_HEART);
-        Component plortName;
+        Component slimeName;
         if (!slime.isBound()) {
-            plortName = Component.literal("BROKEN").withStyle(ChatFormatting.OBFUSCATED);
+            slimeName = Component.translatable("splendid_slimes.item.default_heart");
         }
-        else plortName = slime.get().name();
-        return Component.translatable(this.getDescriptionId(pStack), plortName);
+        else slimeName = slime.get().name();
+        return Component.translatable(this.getDescriptionId(pStack), slimeName);
     }
 
     public static void setStoredPlort(ItemStack stack, SlimeBreed slimeBreed) {

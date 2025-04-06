@@ -1,0 +1,38 @@
+{
+  "parent": "splendid_slimes:main/obtain_plort",
+  "criteria": {
+    "corral_block": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "splendid_slimes:corral_block"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "splendid_slimes.advancement.obtain_corral.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "splendid_slimes:corral_block"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "splendid_slimes.advancement.obtain_corral.title"
+    }
+  },
+  "requirements": [
+    [
+      "corral_block"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

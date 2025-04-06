@@ -88,21 +88,18 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
 
         for (int i = 0; i < results.size(); i++) {
             currentWeight += weights.get(i);
-            SplendidSlimes.LOGGER.info("TOTAL: ");
-            SplendidSlimes.LOGGER.info(currentWeight);
-            SplendidSlimes.LOGGER.info(result);
             if (currentWeight >= result) {
                 outputItem = results.get(i);
                 break;
             }
 
         }
-        BlockState newState = state.setValue(WORKING, false);
-        level.setBlockAndUpdate(pos, newState);
-        this.inventory.getStackInSlot(0).shrink(1);
-        this.slimeType = "";
         Block.popResourceFromFace(level, pos, state.getValue(PlortRippitBlock.FACING).getOpposite(), outputItem.copy());
         level.playSound(null, pos, SoundEvents.FROG_AMBIENT, SoundSource.BLOCKS, 0.7F, 0.95F + level.getRandom().nextFloat() * 0.1F);
+        BlockState newState = state.setValue(WORKING, false);
+        level.setBlockAndUpdate(pos, newState);
+        this.slimeType = "";
+        this.inventory.getStackInSlot(0).shrink(1);
     }
 
     public void setSlimeType(String type) {

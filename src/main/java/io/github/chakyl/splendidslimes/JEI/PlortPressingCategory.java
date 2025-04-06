@@ -19,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
 public class PlortPressingCategory implements IRecipeCategory<PlortPressingRecipe> {
 
     public static final RecipeType<PlortPressingRecipe> TYPE = RecipeType.create(SplendidSlimes.MODID, "plort_pressing", PlortPressingRecipe.class);
-    public static final ResourceLocation TEXTURES = new ResourceLocation(SplendidSlimes.MODID, "textures/jei/splendid.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(SplendidSlimes.MODID, "textures/jei/plort_press_jei.png");
 
     private final IDrawable background;
     private final IDrawable icon;
@@ -29,7 +29,7 @@ public class PlortPressingCategory implements IRecipeCategory<PlortPressingRecip
     private long lastTickTime = 0;
 
     public PlortPressingCategory(IGuiHelper guiHelper) {
-        this.background = guiHelper.createDrawable(TEXTURES, 0, 0, 128, 30);
+        this.background = guiHelper.createDrawable(TEXTURE, 0, 0, 84, 64);
         this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Blocks.PLORT_PRESS.get()));
         this.name = Component.translatable(ModElements.Blocks.PLORT_PRESS.get().getDescriptionId());
     }
@@ -57,9 +57,9 @@ public class PlortPressingCategory implements IRecipeCategory<PlortPressingRecip
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, PlortPressingRecipe recipe, IFocusGroup focuses) {
-        builder.addSlot(RecipeIngredientRole.INPUT, 0, 7).addItemStack(recipe.getInputItem(null));
-        builder.addSlot(RecipeIngredientRole.INPUT, 20, 7).addItemStack(recipe.getOutputItem(null));
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 60, 7).addItemStack(recipe.getResultItem(null));
+        builder.addSlot(RecipeIngredientRole.INPUT, 17, 1).addItemStack(recipe.getInputItem(null));
+        builder.addSlot(RecipeIngredientRole.INPUT, 17, 43).addItemStack(recipe.getOutputItem(null));
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 55, 24).addItemStack(recipe.getResultItem(null));
 
     }
 

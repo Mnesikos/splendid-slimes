@@ -1,0 +1,44 @@
+{
+  "criteria": {
+    "killed_by_slime": {
+      "conditions": {
+        "entity": {
+          "type": "minecraft:slime"
+        }
+      },
+      "trigger": "minecraft:entity_killed_player"
+    },
+    "killed_slime": {
+      "conditions": {
+        "entity": {
+          "type": "minecraft:slime"
+        }
+      },
+      "trigger": "minecraft:player_killed_entity"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "minecraft:textures/block/slime_block.png",
+    "description": {
+      "translate": "splendid_slimes.advancement.root.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "splendid_slimes:plort",
+      "nbt": "{plort:{id:\"splendid_slimes:slimy\"}}"
+    },
+    "show_toast": false,
+    "title": {
+      "translate": "splendid_slimes.advancement.root.title"
+    }
+  },
+  "requirements": [
+    [
+      "killed_by_slime",
+      "killed_slime"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

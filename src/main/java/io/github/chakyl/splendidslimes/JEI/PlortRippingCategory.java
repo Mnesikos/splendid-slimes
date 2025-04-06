@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
 public class PlortRippingCategory implements IRecipeCategory<PlortRippingRecipe> {
 
     public static final RecipeType<PlortRippingRecipe> TYPE = RecipeType.create(SplendidSlimes.MODID, "plort_ripping", PlortRippingRecipe.class);
-    public static final ResourceLocation TEXTURES = new ResourceLocation(SplendidSlimes.MODID, "textures/jei/splendid.png");
+    public static final ResourceLocation TEXTURES = new ResourceLocation(SplendidSlimes.MODID, "textures/jei/plort_rip_jei.png");
 
     private final IDrawable background;
     private final IDrawable icon;
@@ -28,7 +28,7 @@ public class PlortRippingCategory implements IRecipeCategory<PlortRippingRecipe>
     private long lastTickTime = 0;
 
     public PlortRippingCategory(IGuiHelper guiHelper) {
-        this.background = guiHelper.createDrawable(TEXTURES, 0, 0, 128, 30);
+        this.background = guiHelper.createDrawable(TEXTURES, 0, 0, 112, 54);
         this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Blocks.PLORT_RIPPIT.get()));
         this.name = Component.translatable(ModElements.Blocks.PLORT_RIPPIT.get().getDescriptionId());
     }
@@ -56,9 +56,11 @@ public class PlortRippingCategory implements IRecipeCategory<PlortRippingRecipe>
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, PlortRippingRecipe recipe, IFocusGroup focuses) {
-        builder.addSlot(RecipeIngredientRole.INPUT, 9, 7).addItemStack(recipe.getInputItem(null));
+        builder.addSlot(RecipeIngredientRole.INPUT, 5, 19).addItemStack(recipe.getInputItem(null));
+        int row = 0;
         for (int i = 0; i < recipe.getResults(null).toArray().length; i++) {
-            builder.addSlot(RecipeIngredientRole.OUTPUT, 64 + (i*(16 + 2)), 7).addItemStack(recipe.getResults(null).get(i));
+            if (i % 3 == 0) row++;
+            builder.addSlot(RecipeIngredientRole.OUTPUT, 109 + ((i - (row * 3)) * 18), 1 + ((18 * (i / 3)) )).addItemStack(recipe.getResults(null).get(i));
         }
     }
 
