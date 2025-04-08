@@ -7,6 +7,7 @@ import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -18,12 +19,12 @@ import net.minecraftforge.common.ForgeSpawnEggItem;
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
-public class SpawnEggItem  extends ForgeSpawnEggItem implements ITabFiller {
+public class SlimeSpawnEggItem extends ForgeSpawnEggItem implements ITabFiller {
     public static final String SLIME = "EntityTag";
     public static final String ID = "Breed";
     public static final String DATA = "data";
 
-    public SpawnEggItem(Supplier<? extends EntityType<? extends Mob>> type, int backgroundColor, int highlightColor, Item.Properties props) {
+    public SlimeSpawnEggItem(Supplier<? extends EntityType<? extends Mob>> type, int backgroundColor, int highlightColor, Item.Properties props) {
         super(type, backgroundColor, highlightColor, props);
     }
 
@@ -39,7 +40,7 @@ public class SpawnEggItem  extends ForgeSpawnEggItem implements ITabFiller {
     @Override
     public Component getName(ItemStack pStack) {
         DynamicHolder<SlimeBreed> slime = getSlime(pStack);
-        Component slimeName;
+        MutableComponent slimeName;
         if (!slime.isBound()) {
             slimeName = Component.literal("BROKEN").withStyle(ChatFormatting.OBFUSCATED);
         }

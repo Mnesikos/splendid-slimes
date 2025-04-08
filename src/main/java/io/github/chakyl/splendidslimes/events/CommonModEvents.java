@@ -12,5 +12,6 @@ public class CommonModEvents {
     @SubscribeEvent
     public static void entityAttributes(EntityAttributeCreationEvent event) {
         event.put(ModElements.Entities.SPLENDID_SLIME.get(), SlimeEntityBase.createAttributes().build());
+        event.put(ModElements.Entities.TARR.get(), SlimeEntityBase.createAttributes().build());
     }
 }

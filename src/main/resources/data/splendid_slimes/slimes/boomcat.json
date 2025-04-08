@@ -1,8 +1,8 @@
 {
   "breed": "blasting",
-  "name": "Blasting",
+  "name": "slime.splendid_slimes.boomcat",
   "color": "#8a8a8a",
-  "diet": "Stones",
+  "diet": "Meat",
   "foods": [
     {
       "item": "minecraft:golden_carrot"

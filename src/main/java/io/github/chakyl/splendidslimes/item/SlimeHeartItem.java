@@ -4,6 +4,7 @@ import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import dev.shadowsoffire.placebo.tabs.ITabFiller;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -28,7 +29,7 @@ public class SlimeHeartItem extends Item implements ITabFiller {
 
     @Override
     public void appendHoverText(ItemStack pStack, Level pLevel, List<Component> list, TooltipFlag pFlag) {
-        list.add(Component.translatable("info.splendid_slimes.slime_heart"));
+        list.add(Component.translatable("info.splendid_slimes.slime_heart").withStyle(ChatFormatting.GRAY));
     }
 
     @Override
@@ -45,7 +46,7 @@ public class SlimeHeartItem extends Item implements ITabFiller {
         DynamicHolder<SlimeBreed> slime = getSlimeData(pStack, SLIME_HEART);
         Component slimeName;
         if (!slime.isBound()) {
-            slimeName = Component.translatable("splendid_slimes.item.default_heart");
+            slimeName = Component.translatable("item.splendid_slimes.");
         }
         else slimeName = slime.get().name();
         return Component.translatable(this.getDescriptionId(pStack), slimeName);

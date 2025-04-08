@@ -21,22 +21,26 @@ import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+
 import java.util.Set;
+
 import net.minecraft.client.Minecraft;
 
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
 
 @EventBusSubscriber(bus = Bus.MOD, value = Dist.CLIENT, modid = SplendidSlimes.MODID)
 public class ClientModEvents {
-        @SubscribeEvent
-        public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event){
-            event.registerEntityRenderer(ModElements.Entities.SPLENDID_SLIME.get(), SlimeEntityRenderer::new);
-        }
+    @SubscribeEvent
+    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(ModElements.Entities.SPLENDID_SLIME.get(), SlimeEntityRenderer::new);
+        event.registerEntityRenderer(ModElements.Entities.TARR.get(), SlimeEntityRenderer::new);
+    }
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             EntityRenderers.register(ModElements.Entities.SPLENDID_SLIME.get(), SlimeEntityRenderer::new);
+            EntityRenderers.register(ModElements.Entities.TARR.get(), SlimeEntityRenderer::new);
             MenuScreens.register(ModElements.Menus.PLORT_PRESS_MENU.get(), PlortPressScreen::new);
         });
 
@@ -56,6 +60,7 @@ public class ClientModEvents {
             e.register(new ResourceLocation(SplendidSlimes.MODID, path));
         }
     }
+
     @SubscribeEvent
     public static void replacePlortModel(ModelEvent.ModifyBakingResult e) {
         ModelResourceLocation key = new ModelResourceLocation(SplendidSlimes.loc("plort"), "inventory");

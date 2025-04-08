@@ -16,9 +16,10 @@ import io.github.chakyl.splendidslimes.blockentity.PlortRippitBlockEntity;
 import io.github.chakyl.splendidslimes.blockentity.SlimeIncubatorBlockEntity;
 import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
+import io.github.chakyl.splendidslimes.entity.Tarr;
 import io.github.chakyl.splendidslimes.item.PlortItem;
 import io.github.chakyl.splendidslimes.item.SlimeHeartItem;
-import io.github.chakyl.splendidslimes.item.SpawnEggItem;
+import io.github.chakyl.splendidslimes.item.SlimeSpawnEggItem;
 import io.github.chakyl.splendidslimes.screen.PlortPressMenu;
 import io.github.chakyl.splendidslimes.util.SlimeLootModifier;
 import net.minecraft.core.registries.Registries;
@@ -31,9 +32,11 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -46,6 +49,7 @@ public class ModElements {
     private static final BlockBehaviour.StatePredicate ALWAYS_FALSE = (state, world, pos) -> false;
 
     static RegistryObject<EntityType<SlimeEntityBase>> slimeEntity = R.entity("splendid_slime", () -> EntityType.Builder.<SlimeEntityBase>of(SplendidSlime::new, MobCategory.MONSTER).build("splendid_slime"));
+    static RegistryObject<EntityType<SlimeEntityBase>> tarrEntity = R.entity("tarr", () -> EntityType.Builder.<SlimeEntityBase>of(Tarr::new, MobCategory.MONSTER).build("tarr"));
 
     public static class Blocks {
         public static final RegistryObject<Block> SLIME_INCUBATOR = R.block("slime_incubator", () -> new SlimeIncubatorBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).strength(4, 3000).noOcclusion()));
@@ -78,7 +82,10 @@ public class ModElements {
         public static final RegistryObject<BlockItem> CORRAL_PANE = R.item("corral_pane", () -> new BlockItem(Blocks.CORRAL_PANE.get(), new Item.Properties()));
         public static final RegistryObject<PlortItem> PLORT = R.item("plort", () -> new PlortItem(new Item.Properties().stacksTo(64)));
         public static final RegistryObject<SlimeHeartItem> SLIME_HEART = R.item("slime_heart", () -> new SlimeHeartItem(new Item.Properties().stacksTo(64)));
-        public static final RegistryObject<SpawnEggItem> SPAWN_EGG = R.item("spawn_egg_splendid_slime", () -> new SpawnEggItem(slimeEntity, 9748939, 6238757, new Item.Properties()));
+        public static final RegistryObject<SlimeSpawnEggItem> SPLENDID_SLIME_SPAWN_EGG = R.item("spawn_egg_splendid_slime", () -> new SlimeSpawnEggItem(slimeEntity, 0xff7d9d, 0xff7d9d, new Item.Properties()));
+        public static final RegistryObject<ForgeSpawnEggItem> TARR_SPAWN_EGG = R.item("spawn_egg_tarr", () -> new ForgeSpawnEggItem(tarrEntity, 0x2c221c, 0x921f78, new Item.Properties()));
+
+        public static final RegistryObject<Item> TARRTAR = R.item("tarrtar", () -> new Item(new Item.Properties().stacksTo(64)));
 
         private static void bootstrap() {
         }
@@ -86,6 +93,7 @@ public class ModElements {
 
     public static class Entities {
         public static final RegistryObject<EntityType<SlimeEntityBase>> SPLENDID_SLIME = slimeEntity;
+        public static final RegistryObject<EntityType<SlimeEntityBase>> TARR = tarrEntity;
 
         private static void bootstrap() {
         }

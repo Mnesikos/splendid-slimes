@@ -33,7 +33,7 @@ public class SplendidSlimes {
     @SubscribeEvent
     public void setup(FMLCommonSetupEvent e) {
         e.enqueueWork(() -> {
-            TabFillingRegistry.register(Tabs.TAB_KEY, Items.SLIME_INCUBATOR, Items.PLORT_PRESS, Items.PLORT_RIPPIT, Items.CORRAL_BLOCK, Items.CORRAL_PANE, Items.PLORT, Items.SLIME_HEART, Items.SPAWN_EGG);
+            TabFillingRegistry.register(Tabs.TAB_KEY, Items.SLIME_INCUBATOR, Items.PLORT_PRESS, Items.PLORT_RIPPIT, Items.CORRAL_BLOCK, Items.CORRAL_PANE, Items.PLORT, Items.SLIME_HEART, Items.SPLENDID_SLIME_SPAWN_EGG, Items.TARRTAR, Items.TARR_SPAWN_EGG);
         });
         SlimeBreedRegistry.INSTANCE.registerToBus();
     }

@@ -39,11 +39,13 @@ public class SplendidSlime extends SlimeEntityBase {
     public static final String DATA = "data";
     public static final int SLIME_EAT_COOLDOWN = 2000;
     private int eatingCooldown = 0;
+    boolean tarred;
     private final EntityType<SlimeEntityBase> entityType;
 
     public SplendidSlime(EntityType<SlimeEntityBase> entityType, Level level) {
         super(entityType, level);
         this.entityType = entityType;
+        this.tarred = false;
     }
 
     protected void registerGoals() {
@@ -181,6 +183,14 @@ public class SplendidSlime extends SlimeEntityBase {
         return this.eatingCooldown;
     }
 
+    public void setTarred() {
+        this.tarred = true;
+    }
+
+    public boolean getTarred() {
+        return this.tarred;
+    }
+
     public void push(Entity pEntity) {
         super.push(pEntity);
         List<EntityType<? extends LivingEntity>> edibleMobs = getEdibleMobs();
@@ -242,6 +252,8 @@ public class SplendidSlime extends SlimeEntityBase {
                         if (this.getSize() < 4) this.setSize(this.getSize() + 1, false);
                         this.playSound(SoundEvents.AMETHYST_BLOCK_STEP, 1.0F, 0.9F);
                         this.setSlimeSecondaryBreed(plortTag.get("id").toString().replace("\"", ""));
+                    } else {
+                        causeChaos();
                     }
                 }
             }
@@ -251,27 +263,46 @@ public class SplendidSlime extends SlimeEntityBase {
         }
     }
 
+    public void causeChaos() {
+        this.setTarred();
+        this.kill();
+    }
+
     @Override
     public void remove(Entity.RemovalReason pReason) {
         int size = this.getSize();
-        if (!this.level().isClientSide && size > 1 && this.isDeadOrDying()) {
-            Component component = this.getCustomName();
-            boolean flag = this.isNoAi();
-            SlimeEntityBase slime = (SlimeEntityBase) this.getType().create(this.level());
-            if (slime != null) {
-                if (this.isPersistenceRequired()) {
-                    slime.setPersistenceRequired();
+        if (!this.level().isClientSide && this.isDeadOrDying()) {
+            if (!this.getTarred()) {
+                if (size > 1) {
+                    Component component = this.getCustomName();
+                    boolean flag = this.isNoAi();
+                    SlimeEntityBase slime = (SlimeEntityBase) this.getType().create(this.level());
+                    if (slime != null) {
+                        if (this.isPersistenceRequired()) {
+                            slime.setPersistenceRequired();
+                        }
+                        String secondaryBreed = this.getSlimeSecondaryBreed();
+                        slime.setSlimeBreed(this.getSlimeBreed());
+                        if (!secondaryBreed.isEmpty()) slime.setSlimeSecondaryBreed(secondaryBreed);
+                        slime.setHasSplit(true);
+                        slime.setCustomName(component);
+                        slime.setNoAi(flag);
+                        slime.setInvulnerable(this.isInvulnerable());
+                        slime.setSize(size - 1, true);
+                        slime.moveTo(this.getX(), this.getY() + (double) 0.5F, this.getZ(), this.random.nextFloat() * 360.0F, 0.0F);
+                        this.level().addFreshEntity(slime);
+                    }
                 }
-                String secondaryBreed = this.getSlimeSecondaryBreed();
-                slime.setSlimeBreed(this.getSlimeBreed());
-                if (!secondaryBreed.isEmpty()) slime.setSlimeSecondaryBreed(secondaryBreed);
-                slime.setHasSplit(true);
-                slime.setCustomName(component);
-                slime.setNoAi(flag);
-                slime.setInvulnerable(this.isInvulnerable());
-                slime.setSize(size - 1, true);
-                slime.moveTo(this.getX(), this.getY() + (double) 0.5F, this.getZ(), this.random.nextFloat() * 360.0F, 0.0F);
-                this.level().addFreshEntity(slime);
+            } else {
+                Component component = this.getCustomName();
+                int victimSize = this.getSize();
+                if (victimSize > 0) victimSize--;
+                SlimeEntityBase tarr = ModElements.Entities.TARR.get().create(this.level());
+                tarr.setCustomName(component);
+                tarr.setInvulnerable(this.isInvulnerable());
+                tarr.setSize(victimSize, true);
+                tarr.moveTo(this.getX(), this.getY() + (double) 0.5F, this.getZ(), this.random.nextFloat() * 360.0F, 0.0F);
+                this.level().addFreshEntity(tarr);
             }
         }
         this.setRemoved(pReason);
@@ -357,6 +388,5 @@ public class SplendidSlime extends SlimeEntityBase {
             this.mob.setTarget(this.target);
             super.start();
         }
-
     }
 }

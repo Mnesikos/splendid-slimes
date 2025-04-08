@@ -31,7 +31,7 @@ public class SplendidSlimesJei implements IModPlugin {
     public void registerItemSubtypes(ISubtypeRegistration reg) {
         reg.registerSubtypeInterpreter(ModElements.Items.PLORT.get(), new ModelSubtypes());
         reg.registerSubtypeInterpreter(ModElements.Items.SLIME_HEART.get(), new ModelSubtypes());
-        reg.registerSubtypeInterpreter(ModElements.Items.SPAWN_EGG.get(), new ModelSubtypes());
+        reg.registerSubtypeInterpreter(ModElements.Items.SPLENDID_SLIME_SPAWN_EGG.get(), new ModelSubtypes());
     }
 
     @Override
@@ -71,7 +71,7 @@ public class SplendidSlimesJei implements IModPlugin {
             if (stack.getItem() == ModElements.Items.PLORT.get()) {
                 accessor = "plort";
             }
-            if (stack.getItem() == ModElements.Items.SPAWN_EGG.get()) {
+            if (stack.getItem() == ModElements.Items.SPLENDID_SLIME_SPAWN_EGG.get()) {
                 slimeData = getSlimeFromEgg(stack);
             } else {
                 slimeData = getSlimeData(stack, accessor);

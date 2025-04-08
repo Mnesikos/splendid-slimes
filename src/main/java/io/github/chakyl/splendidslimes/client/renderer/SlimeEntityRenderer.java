@@ -50,6 +50,7 @@ public class SlimeEntityRenderer extends MobRenderer<SlimeEntityBase, SlimeEntit
     @Override
     public ResourceLocation getTextureLocation(SlimeEntityBase slimeEntityBase) {
         String path = slimeEntityBase.getSlimeBreed().replace(":", ":textures/entity/slime/") + ".png";
+
         if (!cache.containsKey(path)) {
             cache.put(path, new ResourceLocation(path));
         }

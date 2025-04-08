@@ -1,6 +1,7 @@
 package io.github.chakyl.splendidslimes.entity;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
+import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
 import net.minecraft.ChatFormatting;
@@ -47,6 +48,7 @@ public class SlimeEntityBase extends Slime {
     }
 
     public String getSlimeBreed() {
+        if (this instanceof Tarr) return SplendidSlimes.MODID + ":tarr";
         return this.entityData.get(BREED);
     }
 
@@ -73,8 +75,7 @@ public class SlimeEntityBase extends Slime {
         Component slimeName;
         if (!slime.isBound()) {
             slimeName = Component.literal("BROKEN").withStyle(ChatFormatting.OBFUSCATED);
-        }
-        else slimeName = slime.get().name();
+        } else slimeName = slime.get().name();
         if (secondarySlime.isBound()) {
             return Component.translatable("entity.splendid_slimes.largo_splendid_slime", slimeName, secondarySlime.get().name());
         }
@@ -86,6 +87,7 @@ public class SlimeEntityBase extends Slime {
         if (!slime.isBound()) return 0xFFFFFF;
         return slime.get().getColor();
     }
+
     public int getSecondarySlimeColor() {
         DynamicHolder<SlimeBreed> slime = getSecondarySlime();
         if (!slime.isBound()) return -1;
@@ -144,7 +146,7 @@ public class SlimeEntityBase extends Slime {
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
         this.setHasSplit(false);
         this.setPersistenceRequired();
-        SpawnGroupData spawn =  super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+        SpawnGroupData spawn = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
         this.setSize(0, true);
         return spawn;
     }
@@ -153,4 +155,5 @@ public class SlimeEntityBase extends Slime {
     protected boolean isDealsDamage() {
         return this.isEffectiveAi();
     }
+
 }

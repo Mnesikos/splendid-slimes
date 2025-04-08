@@ -14,7 +14,6 @@ import net.minecraft.world.entity.Entity;
 
 
 public class SlimeEntityModel<T extends Entity> extends HierarchicalModel<T> {
-    public static final ModelLayerLocation SLIME_LOCATION = new ModelLayerLocation(new ResourceLocation(SplendidSlimes.MODID, "textures/entity/slime.png"), "main");
     private final ModelPart root;
 
     public SlimeEntityModel(ModelPart root) {
