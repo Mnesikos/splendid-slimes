@@ -2,6 +2,7 @@ package io.github.chakyl.splendidslimes.events;
 
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.client.model.SlimeEntityModel;
+import io.github.chakyl.splendidslimes.client.model.SlimeHatLayer;
 import io.github.chakyl.splendidslimes.client.renderer.SlimeEntityRenderer;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.registry.ModElements;

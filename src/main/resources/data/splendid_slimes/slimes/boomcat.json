@@ -2,18 +2,31 @@
   "breed": "blasting",
   "name": "slime.splendid_slimes.boomcat",
   "color": "#8a8a8a",
+  "hat": {
+    "item": "minecraft:tnt"
+  },
   "diet": "Meat",
   "foods": [
-    {
-      "item": "minecraft:golden_carrot"
-    }
+    { "item": "minecraft:rabbit" }, 
+    { "item": "minecraft:mutton" }, 
+    { "item": "minecraft:beef" }, 
+    { "item": "minecraft:porkchop" }, 
+    { "item": "minecraft:chicken" },
+    { "item": "minecraft:cooked_rabbit" }, 
+    { "item": "minecraft:cooked_mutton" }, 
+    { "item": "minecraft:cooked_beef" }, 
+    { "item": "minecraft:cooked_porkchop" }, 
+    { "item": "minecraft:cooked_chicken" }
   ],
   "favorite_food": {
-    "item": "minecraft:golden_carrot"
+    "item": "minecraft:cooked_beef"
   },
   "entities": [
       "minecraft:chicken",
-      "minecraft:villager"
+      "minecraft:cow",
+      "minecraft:pig",
+      "minecraft:rabbit",
+      "minecraft:sheep"
   ],
-  "favorite_entity": "minecraft:chicken"
+  "favorite_entity": "minecraft:cow"
 }

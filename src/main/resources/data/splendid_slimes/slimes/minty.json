@@ -2,20 +2,21 @@
   "breed": "minty",
   "name": "slime.splendid_slimes.minty",
   "color": "#cd75a4",
-  "diet": "Monsters",
-  "foods": [
-    {
-      "item": "minecraft:golden_carrot"
-    }
-  ],
-  "favorite_food": {
-    "item": "minecraft:golden_carrot"
+  "hat": {
+    "item": "minecraft:dragon_head"
   },
+  "diet": "Monsters",
   "entities": [
-      "minecraft:chicken",
-      "minecraft:villager"
+      "minecraft:zombie",
+      "minecraft:zombie_villager",
+      "minecraft:skeleton",
+      "minecraft:enderman",
+      "minecraft:husk",
+      "minecraft:stray",
+      "minecraft:drowned",
+      "minecraft:creeper"
   ],
-  "favorite_entity": "minecraft:chicken",
+  "favorite_entity": "minecraft:enderman",
   "positive_emit_effects": [
     {
       "effect": "minecraft:regeneration",

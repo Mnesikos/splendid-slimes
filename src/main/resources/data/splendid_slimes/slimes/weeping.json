@@ -2,13 +2,20 @@
   "breed": "weeping",
   "name": "slime.splendid_slimes.weeping",
   "color": "#cff1f1",
-  "diet": "Innocents",
-  "entities": [
-      "minecraft:chicken",
-      "minecraft:villager"
+  "hat": {
+    "item": "minecraft:fire_charge"
+  },
+  "diet": "Fruit",
+  "foods": [
+    { "item": "minecraft:sweet_berries" },  
+    { "item": "minecraft:apple" }, 
+    { "item": "minecraft:golden_apple" }, 
+    { "item": "minecraft:melon_slice" }, 
+    { "item": "minecraft:glow_berries" }, 
+    { "item": "minecraft:chorus_fruit" },  
+    { "item": "minecraft:melon" }
   ],
   "favorite_food": {
-    "item": "minecraft:golden_carrot"
-  },
-  "favorite_entity": "minecraft:chicken"
+    "item": "minecraft:glow_berries"
+  }
 }

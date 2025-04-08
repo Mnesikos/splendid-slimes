@@ -25,7 +25,6 @@ public class SlimeIncubatorBlockEntity extends BlockEntity implements TickingBlo
             if (this.incubationTime >= 200) {
                 SlimeEntityBase birthSlime = ModElements.Entities.SPLENDID_SLIME.get().create(level);
                 birthSlime.setSlimeBreed(slimeType);
-                birthSlime.setHasSplit(true);
                 birthSlime.setSize(1, true);
                 BlockPos facingPos = pos.relative(state.getValue(PlortRippitBlock.FACING));
                 birthSlime.moveTo(facingPos.getX() + 0.25, facingPos.getY(), facingPos.getZ() + 0.25, level.random.nextFloat() * 360.0F, 0.0F);

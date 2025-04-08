@@ -2,6 +2,9 @@
   "breed": "prisma",
   "name": "slime.splendid_slimes.prisma",
   "color": "#a4d1c2",
+  "hat": {
+    "item": "minecraft:sea_lantern"
+  },
   "diet": "Fish",
   "foods": [
     {

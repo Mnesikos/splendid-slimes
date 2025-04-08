@@ -2,14 +2,16 @@
   "breed": "bitwise",
   "name": "slime.splendid_slimes.bitwise",
   "color": "#aa0f01",
-  "diet": "Clay",
+  "hat": {
+    "item": "minecraft:repeater"
+  },
+  "diet": "Logs",
   "foods": [
     {
-      "item": "minecraft:golden_carrot"
+      "tag": "minecraft:logs"
     }
   ],
   "favorite_food": {
-    "item": "minecraft:golden_carrot"
-  },
-  "favorite_entity": "minecraft:chicken"
+    "item": "minecraft:mangrove_log"
+  }
 }

@@ -42,6 +42,11 @@ import java.util.List;
  *
  * @param breed               The breed of the slime
  * @param name                The display name of slime
+ * @param hat                 Item to use as a hat
+ * @param hatScale            Scale applied to the hat when it is being rendered.
+ * @param hatXOffset          X offset applied to the hat when it is being rendered.
+ * @param hatYOffset          Y offset applied to the hat when it is being rendered.
+ * @param hatZOffset          Z offset applied to the hat when it is being rendered.
  * @param diet                Diet of the slime, for players. Be as vague or mysterious as needed
  * @param foods               List of items or item tags a Slime will eat
  * @param favoriteFood        The itemstack for a slime's favorite food that doubles plort output
@@ -50,7 +55,7 @@ import java.util.List;
  * @param positiveEmitEffects List of effects that will be emitted in an AoE around the slime when happy
  * @param negativeEmitEffects List of effects that will be emitted in an AoE around the slime when unhappy
  */
-public record SlimeBreed(String breed, MutableComponent name, MutableComponent diet, List<Object> foods,
+public record SlimeBreed(String breed, MutableComponent name, ItemStack hat, float hatScale, float hatXOffset, float hatYOffset, float hatZOffset, MutableComponent diet, List<Object> foods,
                          ItemStack favoriteFood, List<EntityType<? extends LivingEntity>> entities,
                          EntityType<? extends LivingEntity> favoriteEntity,
                          List<MobEffectInstance> positiveEmitEffects,
@@ -59,7 +64,7 @@ public record SlimeBreed(String breed, MutableComponent name, MutableComponent d
     public static final Codec<SlimeBreed> CODEC = new SlimeBreedCodec();
 
     public SlimeBreed(SlimeBreed other) {
-        this(other.breed, other.name, other.diet, other.foods, other.favoriteFood, other.entities, other.favoriteEntity, other.positiveEmitEffects, other.positiveEmitEffects);
+        this(other.breed, other.name, other.hat, other.hatScale, other.hatXOffset, other.hatYOffset, other.hatZOffset, other.diet, other.foods, other.favoriteFood, other.entities, other.favoriteEntity, other.positiveEmitEffects, other.positiveEmitEffects);
     }
 
     public int getColor() {
@@ -75,6 +80,7 @@ public record SlimeBreed(String breed, MutableComponent name, MutableComponent d
     public SlimeBreed validate(ResourceLocation key) {
         Preconditions.checkNotNull(this.breed, "Invalid slime breed id!");
         Preconditions.checkNotNull(this.name, "Invalid slime name!");
+        Preconditions.checkNotNull(this.hat, "Invalid slime hat!");
         Preconditions.checkNotNull(this.diet, "Invalid slime diet!");
         Preconditions.checkNotNull(this.name.getStyle().getColor(), "Invalid entity name color!");
         return this;
@@ -114,8 +120,14 @@ public record SlimeBreed(String breed, MutableComponent name, MutableComponent d
         public <T> DataResult<T> encode(SlimeBreed input, DynamicOps<T> ops, T prefix) {
             JsonObject obj = new JsonObject();
             ResourceLocation key = new ResourceLocation(SplendidSlimes.MODID, input.breed);
+            SplendidSlimes.LOGGER.info(input);
             obj.addProperty("breed", input.breed);
             obj.addProperty("name", ((TranslatableContents) input.name.getContents()).getKey());
+            obj.add("hat", ItemAdapter.ITEM_READER.toJsonTree(input.hat));
+            obj.addProperty("hat_scale", input.hatScale);
+            obj.addProperty("hat_x_offset", input.hatXOffset);
+            obj.addProperty("hat_y_offset", input.hatYOffset);
+            obj.addProperty("hat_z_offset", input.hatZOffset);
             obj.addProperty("diet", ((TranslatableContents) input.diet.getContents()).getKey());
             obj.addProperty("color", input.name.getStyle().getColor().serialize());
             JsonArray foods = new JsonArray();
@@ -157,8 +169,28 @@ public record SlimeBreed(String breed, MutableComponent name, MutableComponent d
         public <T> DataResult<Pair<SlimeBreed, T>> decode(DynamicOps<T> ops, T input) {
             JsonObject obj = ops.convertTo(JsonOps.INSTANCE, input).getAsJsonObject();
 
+            SplendidSlimes.LOGGER.info("YEET");
+            SplendidSlimes.LOGGER.info(obj.toString());
             String breed = GsonHelper.getAsString(obj, "breed");
             MutableComponent name = Component.translatable(GsonHelper.getAsString(obj, "name"));
+            ItemStack hat = ItemAdapter.ITEM_READER.fromJson(obj.get("hat"), ItemStack.class);
+            float hatScale = 1.25F;
+            if (obj.has("hat_scale")) {
+                hatScale = GsonHelper.getAsFloat(obj, "hat_scale");
+            }
+            float hatXOffset = 0;
+            if (obj.has("hat_x_offset")) {
+                hatXOffset = GsonHelper.getAsFloat(obj, "hat_x_offset");
+            }
+            float hatYOffset = -0.75F;
+            if (obj.has("hat_y_offset")) {
+                hatYOffset = GsonHelper.getAsFloat(obj, "hat_y_offset");
+            }
+            float hatZOffset = 0.02F;
+            if (obj.has("hat_z_offset")) {
+                hatZOffset = GsonHelper.getAsFloat(obj, "hat_z_offset");
+            }
+            
             MutableComponent diet = Component.translatable(GsonHelper.getAsString(obj, "diet"));
             if (obj.has("color")) {
                 String colorStr = GsonHelper.getAsString(obj, "color");
@@ -206,7 +238,7 @@ public record SlimeBreed(String breed, MutableComponent name, MutableComponent d
                     negativeEmitEffects.add(getEffectFromJson(json));
                 }
             }
-            return DataResult.success(Pair.of(new SlimeBreed(breed, name, diet, foods, favoriteFood, entities, favoriteEntity, positiveEmitEffects, negativeEmitEffects), input));
+            return DataResult.success(Pair.of(new SlimeBreed(breed, name, hat, hatScale, hatXOffset, hatYOffset, hatZOffset, diet, foods, favoriteFood, entities, favoriteEntity, positiveEmitEffects, negativeEmitEffects), input));
         }
 
     }

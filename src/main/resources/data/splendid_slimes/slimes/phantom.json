@@ -2,18 +2,16 @@
   "breed": "phantom",
   "name": "slime.splendid_slimes.phantom",
   "color": "#dcd9c0",
+  "hat": {
+    "item": "minecraft:phantom_membrane"
+  },
   "diet": "Beds",
   "foods": [
     {
-      "item": "minecraft:golden_carrot"
+      "tag": "minecraft:beds"
     }
   ],
   "favorite_food": {
-    "item": "minecraft:golden_carrot"
-  },
-  "entities": [
-      "minecraft:chicken",
-      "minecraft:villager"
-  ],
-  "favorite_entity": "minecraft:chicken"
+    "item": "minecraft:purple_bed"
+  }
 }

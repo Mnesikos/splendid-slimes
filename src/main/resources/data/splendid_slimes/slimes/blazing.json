@@ -2,18 +2,18 @@
   "breed": "blazing",
   "name": "slime.splendid_slimes.blazing",
   "color": "#c96c03",
+  "hat": {
+    "item": "minecraft:campfire"
+  },
   "diet": "Cooked Meat",
   "foods": [
-    {
-      "item": "minecraft:golden_carrot"
-    }
+    { "item": "minecraft:cooked_rabbit" }, 
+    { "item": "minecraft:cooked_mutton" }, 
+    { "item": "minecraft:cooked_beef" }, 
+    { "item": "minecraft:cooked_porkchop" }, 
+    { "item": "minecraft:cooked_chicken" }
   ],
   "favorite_food": {
-    "item": "minecraft:golden_carrot"
-  },
-  "entities": [
-      "minecraft:chicken",
-      "minecraft:villager"
-  ],
-  "favorite_entity": "minecraft:chicken"
+    "item": "minecraft:cooked_porkchop"
+  }
 }

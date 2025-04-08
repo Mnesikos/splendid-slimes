@@ -2,16 +2,16 @@
   "breed": "gold",
   "name": "slime.splendid_slimes.gold",
   "color": "#e9b115",
-  "diet": "Metal",
+  "hat": {
+    "item": "minecraft:gold_ore"
+  },
+  "diet": "Ingots",
   "foods": [
     {
-      "item": "minecraft:golden_carrot"
-    },
-    {
-      "item": "minecraft:golden_apple"
+      "tag": "forge:ingots"
     }
   ],
   "favorite_food": {
-    "item": "minecraft:golden_apple"
+    "item": "minecraft:copper_ingot"
   }
 }

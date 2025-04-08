@@ -2,18 +2,18 @@
   "breed": "luminous",
   "name": "slime.splendid_slimes.luminous",
   "color": "#ffbc5e",
-  "diet": "Quartz",
-  "foods": [
-    {
-      "item": "minecraft:golden_carrot"
-    }
-  ],
-  "favorite_food": {
-    "item": "minecraft:golden_carrot"
+  "hat": {
+    "item": "minecraft:glowstone"
   },
-  "entities": [
-      "minecraft:chicken",
-      "minecraft:villager"
-  ],
-  "favorite_entity": "minecraft:chicken"
+  "diet": "Quartz",
+  
+  "foods": [
+    { "item": "minecraft:quartz_block" },
+    { "item": "minecraft:nether_quartz_ore" },
+    { "item": "minecraft:quartz" },
+    { "item": "minecraft:smooth_quartz" }
+    ],
+  "favorite_food": {
+    "item": "minecraft:quartz_block"
+  }
 }

@@ -3,6 +3,7 @@ package io.github.chakyl.splendidslimes.client.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.client.model.SlimeEntityModel;
+import io.github.chakyl.splendidslimes.client.model.SlimeHatLayer;
 import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -17,10 +18,12 @@ import java.util.Map;
 
 public class SlimeEntityRenderer extends MobRenderer<SlimeEntityBase, SlimeEntityModel<SlimeEntityBase>> {
     public static final ModelLayerLocation SPLENDID_SLIME_BASE = new ModelLayerLocation(new ResourceLocation(SplendidSlimes.MODID, "main"), "main");
+    public static final ModelLayerLocation HAT_LAYER =new ModelLayerLocation(new ResourceLocation(SplendidSlimes.MODID, "main"), "main");
     private static Map<String, ResourceLocation> cache = new HashMap<>();
 
     public SlimeEntityRenderer(EntityRendererProvider.Context context) {
         super(context, new SlimeEntityModel<>(context.bakeLayer(SPLENDID_SLIME_BASE)), 0.25F);
+        addLayer(new SlimeHatLayer<>(this));
     }
 
     public void render(SlimeEntityBase slimeEntityBase, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
@@ -38,6 +41,7 @@ public class SlimeEntityRenderer extends MobRenderer<SlimeEntityBase, SlimeEntit
             return p_230496_4_ ? RenderType.outline(resourcelocation) : null;
         }
     }
+
     protected void scale(SlimeEntityBase slimeEntityBase, PoseStack poseStack, float partialTickTime) {
         poseStack.scale(0.999F, 0.999F, 0.999F);
         poseStack.translate(0.0F, 0.001F, 0.0F);

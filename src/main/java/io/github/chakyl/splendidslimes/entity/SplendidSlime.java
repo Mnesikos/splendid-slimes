@@ -86,6 +86,15 @@ public class SplendidSlime extends SlimeEntityBase {
         return true;
     }
 
+    private boolean checkFoods(ItemStack pStack, List<Object> foods) {
+        Item pickUpItem = pStack.getItem();
+        for (Object food : foods) {
+            if (food.getClass() == ItemStack.class && ((ItemStack) food).getItem() == pickUpItem) return true;
+            if (food.getClass() == TagKey.class && pStack.is((TagKey<Item>) food)) return true;
+        }
+        return false;
+    }
+
     public boolean wantsToPickUp(ItemStack pStack) {
         Item pickUpItem = pStack.getItem();
         if (this.eatingCooldown > 0 && pickUpItem != ModElements.Items.PLORT.get()) return false;
@@ -99,12 +108,15 @@ public class SplendidSlime extends SlimeEntityBase {
             }
         }
         if (pStack == slime.favoriteFood()) return true;
-        for (Object food : slime.foods()) {
-            if (food.getClass() == ItemStack.class && ((ItemStack) food).getItem() == pickUpItem) return true;
-            if (food.getClass() == TagKey.class && pStack.is((TagKey<Item>) food)) return true;
+        if (checkFoods(pStack, slime.foods())) return true;
+        if (getSecondarySlime().isBound()) {
+            SlimeBreed secondarySlime = getSecondarySlime().get();
+            if (pStack == secondarySlime.favoriteFood()) return true;
+            return checkFoods(pStack, secondarySlime.foods());
         }
         return false;
     }
+
 
     public ItemStack getSlimePlort() {
         return getSlimePlort(false);
@@ -284,7 +296,6 @@ public class SplendidSlime extends SlimeEntityBase {
                         String secondaryBreed = this.getSlimeSecondaryBreed();
                         slime.setSlimeBreed(this.getSlimeBreed());
                         if (!secondaryBreed.isEmpty()) slime.setSlimeSecondaryBreed(secondaryBreed);
-                        slime.setHasSplit(true);
                         slime.setCustomName(component);
                         slime.setNoAi(flag);
                         slime.setInvulnerable(this.isInvulnerable());

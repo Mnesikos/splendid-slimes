@@ -2,18 +2,16 @@
   "breed": "slimy",
   "name": "slime.splendid_slimes.slimy",
   "color": "#ff7d9d",
+  "hat": {
+    "item": "minecraft:slime_block"
+  },
   "diet": "Flowers",
   "foods": [
     {
-      "item": "minecraft:golden_carrot"
+      "tag": "minecraft:flowers"
     }
   ],
   "favorite_food": {
-    "item": "minecraft:golden_carrot"
-  },
-  "entities": [
-      "minecraft:chicken",
-      "minecraft:villager"
-  ],
-  "favorite_entity": "minecraft:chicken"
+    "item": "minecraft:blue_orchid"
+  }
 }

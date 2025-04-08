@@ -2,18 +2,33 @@
   "breed": "bony",
   "name": "slime.splendid_slimes.bony",
   "color": "#e8e5d2",
+  "hat": {
+    "item": "minecraft:bone"
+  },
+  "hat_scale": 1,
+  "hat_y_offset": -1.1,
   "diet": "Meat",
   "foods": [
-    {
-      "item": "minecraft:golden_carrot"
-    }
+    { "item": "minecraft:rabbit" }, 
+    { "item": "minecraft:mutton" }, 
+    { "item": "minecraft:beef" }, 
+    { "item": "minecraft:porkchop" }, 
+    { "item": "minecraft:chicken" },
+    { "item": "minecraft:cooked_rabbit" }, 
+    { "item": "minecraft:cooked_mutton" }, 
+    { "item": "minecraft:cooked_beef" }, 
+    { "item": "minecraft:cooked_porkchop" }, 
+    { "item": "minecraft:cooked_chicken" }
   ],
   "favorite_food": {
-    "item": "minecraft:golden_carrot"
+    "item": "minecraft:mutton"
   },
   "entities": [
       "minecraft:chicken",
-      "minecraft:villager"
+      "minecraft:cow",
+      "minecraft:pig",
+      "minecraft:rabbit",
+      "minecraft:sheep"
   ],
-  "favorite_entity": "minecraft:chicken"
+  "favorite_entity": "minecraft:sheep"
 }

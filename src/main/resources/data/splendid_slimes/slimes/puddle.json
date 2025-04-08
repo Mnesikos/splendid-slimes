@@ -2,6 +2,9 @@
   "breed": "puddle",
   "name": "slime.splendid_slimes.puddle",
   "color": "#68c9ff",
+  "hat": {
+    "item": "minecraft:potion"
+  },
   "diet": "Fish",
   "foods": [
     {
@@ -12,10 +15,10 @@
     "item": "minecraft:tropical_fish"
   },
   "entities": [
-      "minecraft:cod",
-      "minecraft:salmon",
-      "minecraft:pufferfish",
-      "minecraft:tropical_fish"
+    "minecraft:cod",
+    "minecraft:salmon",
+    "minecraft:pufferfish",
+    "minecraft:tropical_fish"
   ],
   "favorite_entity": "minecraft:tropical_fish",
   "positive_emit_effects": [

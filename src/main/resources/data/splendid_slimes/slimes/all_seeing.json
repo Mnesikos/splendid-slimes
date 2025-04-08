@@ -2,13 +2,16 @@
   "breed": "all_seeing",
   "name": "slime.splendid_slimes.all_seeing",
   "color": "#65062b",
+  "hat": {
+    "item": "minecraft:spider_eye"
+  },
   "diet": "Vegetables",
   "foods": [
     { "item": "minecraft:golden_carrot" },
     { "item": "minecraft:carrot" },
     { "item": "minecraft:potato" },
     { "item": "minecraft:beetroot" },
-    { "item": "minecraft:poisonous_potato" }
+    { "item": "minecraft:pumpkin" }
   ],
   "favorite_food": {
     "item": "minecraft:golden_carrot"

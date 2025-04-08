@@ -2,18 +2,25 @@
   "breed": "orby",
   "name": "slime.splendid_slimes.orby",
   "color": "#b8e45a",
-  "diet": "Monsters, Animals",
-  "foods": [
-    {
-      "item": "minecraft:golden_carrot"
-    }
-  ],
-  "favorite_food": {
-    "item": "minecraft:golden_carrot"
+  "hat": {
+    "item": "minecraft:bookshelf"
   },
+  "hat_y_offset": -1.0,
+  "diet": "Monsters, Animals",
   "entities": [
-      "minecraft:chicken",
-      "minecraft:villager"
+    "minecraft:chicken",
+    "minecraft:cow",
+    "minecraft:pig",
+    "minecraft:rabbit",
+    "minecraft:sheep",
+    "minecraft:zombie",
+    "minecraft:zombie_villager",
+    "minecraft:skeleton",
+    "minecraft:enderman",
+    "minecraft:husk",
+    "minecraft:stray",
+    "minecraft:drowned",
+    "minecraft:creeper"
   ],
-  "favorite_entity": "minecraft:chicken"
+  "favorite_entity": "minecraft:skeleton"
 }

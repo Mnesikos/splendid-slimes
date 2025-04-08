@@ -2,18 +2,31 @@
   "breed": "sweet",
   "name": "slime.splendid_slimes.sweet",
   "color": "#eaeaea",
+  "hat": {
+    "item": "splendid_slimes:hat/sweet_hat"
+  },
+  "hat_scale": 1.0,
+  "hat_x_offset": -0.09,
+  "hat_y_offset": -1.05,
+  "hat_z_offset": -0.2,  
   "diet": "Fruit",
   "foods": [
-    {
-      "item": "minecraft:golden_carrot"
-    }
+    { "item": "minecraft:sweet_berries" },  
+    { "item": "minecraft:apple" }, 
+    { "item": "minecraft:golden_apple" }, 
+    { "item": "minecraft:melon_slice" }, 
+    { "item": "minecraft:glow_berries" }, 
+    { "item": "minecraft:chorus_fruit" },  
+    { "item": "minecraft:melon" }
   ],
   "favorite_food": {
-    "item": "minecraft:golden_carrot"
+    "item": "minecraft:glow_berries"
   },
-  "entities": [
-      "minecraft:chicken",
-      "minecraft:villager"
-  ],
-  "favorite_entity": "minecraft:chicken"
+  "positive_emit_effects": [
+    {
+      "effect": "minecraft:speed",
+      "duration": 200,
+      "amplifier": 3
+    }
+  ]
 }

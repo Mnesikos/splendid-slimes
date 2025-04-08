@@ -26,7 +26,6 @@ import javax.annotation.Nullable;
 
 public class SlimeEntityBase extends Slime {
     private static final EntityDataAccessor<Integer> SIZE = SynchedEntityData.defineId(SlimeEntityBase.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> HAS_SPLIT = SynchedEntityData.defineId(SlimeEntityBase.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<String> BREED = SynchedEntityData.defineId(SlimeEntityBase.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<String> SECONDARY_BREED = SynchedEntityData.defineId(SlimeEntityBase.class, EntityDataSerializers.STRING);
 
@@ -58,14 +57,6 @@ public class SlimeEntityBase extends Slime {
 
     public String getSlimeSecondaryBreed() {
         return this.entityData.get(SECONDARY_BREED);
-    }
-
-    public void setHasSplit(Boolean data) {
-        this.entityData.set(HAS_SPLIT, data);
-    }
-
-    public Boolean getHasSplit() {
-        return this.entityData.get(HAS_SPLIT);
     }
 
     @Override
@@ -110,12 +101,19 @@ public class SlimeEntityBase extends Slime {
         return SlimeBreedRegistry.INSTANCE.holder(new ResourceLocation(type));
     }
 
+    public DynamicHolder<SlimeBreed> getHatSlime() {
+        DynamicHolder<SlimeBreed> slime = getSecondarySlime();
+        if (!slime.isBound()) {
+            slime = getSlime();
+        }
+        return slime;
+    }
+
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(BREED, "");
         this.entityData.define(SECONDARY_BREED, "");
-        this.entityData.define(HAS_SPLIT, false);
     }
 
     @Override
@@ -131,7 +129,6 @@ public class SlimeEntityBase extends Slime {
         super.readAdditionalSaveData(nbt);
         setSlimeBreed(nbt.getString("Breed"));
         setSlimeSecondaryBreed(nbt.getString("SecondaryBreed"));
-        setHasSplit(nbt.getBoolean("HasSplit"));
     }
 
     @Override
@@ -139,12 +136,10 @@ public class SlimeEntityBase extends Slime {
         super.addAdditionalSaveData(nbt);
         nbt.putString("Breed", getSlimeBreed());
         nbt.putString("SecondaryBreed", getSlimeSecondaryBreed());
-        nbt.putBoolean("HasSplit", getHasSplit());
     }
 
     @Nullable
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        this.setHasSplit(false);
         this.setPersistenceRequired();
         SpawnGroupData spawn = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
         this.setSize(0, true);

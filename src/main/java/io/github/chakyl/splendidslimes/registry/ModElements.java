@@ -58,6 +58,9 @@ public class ModElements {
         public static final RegistryObject<CorralBlock> CORRAL_BLOCK = R.block("corral_block", () -> new CorralBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.GLASS).strength(4, 3000).noOcclusion().isSuffocating(ALWAYS_FALSE).isViewBlocking(ALWAYS_FALSE)));
         public static final RegistryObject<CorralPane> CORRAL_PANE = R.block("corral_pane", () -> new CorralPane(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.GLASS_PANE).strength(4, 3000).noOcclusion().isSuffocating(ALWAYS_FALSE).isViewBlocking(ALWAYS_FALSE)));
 
+        // Hats
+        public static final RegistryObject<Block> SWEET_HAT = R.block("hat/sweet_hat", () -> new Block(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).strength(4, 3000).noOcclusion()));
+
         private static void bootstrap() {
         }
     }
@@ -84,8 +87,9 @@ public class ModElements {
         public static final RegistryObject<SlimeHeartItem> SLIME_HEART = R.item("slime_heart", () -> new SlimeHeartItem(new Item.Properties().stacksTo(64)));
         public static final RegistryObject<SlimeSpawnEggItem> SPLENDID_SLIME_SPAWN_EGG = R.item("spawn_egg_splendid_slime", () -> new SlimeSpawnEggItem(slimeEntity, 0xff7d9d, 0xff7d9d, new Item.Properties()));
         public static final RegistryObject<ForgeSpawnEggItem> TARR_SPAWN_EGG = R.item("spawn_egg_tarr", () -> new ForgeSpawnEggItem(tarrEntity, 0x2c221c, 0x921f78, new Item.Properties()));
-
         public static final RegistryObject<Item> TARRTAR = R.item("tarrtar", () -> new Item(new Item.Properties().stacksTo(64)));
+        // Hats
+        public static final RegistryObject<BlockItem> SWEET_HAT = R.item("hat/sweet_hat", () -> new BlockItem(Blocks.SWEET_HAT.get(), new Item.Properties()));
 
         private static void bootstrap() {
         }

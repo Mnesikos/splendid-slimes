@@ -37,8 +37,8 @@ public class ModLangProvider extends  LanguageProvider {
         this.add("entity.splendid_slimes.splendid_slime", "%s Slime");
         this.add("entity.splendid_slimes.tarr", "Tarr");
         this.add("entity.splendid_slimes.largo_splendid_slime", "%s %s Largo");
-        this.add("entity.splendid_slimes.diet", "Diet, %s");
-        this.add("entity.splendid_slimes.largo_diet", "Diet, %s, %s");
+        this.add("entity.splendid_slimes.diet", "Diet: %s");
+        this.add("entity.splendid_slimes.largo_diet", "Diet: %s, %s");
 
         this.add("info.splendid_slimes.plort", "Dropped from fed slimes");
         this.add("config.jade.plugin_splendid_slimes.splendid_slime", "jade slime")
