@@ -6,6 +6,8 @@ import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -61,13 +63,14 @@ public class SlimeIncubatorBlock extends HorizontalDirectionalBlock implements T
             if (pHand == InteractionHand.MAIN_HAND && entity instanceof SlimeIncubatorBlockEntity && ((SlimeIncubatorBlockEntity) entity).getIncubationTime() == 0) {
                 ItemStack heldItem = pPlayer.getItemInHand(pHand);
                 if (heldItem.getItem() == ModElements.Items.SLIME_HEART.get() && heldItem.hasTag()) {
-                    CompoundTag plortTag = heldItem.getTagElement("plort");
+                    CompoundTag plortTag = heldItem.getTagElement("slime");
                     if (plortTag != null && plortTag.contains("id")){
                         if (!pPlayer.isCreative()) heldItem.shrink(1);
 
                         BlockState newState = pState.setValue(WORKING, true);
                         pLevel.setBlock(pPos, newState, 2);
 
+                        pLevel.playSound(pPlayer, pPos, SoundEvents.GLOW_INK_SAC_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
                         ((SlimeIncubatorBlockEntity) entity).setSlimeType(plortTag.get("id").toString().replace("\"", ""));
                         return InteractionResult.CONSUME;
                     }

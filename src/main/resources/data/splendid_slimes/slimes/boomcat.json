@@ -28,5 +28,10 @@
       "minecraft:rabbit",
       "minecraft:sheep"
   ],
-  "favorite_entity": "minecraft:cow"
+  "favorite_entity": "minecraft:cow",
+  "negative_commands": [
+    "summon minecraft:tnt",
+    "say teeheee",
+    "time set night"
+  ]
 }

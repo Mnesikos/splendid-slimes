@@ -43,17 +43,18 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
         if (!this.inventory.getStackInSlot(0).isEmpty() && hasRecipe()) {
             if (this.processingTime == 0 && !state.getValue(WORKING)) {
                 BlockState newState = state.setValue(WORKING, true);
-                level.setBlock(pos, newState, 2);
+                level.setBlockAndUpdate(pos, newState);
                 this.setSlimeType(this.inventory.getStackInSlot(0).getTagElement("plort").get("id").toString().replace("\"", ""));
                 level.playSound(null, pos, SoundEvents.FROG_TONGUE, SoundSource.BLOCKS, 1.0F, 0.9F);
                 level.playSound(null, pos, SoundEvents.FROG_EAT, SoundSource.BLOCKS, 1.0F, 0.9F);
             } else if (this.processingTime == 100) {
                 craftItem(pos, state);
                 setChanged();
+                this.processingTime = 0;
             } else {
                 this.processingTime++;
             }
-        } else this.processingTime = 0;
+        };
     }
 
     private boolean hasRecipe() {

@@ -25,7 +25,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class SlimeEntityBase extends Slime {
-    private static final EntityDataAccessor<Integer> SIZE = SynchedEntityData.defineId(SlimeEntityBase.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<String> BREED = SynchedEntityData.defineId(SlimeEntityBase.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<String> SECONDARY_BREED = SynchedEntityData.defineId(SlimeEntityBase.class, EntityDataSerializers.STRING);
 

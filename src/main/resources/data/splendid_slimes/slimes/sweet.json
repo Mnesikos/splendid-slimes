@@ -6,9 +6,7 @@
     "item": "splendid_slimes:hat/sweet_hat"
   },
   "hat_scale": 1.0,
-  "hat_x_offset": -0.09,
-  "hat_y_offset": -1.05,
-  "hat_z_offset": -0.2,  
+  "hat_y_offset": -0.5,
   "diet": "Fruit",
   "foods": [
     { "item": "minecraft:sweet_berries" },  

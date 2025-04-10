@@ -1,6 +1,7 @@
 package io.github.chakyl.splendidslimes.blockentity;
 
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntity;
+import io.github.chakyl.splendidslimes.block.SlimeIncubatorBlock;
 import io.github.chakyl.splendidslimes.recipe.PlortPressingRecipe;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import io.github.chakyl.splendidslimes.screen.PlortPressMenu;
@@ -16,8 +17,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
@@ -35,7 +39,7 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
 
     protected final ContainerData data;
     private int progress = 0;
-    private int maxProgress = 90;
+    private int maxProgress = 1200;
 
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
@@ -68,6 +72,26 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
     }
 
     @Override
+    public void serverTick(Level level, BlockPos pos, BlockState state) {
+        if (hasRecipe()) {
+            if (progress == 0) {
+                BlockState newState = state.setValue(SlimeIncubatorBlock.WORKING, true);
+                level.setBlockAndUpdate(pos, newState);
+            }
+            this.progress++;
+            setChanged(level, pos, state);
+            if (this.progress >= maxProgress) {
+                craftItem();
+                BlockState newState = state.setValue(SlimeIncubatorBlock.WORKING, false);
+                level.setBlockAndUpdate(pos, newState);
+                this.progress = 0;
+            }
+        } else {
+            this.progress = 0;
+        }
+    }
+
+    @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
         if (cap == ForgeCapabilities.ITEM_HANDLER) return lazyItemHandler.cast();
         return super.getCapability(cap, side);
@@ -91,20 +115,6 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
     @Override
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
         return new PlortPressMenu(pContainerId, pPlayerInventory, this, this.data);
-    }
-
-    @Override
-    public void serverTick(Level level, BlockPos pos, BlockState state) {
-        if (hasRecipe()) {
-            this.progress++;
-            setChanged(level, pos, state);
-            if (this.progress >= maxProgress) {
-                craftItem();
-                this.progress = 0;
-            }
-        } else {
-            this.progress = 0;
-        }
     }
 
     private void craftItem() {

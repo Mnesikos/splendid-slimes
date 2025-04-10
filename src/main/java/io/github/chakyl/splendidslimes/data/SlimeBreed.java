@@ -54,28 +54,26 @@ import java.util.List;
  * @param favoriteEntity      The Entity for a slime's favorite food that doubles plort output
  * @param positiveEmitEffects List of effects that will be emitted in an AoE around the slime when happy
  * @param negativeEmitEffects List of effects that will be emitted in an AoE around the slime when unhappy
+ * @param positiveCommands List of commands that will be executed as the slime when happy
+ * @param negativeCommands List of commands that will be executed as the slime when unhappy
  */
-public record SlimeBreed(String breed, MutableComponent name, ItemStack hat, float hatScale, float hatXOffset, float hatYOffset, float hatZOffset, MutableComponent diet, List<Object> foods,
-                         ItemStack favoriteFood, List<EntityType<? extends LivingEntity>> entities,
-                         EntityType<? extends LivingEntity> favoriteEntity,
-                         List<MobEffectInstance> positiveEmitEffects,
-                         List<MobEffectInstance> negativeEmitEffects) implements CodecProvider<SlimeBreed> {
+public record SlimeBreed(String breed, MutableComponent name,
+                         ItemStack hat, float hatScale, float hatXOffset, float hatYOffset, float hatZOffset,
+                         MutableComponent diet, List<Object> foods, ItemStack favoriteFood,
+                         List<EntityType<? extends LivingEntity>> entities, EntityType<? extends LivingEntity> favoriteEntity,
+                         List<MobEffectInstance> positiveEmitEffects, List<MobEffectInstance> negativeEmitEffects,
+                         List<String> positiveCommands, List<String> negativeCommands) implements CodecProvider<SlimeBreed> {
 
     public static final Codec<SlimeBreed> CODEC = new SlimeBreedCodec();
 
     public SlimeBreed(SlimeBreed other) {
-        this(other.breed, other.name, other.hat, other.hatScale, other.hatXOffset, other.hatYOffset, other.hatZOffset, other.diet, other.foods, other.favoriteFood, other.entities, other.favoriteEntity, other.positiveEmitEffects, other.positiveEmitEffects);
+        this(other.breed, other.name, other.hat, other.hatScale, other.hatXOffset, other.hatYOffset, other.hatZOffset, other.diet, other.foods, other.favoriteFood, other.entities, other.favoriteEntity, other.positiveEmitEffects, other.negativeEmitEffects, other.positiveCommands, other.negativeCommands);
     }
 
     public int getColor() {
         return this.name.getStyle().getColor().getValue();
     }
 
-    public ItemStack getPlortResources() {
-        ItemStack stk = new ItemStack(ModElements.Items.PLORT.get());
-        PlortItem.setStoredPlort(stk, this);
-        return stk;
-    }
 
     public SlimeBreed validate(ResourceLocation key) {
         Preconditions.checkNotNull(this.breed, "Invalid slime breed id!");
@@ -120,7 +118,6 @@ public record SlimeBreed(String breed, MutableComponent name, ItemStack hat, flo
         public <T> DataResult<T> encode(SlimeBreed input, DynamicOps<T> ops, T prefix) {
             JsonObject obj = new JsonObject();
             ResourceLocation key = new ResourceLocation(SplendidSlimes.MODID, input.breed);
-            SplendidSlimes.LOGGER.info(input);
             obj.addProperty("breed", input.breed);
             obj.addProperty("name", ((TranslatableContents) input.name.getContents()).getKey());
             obj.add("hat", ItemAdapter.ITEM_READER.toJsonTree(input.hat));
@@ -161,6 +158,16 @@ public record SlimeBreed(String breed, MutableComponent name, ItemStack hat, flo
             for (Object effect : input.negativeEmitEffects) {
                 negativeEmitEffects.add(getEffectJson(effect));
             }
+            JsonArray positiveCommands = new JsonArray();
+            obj.add("positive_commands", positiveCommands);
+            for (String command : input.positiveCommands) {
+                positiveCommands.add(command);
+            }
+            JsonArray negativeCommands = new JsonArray();
+            obj.add("negative_commands", negativeCommands);
+            for (String command : input.negativeCommands) {
+                negativeEmitEffects.add(command);
+            }
             return DataResult.success(JsonOps.INSTANCE.convertTo(ops, obj));
         }
 
@@ -169,8 +176,6 @@ public record SlimeBreed(String breed, MutableComponent name, ItemStack hat, flo
         public <T> DataResult<Pair<SlimeBreed, T>> decode(DynamicOps<T> ops, T input) {
             JsonObject obj = ops.convertTo(JsonOps.INSTANCE, input).getAsJsonObject();
 
-            SplendidSlimes.LOGGER.info("YEET");
-            SplendidSlimes.LOGGER.info(obj.toString());
             String breed = GsonHelper.getAsString(obj, "breed");
             MutableComponent name = Component.translatable(GsonHelper.getAsString(obj, "name"));
             ItemStack hat = ItemAdapter.ITEM_READER.fromJson(obj.get("hat"), ItemStack.class);
@@ -182,7 +187,7 @@ public record SlimeBreed(String breed, MutableComponent name, ItemStack hat, flo
             if (obj.has("hat_x_offset")) {
                 hatXOffset = GsonHelper.getAsFloat(obj, "hat_x_offset");
             }
-            float hatYOffset = -0.75F;
+            float hatYOffset = -1.0F;
             if (obj.has("hat_y_offset")) {
                 hatYOffset = GsonHelper.getAsFloat(obj, "hat_y_offset");
             }
@@ -238,7 +243,19 @@ public record SlimeBreed(String breed, MutableComponent name, ItemStack hat, flo
                     negativeEmitEffects.add(getEffectFromJson(json));
                 }
             }
-            return DataResult.success(Pair.of(new SlimeBreed(breed, name, hat, hatScale, hatXOffset, hatYOffset, hatZOffset, diet, foods, favoriteFood, entities, favoriteEntity, positiveEmitEffects, negativeEmitEffects), input));
+            List<String> positiveCommands = new ArrayList<>();
+            if (obj.has("positive_commands")) {
+                for (JsonElement json : GsonHelper.getAsJsonArray(obj, "positive_commands")) {
+                    positiveCommands.add(String.valueOf(json));
+                }
+            }
+            List<String> negativeCommands = new ArrayList<>();
+            if (obj.has("negative_commands")) {
+                for (JsonElement json : GsonHelper.getAsJsonArray(obj, "negative_commands")) {
+                    positiveCommands.add(String.valueOf(json));
+                }
+            }
+            return DataResult.success(Pair.of(new SlimeBreed(breed, name, hat, hatScale, hatXOffset, hatYOffset, hatZOffset, diet, foods, favoriteFood, entities, favoriteEntity, positiveEmitEffects, negativeEmitEffects, positiveCommands, negativeCommands), input));
         }
 
     }
