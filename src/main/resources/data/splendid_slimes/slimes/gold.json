@@ -6,7 +6,7 @@
     "item": "splendid_slimes:hat/gold_hat"
   },
   "hat_y_offset": -1,
-  "diet": "Ingots",
+  "diet": "diet.splendid_slimes.gold",
   "foods": [
     {
       "tag": "forge:ingots"
