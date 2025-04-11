@@ -5,7 +5,7 @@
   "hat": {
     "item": "minecraft:slime_block"
   },
-  "diet": "Flowers",
+  "diet": "diet.splendid_slimes.slimy",
   "foods": [
     {
       "tag": "minecraft:flowers"

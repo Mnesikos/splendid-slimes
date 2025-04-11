@@ -5,7 +5,7 @@
   "hat": {
     "item": "minecraft:ender_pearl"
   },
-  "diet": "Gems",
+  "diet": "diet.splendid_slimes.ender",
   "foods": [
     {
       "tag": "forge:gems"
@@ -13,5 +13,8 @@
   ],
   "favorite_food": {
     "item": "minecraft:amethyst_shard"
-  }
+  },
+  "negative_commands": [
+    "tp @e[distance=..16] @e[limit=1,sort=nearest]"
+  ]
 }

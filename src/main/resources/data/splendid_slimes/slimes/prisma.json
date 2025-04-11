@@ -3,9 +3,9 @@
   "name": "slime.splendid_slimes.prisma",
   "color": "#a4d1c2",
   "hat": {
-    "item": "minecraft:sea_lantern"
+    "item": "splendid_slimes:hat/prisma_hat"
   },
-  "diet": "Fish",
+  "diet": "diet.splendid_slimes.prisma",
   "foods": [
     {
       "tag": "minecraft:fishes"

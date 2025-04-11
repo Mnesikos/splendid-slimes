@@ -3,9 +3,10 @@
   "name": "slime.splendid_slimes.phantom",
   "color": "#dcd9c0",
   "hat": {
-    "item": "minecraft:phantom_membrane"
+    "item": "splendid_slimes:hat/phantom_hat"
   },
-  "diet": "Beds",
+  "hat_z_offset": -0.06,
+  "diet": "diet.splendid_slimes.phantom",
   "foods": [
     {
       "tag": "minecraft:beds"

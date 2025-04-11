@@ -4,7 +4,6 @@ package io.github.chakyl.splendidslimes.datagen;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
-import io.github.chakyl.splendidslimes.recipe.ModRecipes;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -46,7 +45,7 @@ public class PlortPressRecipeBuilder {
     public static class Result implements FinishedRecipe {
         private final ResourceLocation id;
         private final String breed;
-        private final int inputCount = 64;
+        private final int inputCount = 32;
 
         public Result(ResourceLocation idIn, String breed) {
             this.id = idIn;
@@ -88,7 +87,7 @@ public class PlortPressRecipeBuilder {
 
         @Override
         public RecipeSerializer<?> getType() {
-            return ModRecipes.PLORT_PRESSING_SERIALIZER.get();
+            return ModElements.Recipes.PLORT_PRESSING_SERIALIZER.get();
         }
 
         @Nullable

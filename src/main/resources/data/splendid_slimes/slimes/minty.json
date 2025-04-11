@@ -3,9 +3,10 @@
   "name": "slime.splendid_slimes.minty",
   "color": "#cd75a4",
   "hat": {
-    "item": "minecraft:dragon_head"
+    "item": "splendid_slimes:hat/minty_hat"
   },
-  "diet": "Monsters",
+  "hat_y_offset": -0.70,
+  "diet": "diet.splendid_slimes.minty",
   "entities": [
       "minecraft:zombie",
       "minecraft:zombie_villager",

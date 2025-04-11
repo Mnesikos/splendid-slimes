@@ -3,10 +3,10 @@
   "name": "slime.splendid_slimes.orby",
   "color": "#b8e45a",
   "hat": {
-    "item": "minecraft:bookshelf"
+    "item": "splendid_slimes:hat/orby_hat"
   },
-  "hat_y_offset": -1.0,
-  "diet": "Monsters, Animals",
+  "hat_y_offset": -0.5,
+  "diet": "diet.splendid_slimes.orby",
   "entities": [
     "minecraft:chicken",
     "minecraft:cow",

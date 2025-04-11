@@ -5,7 +5,7 @@
   "hat": {
     "item": "minecraft:cobweb"
   },
-  "diet": "Vegetables",
+  "diet": "diet.splendid_slimes.webby",
   "foods": [
     { "item": "minecraft:golden_carrot" },
     { "item": "minecraft:carrot" },

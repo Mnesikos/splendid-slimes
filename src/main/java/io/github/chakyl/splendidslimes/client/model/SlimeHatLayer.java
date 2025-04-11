@@ -2,7 +2,6 @@ package io.github.chakyl.splendidslimes.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
 import net.minecraft.client.Minecraft;
@@ -48,9 +47,8 @@ public class SlimeHatLayer<T extends Entity> extends RenderLayer<T, SlimeEntityM
             if (!stack.isEmpty()) {
                 pPoseStack.pushPose();
                 float scaleFactor = breed.hatScale();
-                pPoseStack.mulPose(new Quaternionf().rotateX(Mth.PI));
+                pPoseStack.mulPose(new Quaternionf().rotateX(Mth.PI).rotateY(Mth.PI));
                 pPoseStack.scale(scaleFactor, scaleFactor, scaleFactor);
-//                SplendidSlimes.LOGGER.info(breed.toString());
                 pPoseStack.translate(breed.hatXOffset(), breed.hatYOffset(), breed.hatZOffset());
                 Minecraft.getInstance()
                         .getItemRenderer()

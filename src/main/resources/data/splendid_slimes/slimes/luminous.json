@@ -5,7 +5,7 @@
   "hat": {
     "item": "minecraft:glowstone"
   },
-  "diet": "Quartz",
+  "diet": "diet.splendid_slimes.luminous",
   
   "foods": [
     { "item": "minecraft:quartz_block" },

@@ -2,15 +2,10 @@ package io.github.chakyl.splendidslimes.datagen;
 
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraftforge.common.data.LanguageProvider;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
 
 public class ModLangProvider extends  LanguageProvider {
     public ModLangProvider(PackOutput output, String modid, String locale) {
@@ -59,6 +54,9 @@ public class ModLangProvider extends  LanguageProvider {
         List<String> breeds = Arrays.asList("all_seeing", "bitwise", "boomcat", "blazing", "bony", "ender", "gold", "luminous", "minty", "orby", "phantom", "prisma", "puddle", "rotting", "shulking", "slimy", "sweet", "webby", "weeping");
         for (String breed : breeds) {
             this.add("slime." + SplendidSlimes.MODID + "." + breed,  breed.substring(0, 1).toUpperCase() + breed.substring(1).replace("_", "-"));
+        }
+        for (String breed : breeds) {
+            this.add("diet." + SplendidSlimes.MODID + "." + breed, "");
         }
     }
 }

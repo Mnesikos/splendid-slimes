@@ -7,7 +7,7 @@
   },
   "hat_scale": 1.0,
   "hat_y_offset": -0.5,
-  "diet": "Fruit",
+  "diet": "diet.splendid_slimes.sweet",
   "foods": [
     { "item": "minecraft:sweet_berries" },  
     { "item": "minecraft:apple" }, 

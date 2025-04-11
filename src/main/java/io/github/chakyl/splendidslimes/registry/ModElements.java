@@ -20,6 +20,8 @@ import io.github.chakyl.splendidslimes.entity.Tarr;
 import io.github.chakyl.splendidslimes.item.PlortItem;
 import io.github.chakyl.splendidslimes.item.SlimeHeartItem;
 import io.github.chakyl.splendidslimes.item.SlimeSpawnEggItem;
+import io.github.chakyl.splendidslimes.recipe.PlortPressingRecipe;
+import io.github.chakyl.splendidslimes.recipe.PlortRippingRecipe;
 import io.github.chakyl.splendidslimes.screen.PlortPressMenu;
 import io.github.chakyl.splendidslimes.util.SlimeLootModifier;
 import net.minecraft.core.registries.Registries;
@@ -32,7 +34,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -44,22 +46,34 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class ModElements {
     private static final DeferredHelper R = DeferredHelper.create(SplendidSlimes.MODID);
+
     public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> LOOT_MODIFIERS = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, SplendidSlimes.MODID);
     public static final RegistryObject<Codec<SlimeLootModifier>> SLIME_MODIFIER = LOOT_MODIFIERS.register("slime_modifier", () -> SlimeLootModifier.CODEC);
+
     private static final BlockBehaviour.StatePredicate ALWAYS_FALSE = (state, world, pos) -> false;
 
     static RegistryObject<EntityType<SlimeEntityBase>> slimeEntity = R.entity("splendid_slime", () -> EntityType.Builder.<SlimeEntityBase>of(SplendidSlime::new, MobCategory.MONSTER).build("splendid_slime"));
     static RegistryObject<EntityType<SlimeEntityBase>> tarrEntity = R.entity("tarr", () -> EntityType.Builder.<SlimeEntityBase>of(Tarr::new, MobCategory.MONSTER).build("tarr"));
 
+    static BlockBehaviour.Properties defaultBehavior = BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.IRON_BLOCK);
+
     public static class Blocks {
-        public static final RegistryObject<Block> SLIME_INCUBATOR = R.block("slime_incubator", () -> new SlimeIncubatorBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).strength(4, 3000).noOcclusion()));
-        public static final RegistryObject<Block> PLORT_PRESS = R.block("plort_press", () -> new PlortPressBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).strength(4, 3000).noOcclusion()));
-        public static final RegistryObject<Block> PLORT_RIPPIT = R.block("plort_rippit", () -> new PlortRippitBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> SLIME_INCUBATOR = R.block("slime_incubator", () -> new SlimeIncubatorBlock(defaultBehavior.strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> PLORT_PRESS = R.block("plort_press", () -> new PlortPressBlock(defaultBehavior.strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> PLORT_RIPPIT = R.block("plort_rippit", () -> new PlortRippitBlock(defaultBehavior.strength(4, 3000).noOcclusion()));
         public static final RegistryObject<CorralBlock> CORRAL_BLOCK = R.block("corral_block", () -> new CorralBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.GLASS).strength(4, 3000).noOcclusion().isSuffocating(ALWAYS_FALSE).isViewBlocking(ALWAYS_FALSE)));
         public static final RegistryObject<CorralPane> CORRAL_PANE = R.block("corral_pane", () -> new CorralPane(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.GLASS_PANE).strength(4, 3000).noOcclusion().isSuffocating(ALWAYS_FALSE).isViewBlocking(ALWAYS_FALSE)));
 
         // Hats
-        public static final RegistryObject<Block> SWEET_HAT = R.block("hat/sweet_hat", () -> new Block(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> BLAZING_HAT = R.block("hat/blazing_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> BOOMCAT_HAT = R.block("hat/boomcat_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> GOLD_HAT = R.block("hat/gold_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> ORBY_HAT = R.block("hat/orby_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> MINTY_HAT = R.block("hat/minty_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> PHANTOM_HAT = R.block("hat/phantom_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> PRISMA_HAT = R.block("hat/prisma_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> SHULKING_HAT = R.block("hat/shulking_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> SWEET_HAT = R.block("hat/sweet_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
 
         private static void bootstrap() {
         }
@@ -89,7 +103,16 @@ public class ModElements {
         public static final RegistryObject<ForgeSpawnEggItem> TARR_SPAWN_EGG = R.item("spawn_egg_tarr", () -> new ForgeSpawnEggItem(tarrEntity, 0x2c221c, 0x921f78, new Item.Properties()));
         public static final RegistryObject<Item> TARRTAR = R.item("tarrtar", () -> new Item(new Item.Properties().stacksTo(64)));
         // Hats
+        public static final RegistryObject<BlockItem> BLAZING_HAT = R.item("hat/blazing_hat", () -> new BlockItem(Blocks.BLAZING_HAT.get(), new Item.Properties()));
+        public static final RegistryObject<BlockItem> BOOMCAT_HAT = R.item("hat/boomcat_hat", () -> new BlockItem(Blocks.BOOMCAT_HAT.get(), new Item.Properties()));
+        public static final RegistryObject<BlockItem> GOLD_HAT = R.item("hat/gold_hat", () -> new BlockItem(Blocks.GOLD_HAT.get(), new Item.Properties()));
+        public static final RegistryObject<BlockItem> MINTY_HAT = R.item("hat/minty_hat", () -> new BlockItem(Blocks.ORBY_HAT.get(), new Item.Properties()));
+        public static final RegistryObject<BlockItem> ORBY_HAT = R.item("hat/orby_hat", () -> new BlockItem(Blocks.ORBY_HAT.get(), new Item.Properties()));
+        public static final RegistryObject<BlockItem> PHANTOM_HAT = R.item("hat/phantom_hat", () -> new BlockItem(Blocks.PHANTOM_HAT.get(), new Item.Properties()));
+        public static final RegistryObject<BlockItem> PRISMA_HAT = R.item("hat/prisma_hat", () -> new BlockItem(Blocks.PRISMA_HAT.get(), new Item.Properties()));
+        public static final RegistryObject<BlockItem> SHULKING_HAT = R.item("hat/shulking_hat", () -> new BlockItem(Blocks.SHULKING_HAT.get(), new Item.Properties()));
         public static final RegistryObject<BlockItem> SWEET_HAT = R.item("hat/sweet_hat", () -> new BlockItem(Blocks.SWEET_HAT.get(), new Item.Properties()));
+        public static final RegistryObject<BlockItem> BITWISE_HAT = R.item("hat/bitwise_hat" , () -> new BlockItem(net.minecraft.world.level.block.Blocks.COMPARATOR, new Item.Properties()));
 
         private static void bootstrap() {
         }
@@ -108,15 +131,15 @@ public class ModElements {
         private static void bootstrap() {
         }
     }
-//    public static class Recipes {
-//
-//
-//        public static final RegistryObject<RecipeType<PlortPressRecipe>> CUTTING = RECIPE_TYPES.register("cutting", () -> registerRecipeType("cutting"));
-//
-//        public static final RegistryObject<RecipeType<PlortPressRecipe>> FLETCHING = PlaceboUtil.makeRecipeType(SplendidSlimes.MODID + ":plort_pressing");
-//        private static void bootstrap() {
-//        }
-//    }
+
+    public static class Recipes {
+        public static final RegistryObject<RecipeSerializer<PlortPressingRecipe>> PLORT_PRESSING_SERIALIZER = R.recipeSerializer("plort_pressing", PlortPressingRecipe.Serializer::new);
+        public static final RegistryObject<RecipeSerializer<PlortRippingRecipe>> PLORT_RIPPING_SERIALIZER = R.recipeSerializer("plort_ripping", PlortRippingRecipe.Serializer::new);
+        private static void bootstrap() {
+
+        }
+    }
+
     public static class Tabs {
         public static final ResourceKey<CreativeModeTab> TAB_KEY = ResourceKey.create(Registries.CREATIVE_MODE_TAB, new ResourceLocation(SplendidSlimes.MODID, "tab"));
 
@@ -133,7 +156,7 @@ public class ModElements {
         Items.bootstrap();
         Entities.bootstrap();
         Menus.bootstrap();
-//        Recipes.bootstrap();
+        Recipes.bootstrap();
         Tabs.bootstrap();
     }
 }

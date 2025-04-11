@@ -5,7 +5,7 @@
   "hat": {
     "item": "minecraft:spider_eye"
   },
-  "diet": "Vegetables",
+  "diet": "diet.splendid_slimes.all_seeing",
   "foods": [
     { "item": "minecraft:golden_carrot" },
     { "item": "minecraft:carrot" },

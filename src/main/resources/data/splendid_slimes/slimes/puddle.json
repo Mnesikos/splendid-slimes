@@ -5,7 +5,7 @@
   "hat": {
     "item": "minecraft:potion"
   },
-  "diet": "Fish",
+  "diet": "diet.splendid_slimes.puddle",
   "foods": [
     {
       "tag": "minecraft:fishes"

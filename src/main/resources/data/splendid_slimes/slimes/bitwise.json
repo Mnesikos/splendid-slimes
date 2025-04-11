@@ -1,11 +1,14 @@
 {
   "breed": "bitwise",
   "name": "slime.splendid_slimes.bitwise",
+  "hat_scale": 0.5,
+  "hat_y_offset": -1.5,
+  "hat_z_offset": -0.13,
   "color": "#aa0f01",
   "hat": {
-    "item": "minecraft:repeater"
+    "item": "splendid_slimes:hat/bitwise_hat"
   },
-  "diet": "Logs",
+  "diet": "diet.splendid_slimes.bitwise",
   "foods": [
     {
       "tag": "minecraft:logs"

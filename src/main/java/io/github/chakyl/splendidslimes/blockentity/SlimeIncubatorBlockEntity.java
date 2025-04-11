@@ -12,7 +12,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class SlimeIncubatorBlockEntity extends BlockEntity implements TickingBlockEntity {
-    protected int incubationTime = 0;
+    private int INCUBATION_TIME = 6000;
+    protected int progress = 0;
     protected String slimeType = "";
 
     public SlimeIncubatorBlockEntity(BlockPos pos, BlockState state) {
@@ -22,7 +23,7 @@ public class SlimeIncubatorBlockEntity extends BlockEntity implements TickingBlo
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state) {
         if (!slimeType.isEmpty()) {
-            if (this.incubationTime >= 200) {
+            if (this.progress >= INCUBATION_TIME) {
                 SlimeEntityBase birthSlime = ModElements.Entities.SPLENDID_SLIME.get().create(level);
                 birthSlime.setSlimeBreed(slimeType);
                 birthSlime.setSize(1, true);
@@ -35,23 +36,23 @@ public class SlimeIncubatorBlockEntity extends BlockEntity implements TickingBlo
                 setChanged();
             }
             else {
-                this.incubationTime++;
+                this.progress++;
             }
         }
-        else this.incubationTime = 0;
+        else this.progress = 0;
     }
 
     @Override
     public void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        tag.putInt("incubationTime", this.incubationTime);
+        tag.putInt("progress", this.progress);
         tag.putString("slimeType", this.slimeType);
     }
 
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        this.incubationTime = tag.getInt("incubationTime");
+        this.progress = tag.getInt("progress");
         this.slimeType = tag.getString("slimeType");
     }
 
@@ -63,8 +64,8 @@ public class SlimeIncubatorBlockEntity extends BlockEntity implements TickingBlo
         return this.slimeType;
     }
 
-    public int getIncubationTime() {
-        return this.incubationTime;
+    public int getProgress() {
+        return this.progress;
     }
 
 }

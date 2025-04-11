@@ -3,9 +3,10 @@
   "name": "slime.splendid_slimes.shulking",
   "color": "#976997",
   "hat": {
-    "item": "minecraft:purpur_block"
+    "item": "splendid_slimes:hat/shulking_hat"
   },
-  "diet": "Chorus",
+  "hat_y_offset": -1,
+  "diet": "diet.splendid_slimes.shulking",
   "foods": [
     { "item": "minecraft:popped_chorus_fruit" },
     { "item": "minecraft:chorus_flower" },

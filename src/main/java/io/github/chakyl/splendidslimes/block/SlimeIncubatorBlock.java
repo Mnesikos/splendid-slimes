@@ -60,7 +60,7 @@ public class SlimeIncubatorBlock extends HorizontalDirectionalBlock implements T
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (!pLevel.isClientSide) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
-            if (pHand == InteractionHand.MAIN_HAND && entity instanceof SlimeIncubatorBlockEntity && ((SlimeIncubatorBlockEntity) entity).getIncubationTime() == 0) {
+            if (pHand == InteractionHand.MAIN_HAND && entity instanceof SlimeIncubatorBlockEntity && ((SlimeIncubatorBlockEntity) entity).getProgress() == 0) {
                 ItemStack heldItem = pPlayer.getItemInHand(pHand);
                 if (heldItem.getItem() == ModElements.Items.SLIME_HEART.get() && heldItem.hasTag()) {
                     CompoundTag plortTag = heldItem.getTagElement("slime");

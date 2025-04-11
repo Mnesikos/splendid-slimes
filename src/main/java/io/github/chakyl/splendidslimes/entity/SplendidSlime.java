@@ -72,8 +72,8 @@ public class SplendidSlime extends SlimeEntityBase {
             int eatCooldown = getEatingCooldown();
             if (eatCooldown > 0) {
                 setEatingCooldown(eatCooldown - 1);
-            } //800
-            if (this.tickCount % 200 == 0) {
+            } 
+            if (this.tickCount % 800 == 0) {
                 DynamicHolder<SlimeBreed> slime = getSlime();
                 if (slime.isBound()) {
                     Double chance = 1 - (((getHappiness() + 1.0) / MAX_HAPPINESS));

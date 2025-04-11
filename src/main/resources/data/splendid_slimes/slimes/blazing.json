@@ -3,9 +3,9 @@
   "name": "slime.splendid_slimes.blazing",
   "color": "#c96c03",
   "hat": {
-    "item": "minecraft:campfire"
+    "item": "splendid_slimes:hat/blazing_hat"
   },
-  "diet": "Cooked Meat",
+  "diet": "diet.splendid_slimes.blazing",
   "foods": [
     { "item": "minecraft:cooked_rabbit" }, 
     { "item": "minecraft:cooked_mutton" }, 

@@ -13,8 +13,6 @@ import com.mojang.serialization.JsonOps;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
 import dev.shadowsoffire.placebo.json.ItemAdapter;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
-import io.github.chakyl.splendidslimes.item.PlortItem;
-import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -179,7 +177,7 @@ public record SlimeBreed(String breed, MutableComponent name,
             String breed = GsonHelper.getAsString(obj, "breed");
             MutableComponent name = Component.translatable(GsonHelper.getAsString(obj, "name"));
             ItemStack hat = ItemAdapter.ITEM_READER.fromJson(obj.get("hat"), ItemStack.class);
-            float hatScale = 1.25F;
+            float hatScale = 1F;
             if (obj.has("hat_scale")) {
                 hatScale = GsonHelper.getAsFloat(obj, "hat_scale");
             }
@@ -191,7 +189,7 @@ public record SlimeBreed(String breed, MutableComponent name,
             if (obj.has("hat_y_offset")) {
                 hatYOffset = GsonHelper.getAsFloat(obj, "hat_y_offset");
             }
-            float hatZOffset = 0.02F;
+            float hatZOffset = -0.05F;
             if (obj.has("hat_z_offset")) {
                 hatZOffset = GsonHelper.getAsFloat(obj, "hat_z_offset");
             }

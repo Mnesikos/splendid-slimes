@@ -3,8 +3,9 @@
   "name": "slime.splendid_slimes.gold",
   "color": "#e9b115",
   "hat": {
-    "item": "minecraft:gold_ore"
+    "item": "splendid_slimes:hat/gold_hat"
   },
+  "hat_y_offset": -1,
   "diet": "Ingots",
   "foods": [
     {

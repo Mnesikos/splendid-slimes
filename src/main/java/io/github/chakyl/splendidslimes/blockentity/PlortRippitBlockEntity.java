@@ -30,7 +30,8 @@ import java.util.Random;
 import static io.github.chakyl.splendidslimes.block.PlortRippitBlock.WORKING;
 
 public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockEntity {
-    protected int processingTime = 0;
+    private int RIPPIT_PROCESSING_TIME = 100;
+    protected int progress = 0;
     protected String slimeType = "";
     protected final RippitItemHandler inventory = new RippitItemHandler();
 
@@ -41,18 +42,18 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state) {
         if (!this.inventory.getStackInSlot(0).isEmpty() && hasRecipe()) {
-            if (this.processingTime == 0 && !state.getValue(WORKING)) {
+            if (this.progress == 0 && !state.getValue(WORKING)) {
                 BlockState newState = state.setValue(WORKING, true);
                 level.setBlockAndUpdate(pos, newState);
                 this.setSlimeType(this.inventory.getStackInSlot(0).getTagElement("plort").get("id").toString().replace("\"", ""));
                 level.playSound(null, pos, SoundEvents.FROG_TONGUE, SoundSource.BLOCKS, 1.0F, 0.9F);
                 level.playSound(null, pos, SoundEvents.FROG_EAT, SoundSource.BLOCKS, 1.0F, 0.9F);
-            } else if (this.processingTime == 100) {
+            } else if (this.progress >= RIPPIT_PROCESSING_TIME) {
                 craftItem(pos, state);
                 setChanged();
-                this.processingTime = 0;
+                this.progress = 0;
             } else {
-                this.processingTime++;
+                this.progress++;
             }
         };
     }
@@ -109,8 +110,8 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
         return this.slimeType;
     }
 
-    public int getProcessingTime() {
-        return this.processingTime;
+    public int getProgress() {
+        return this.progress;
     }
 
     public boolean insertItem(ItemStack itemStack) {
@@ -134,7 +135,7 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
     public void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
         tag.put("inventory", this.inventory.serializeNBT());
-        tag.putInt("processingTime", this.processingTime);
+        tag.putInt("progress", this.progress);
         tag.putString("slimeType", this.slimeType);
     }
 
@@ -142,7 +143,7 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
     public void load(CompoundTag tag) {
         super.load(tag);
         this.inventory.deserializeNBT(tag.getCompound("inventory"));
-        this.processingTime = tag.getInt("processingTime");
+        this.progress = tag.getInt("progress");
         this.slimeType = tag.getString("slimeType");
     }
 
