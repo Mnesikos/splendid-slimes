@@ -3,7 +3,7 @@
   "name": "slime.splendid_slimes.webby",
   "color": "#bebfd2",
   "hat": {
-    "item": "minecraft:cobweb"
+    "item": "splendid_slimes:hat/webby_hat"
   },
   "diet": "diet.splendid_slimes.webby",
   "foods": [

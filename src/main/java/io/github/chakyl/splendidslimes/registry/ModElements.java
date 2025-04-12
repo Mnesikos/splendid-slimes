@@ -65,15 +65,21 @@ public class ModElements {
         public static final RegistryObject<CorralPane> CORRAL_PANE = R.block("corral_pane", () -> new CorralPane(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.GLASS_PANE).strength(4, 3000).noOcclusion().isSuffocating(ALWAYS_FALSE).isViewBlocking(ALWAYS_FALSE)));
 
         // Hats
+        public static final RegistryObject<Block> ALL_SEEING_HAT = R.block("hat/all_seeing_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> BITWISE_HAT = R.block("hat/bitwise_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
         public static final RegistryObject<Block> BLAZING_HAT = R.block("hat/blazing_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
         public static final RegistryObject<Block> BOOMCAT_HAT = R.block("hat/boomcat_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
         public static final RegistryObject<Block> GOLD_HAT = R.block("hat/gold_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
         public static final RegistryObject<Block> ORBY_HAT = R.block("hat/orby_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
         public static final RegistryObject<Block> MINTY_HAT = R.block("hat/minty_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
         public static final RegistryObject<Block> PHANTOM_HAT = R.block("hat/phantom_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> PUDDLE_HAT = R.block("hat/puddle_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
         public static final RegistryObject<Block> PRISMA_HAT = R.block("hat/prisma_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
         public static final RegistryObject<Block> SHULKING_HAT = R.block("hat/shulking_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> SLIMY_HAT = R.block("hat/slimy_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
         public static final RegistryObject<Block> SWEET_HAT = R.block("hat/sweet_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> WEBBY_HAT = R.block("hat/webby_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> WEEPING_HAT = R.block("hat/weeping_hat", () -> new Block(defaultBehavior.strength(4, 3000).noOcclusion()));
 
         private static void bootstrap() {
         }
@@ -103,16 +109,21 @@ public class ModElements {
         public static final RegistryObject<ForgeSpawnEggItem> TARR_SPAWN_EGG = R.item("spawn_egg_tarr", () -> new ForgeSpawnEggItem(tarrEntity, 0x2c221c, 0x921f78, new Item.Properties()));
         public static final RegistryObject<Item> TARRTAR = R.item("tarrtar", () -> new Item(new Item.Properties().stacksTo(64)));
         // Hats
+        public static final RegistryObject<BlockItem> ALL_SEEING_HAT = R.item("hat/all_seeing_hat", () -> new BlockItem(Blocks.ALL_SEEING_HAT.get(), new Item.Properties()));
+        public static final RegistryObject<BlockItem> BITWISE_HAT = R.item("hat/bitwise_hat", () -> new BlockItem(Blocks.BITWISE_HAT.get(), new Item.Properties()));
         public static final RegistryObject<BlockItem> BLAZING_HAT = R.item("hat/blazing_hat", () -> new BlockItem(Blocks.BLAZING_HAT.get(), new Item.Properties()));
         public static final RegistryObject<BlockItem> BOOMCAT_HAT = R.item("hat/boomcat_hat", () -> new BlockItem(Blocks.BOOMCAT_HAT.get(), new Item.Properties()));
         public static final RegistryObject<BlockItem> GOLD_HAT = R.item("hat/gold_hat", () -> new BlockItem(Blocks.GOLD_HAT.get(), new Item.Properties()));
-        public static final RegistryObject<BlockItem> MINTY_HAT = R.item("hat/minty_hat", () -> new BlockItem(Blocks.ORBY_HAT.get(), new Item.Properties()));
+        public static final RegistryObject<BlockItem> MINTY_HAT = R.item("hat/minty_hat", () -> new BlockItem(Blocks.MINTY_HAT.get(), new Item.Properties()));
         public static final RegistryObject<BlockItem> ORBY_HAT = R.item("hat/orby_hat", () -> new BlockItem(Blocks.ORBY_HAT.get(), new Item.Properties()));
         public static final RegistryObject<BlockItem> PHANTOM_HAT = R.item("hat/phantom_hat", () -> new BlockItem(Blocks.PHANTOM_HAT.get(), new Item.Properties()));
         public static final RegistryObject<BlockItem> PRISMA_HAT = R.item("hat/prisma_hat", () -> new BlockItem(Blocks.PRISMA_HAT.get(), new Item.Properties()));
+        public static final RegistryObject<BlockItem> PUDDLE_HAT = R.item("hat/puddle_hat", () -> new BlockItem(Blocks.PUDDLE_HAT.get(), new Item.Properties()));
         public static final RegistryObject<BlockItem> SHULKING_HAT = R.item("hat/shulking_hat", () -> new BlockItem(Blocks.SHULKING_HAT.get(), new Item.Properties()));
+        public static final RegistryObject<BlockItem> SLIMY_HAT = R.item("hat/slimy_hat", () -> new BlockItem(Blocks.SLIMY_HAT.get(), new Item.Properties()));
         public static final RegistryObject<BlockItem> SWEET_HAT = R.item("hat/sweet_hat", () -> new BlockItem(Blocks.SWEET_HAT.get(), new Item.Properties()));
-        public static final RegistryObject<BlockItem> BITWISE_HAT = R.item("hat/bitwise_hat" , () -> new BlockItem(net.minecraft.world.level.block.Blocks.COMPARATOR, new Item.Properties()));
+        public static final RegistryObject<BlockItem> WEBBY_HAT = R.item("hat/webby_hat", () -> new BlockItem(Blocks.WEBBY_HAT.get(), new Item.Properties()));
+        public static final RegistryObject<BlockItem> WEEPING_HAT = R.item("hat/weeping_hat", () -> new BlockItem(Blocks.WEEPING_HAT.get(), new Item.Properties()));
 
         private static void bootstrap() {
         }

@@ -3,7 +3,7 @@
   "name": "slime.splendid_slimes.all_seeing",
   "color": "#65062b",
   "hat": {
-    "item": "minecraft:spider_eye"
+    "item": "splendid_slimes:hat/all_seeing_hat"
   },
   "diet": "diet.splendid_slimes.all_seeing",
   "foods": [

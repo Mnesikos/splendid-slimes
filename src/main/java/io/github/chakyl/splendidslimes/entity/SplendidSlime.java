@@ -19,10 +19,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -36,6 +39,7 @@ import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -50,6 +54,7 @@ public class SplendidSlime extends SlimeEntityBase {
     public static final int SLIME_EAT_COOLDOWN = 6000;
     public static final int SLIME_HUNGRY_THRESHOLD = 1200;
     public static final int MAX_HAPPINESS = 1000;
+    public ItemEntity itemTarget = null;
     boolean tarred;
     private final EntityType<SlimeEntityBase> entityType;
 
@@ -57,12 +62,17 @@ public class SplendidSlime extends SlimeEntityBase {
         super(entityType, level);
         this.entityType = entityType;
         this.tarred = false;
+        this.moveControl = new SplendidSlime.SlimeMoveControl(this);
     }
 
+    @Override
     protected void registerGoals() {
-        super.registerGoals();
-        this.targetSelector.addGoal(1, new SplendidSlime.SlimeTargetItemGoal(this));
-        this.targetSelector.addGoal(1, new SplendidSlime.SlimeAttackFoodEntities(this, true, 10, null));
+        this.goalSelector.addGoal(1, new SplendidSlime.SlimeFloatGoal(this));
+        this.goalSelector.addGoal(2, new SplendidSlime.SlimeTargetItemGoal(this, 60));
+        this.goalSelector.addGoal(2, new SplendidSlime.SlimeAttackFoodEntities(this, true, 60, null));
+        this.goalSelector.addGoal(2, new SplendidSlime.SlimeAttackGoal(this));
+        this.goalSelector.addGoal(3, new SplendidSlime.SlimeRandomDirectionGoal(this));
+        this.goalSelector.addGoal(5, new SplendidSlime.SlimeKeepOnJumpingGoal(this));
 
     }
 
@@ -72,7 +82,7 @@ public class SplendidSlime extends SlimeEntityBase {
             int eatCooldown = getEatingCooldown();
             if (eatCooldown > 0) {
                 setEatingCooldown(eatCooldown - 1);
-            } 
+            }
             if (this.tickCount % 800 == 0) {
                 DynamicHolder<SlimeBreed> slime = getSlime();
                 if (slime.isBound()) {
@@ -108,6 +118,10 @@ public class SplendidSlime extends SlimeEntityBase {
         return true;
     }
 
+    private boolean notHungry() {
+        return getEatingCooldown() > SLIME_HUNGRY_THRESHOLD;
+    }
+
     private boolean checkFoods(ItemStack pStack, List<Object> foods) {
         Item pickUpItem = pStack.getItem();
         for (Object food : foods) {
@@ -119,7 +133,7 @@ public class SplendidSlime extends SlimeEntityBase {
 
     public boolean wantsToPickUp(ItemStack pStack) {
         Item pickUpItem = pStack.getItem();
-        if (getEatingCooldown() > SLIME_HUNGRY_THRESHOLD && pickUpItem != ModElements.Items.PLORT.get()) return false;
+        if (notHungry() && pickUpItem != ModElements.Items.PLORT.get()) return false;
 
         if (!getSlime().isBound()) return false;
         SlimeBreed slime = getSlime().get();
@@ -192,14 +206,15 @@ public class SplendidSlime extends SlimeEntityBase {
             entity.addEffect(copyEffect(effect));
         }
     }
+
     private static CommandSourceStack createCommandSourceStack(@Nullable Player pPlayer, Level pLevel, BlockPos pPos, Component displayName) {
         String s = pPlayer == null ? "Splendid Slime" : pPlayer.getName().getString();
-        Component component = (Component)(pPlayer == null ? displayName : pPlayer.getDisplayName());
-        return new CommandSourceStack(CommandSource.NULL, Vec3.atCenterOf(pPos), Vec2.ZERO, (ServerLevel)pLevel, 2, s, component, pLevel.getServer(), pPlayer);
+        Component component = (Component) (pPlayer == null ? displayName : pPlayer.getDisplayName());
+        return new CommandSourceStack(CommandSource.NULL, Vec3.atCenterOf(pPos), Vec2.ZERO, (ServerLevel) pLevel, 2, s, component, pLevel.getServer(), pPlayer);
     }
 
     public void runCommands(List<String> commands) {
-        CommandSourceStack source = createCommandSourceStack((Player)null, this.level(), this.getOnPos(), this.getDisplayName());
+        CommandSourceStack source = createCommandSourceStack((Player) null, this.level(), this.getOnPos(), this.getDisplayName());
         source.withEntity(this);
         source.withSuppressedOutput();
         for (String command : commands) {
@@ -239,6 +254,14 @@ public class SplendidSlime extends SlimeEntityBase {
         return this.tarred;
     }
 
+    public void setItemTarget(ItemEntity entity) {
+        this.itemTarget = entity;
+    }
+
+    public ItemEntity getItemTarget() {
+        return this.itemTarget;
+    }
+
     public void setHappiness(int data) {
         this.entityData.set(HAPPINESS, data);
     }
@@ -251,9 +274,13 @@ public class SplendidSlime extends SlimeEntityBase {
         this.entityData.set(EATING_COOLDOWN, data);
     }
 
+    private boolean hasTrait(String trait) {
+        return false;
+    }
 
     public void push(Entity pEntity) {
         super.push(pEntity);
+        if (notHungry()) return;
         List<EntityType<? extends LivingEntity>> edibleMobs = getEdibleMobs();
         if (edibleMobs == null) return;
         for (EntityType mobType : edibleMobs) {
@@ -316,6 +343,7 @@ public class SplendidSlime extends SlimeEntityBase {
                         this.playSound(SoundEvents.AMETHYST_BLOCK_STEP, 1.0F, 0.9F);
                         this.setSlimeSecondaryBreed(plortTag.get("id").toString().replace("\"", ""));
                     } else {
+                        causeChaos();
                         causeChaos();
                     }
                 }
@@ -395,39 +423,75 @@ public class SplendidSlime extends SlimeEntityBase {
 
     static class SlimeTargetItemGoal extends Goal {
         private final SplendidSlime slime;
-        private ItemEntity targetItem = null;
+        private ItemEntity targetItem;
+        protected final int randomInterval;
 
-        public SlimeTargetItemGoal(SplendidSlime slime) {
+        public SlimeTargetItemGoal(SplendidSlime slime, int pRandomInterval) {
             this.slime = slime;
+            this.randomInterval = reducedTickDelay(pRandomInterval);
         }
 
-        @Override
-        public boolean canUse() {
-            if (slime.getEatingCooldown() > SLIME_HUNGRY_THRESHOLD) return false;
-            List<ItemEntity> nearbyItems = slime.level().getEntitiesOfClass(ItemEntity.class, slime.getBoundingBox().inflate(10));
-            if (nearbyItems.isEmpty()) {
-                return false;
+        protected void findTarget() {
+            List<ItemEntity> nearbyItems = this.slime.level().getEntitiesOfClass(ItemEntity.class, this.slime.getBoundingBox().inflate(10));
+            if (nearbyItems.isEmpty()) return;
+            ItemEntity target = null;
+            for (ItemEntity potentialTarget : nearbyItems) {
+                if (target == null || this.slime.distanceToSqr(potentialTarget) < this.slime.distanceToSqr(target)) {
+                    if (slime.wantsToPickUp(potentialTarget.getItem())) target = potentialTarget;
+                }
             }
-            for (ItemEntity item : nearbyItems) {
-                if (slime.wantsToPickUp(item.getItem())) targetItem = item;
-            }
-            return targetItem != null;
+            this.targetItem = target;
+            this.slime.setItemTarget(target);
         }
+
 
         @Override
         public void tick() {
-            if (targetItem != null) slime.getNavigation().moveTo(targetItem, 0.8D);
+            if (this.targetItem != null) {
+                this.slime.lookAt(targetItem, 10.0F, 10.0F);
+                MoveControl movecontrol = this.slime.getMoveControl();
+                if (movecontrol instanceof SplendidSlime.SlimeMoveControl slime$slimemovecontrol) {
+                    slime$slimemovecontrol.setDirection(this.slime.getYRot(), true);
+                }
+            }
+
         }
 
         @Override
         public boolean canContinueToUse() {
+            if (!targetItem.isAlive()) targetItem = null;
+            if (this.slime.notHungry()) {
+                targetItem = null;
+                return false;
+            }
             return targetItem != null && targetItem.isAlive();
         }
 
         @Override
-        public void stop() {
-            targetItem = null;
+        public boolean canUse() {
+            if (this.slime.notHungry()) return false;
+            if (this.randomInterval > 0 && this.slime.getRandom().nextInt(this.randomInterval) != 0) {
+                return false;
+            } else {
+                this.findTarget();
+                return this.targetItem != null;
+            }
         }
+
+        @Override
+        public void start() {
+            if (this.slime.hasTrait("foodporting")) {
+                this.slime.setPos(targetItem.getX(), targetItem.getY(), targetItem.getZ());
+            }
+            super.start();
+        }
+
+        @Override
+        public void stop() {
+            this.slime.setItemTarget(null);
+            this.targetItem = null;
+        }
+
     }
 
     public class SlimeAttackFoodEntities<T extends LivingEntity> extends TargetGoal {
@@ -442,7 +506,6 @@ public class SplendidSlime extends SlimeEntityBase {
         }
 
         protected void findTarget() {
-            if (getEatingCooldown() > 0) return;
             List<EntityType<? extends LivingEntity>> edibleMobs = getEdibleMobs();
             if (edibleMobs == null) return;
             List<LivingEntity> nearbyEntities = this.mob.level().getEntitiesOfClass(LivingEntity.class, this.mob.getBoundingBox().inflate(10), e -> edibleMobs.contains(e.getType()));
@@ -458,7 +521,7 @@ public class SplendidSlime extends SlimeEntityBase {
         }
 
         public boolean canUse() {
-            if (getEatingCooldown() > 0) return false;
+            if (notHungry()) return false;
             if (this.randomInterval > 0 && this.mob.getRandom().nextInt(this.randomInterval) != 0) {
                 return false;
             } else {
@@ -468,8 +531,197 @@ public class SplendidSlime extends SlimeEntityBase {
         }
 
         public void start() {
+            if (((SplendidSlime) this.mob).hasTrait("foodporting")) {
+                this.mob.setPos(target.getX(), target.getY(), target.getZ());
+            }
             this.mob.setTarget(this.target);
             super.start();
+        }
+    }
+
+    static class SlimeAttackGoal extends Goal {
+        private final SplendidSlime slime;
+        private int growTiredTimer;
+
+        public SlimeAttackGoal(SplendidSlime pSlime) {
+            this.slime = pSlime;
+            this.setFlags(EnumSet.of(Goal.Flag.LOOK));
+        }
+
+        public boolean canUse() {
+            LivingEntity livingentity = this.slime.getTarget();
+            if (livingentity == null) {
+                return false;
+            } else {
+                return !this.slime.canAttack(livingentity) ? false : this.slime.getMoveControl() instanceof SplendidSlime.SlimeMoveControl;
+            }
+        }
+
+        public void start() {
+            this.growTiredTimer = reducedTickDelay(300);
+            super.start();
+        }
+
+        public boolean canContinueToUse() {
+            LivingEntity livingentity = this.slime.getTarget();
+            if (livingentity == null) {
+                return false;
+            } else if (!this.slime.canAttack(livingentity)) {
+                return false;
+            } else {
+                return --this.growTiredTimer > 0;
+            }
+        }
+
+        public boolean requiresUpdateEveryTick() {
+            return true;
+        }
+
+        public void tick() {
+            LivingEntity livingentity = this.slime.getTarget();
+            if (livingentity != null) {
+                this.slime.lookAt(livingentity, 10.0F, 10.0F);
+            }
+
+            MoveControl movecontrol = this.slime.getMoveControl();
+            if (movecontrol instanceof SplendidSlime.SlimeMoveControl slime$slimemovecontrol) {
+                slime$slimemovecontrol.setDirection(this.slime.getYRot(), true);
+            }
+
+        }
+    }
+
+    static class SlimeFloatGoal extends Goal {
+        private final SplendidSlime slime;
+
+        public SlimeFloatGoal(SplendidSlime pSlime) {
+            this.slime = pSlime;
+            this.setFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.MOVE));
+            pSlime.getNavigation().setCanFloat(true);
+        }
+
+        public boolean canUse() {
+            return (this.slime.isInWater() || this.slime.isInLava()) && this.slime.getMoveControl() instanceof SplendidSlime.SlimeMoveControl;
+        }
+
+        public boolean requiresUpdateEveryTick() {
+            return true;
+        }
+
+        public void tick() {
+            if (this.slime.getRandom().nextFloat() < 0.8F) {
+                this.slime.getJumpControl().jump();
+            }
+
+            MoveControl movecontrol = this.slime.getMoveControl();
+            if (movecontrol instanceof SplendidSlime.SlimeMoveControl slime$slimemovecontrol) {
+                slime$slimemovecontrol.setWantedMovement(1.2D);
+            }
+
+        }
+    }
+
+    static class SlimeKeepOnJumpingGoal extends Goal {
+        private final SplendidSlime slime;
+
+        public SlimeKeepOnJumpingGoal(SplendidSlime pSlime) {
+            this.slime = pSlime;
+            this.setFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.MOVE));
+        }
+
+        public boolean canUse() {
+            return !this.slime.isPassenger();
+        }
+
+        public void tick() {
+            MoveControl movecontrol = this.slime.getMoveControl();
+            if (movecontrol instanceof SplendidSlime.SlimeMoveControl slime$slimemovecontrol) {
+                slime$slimemovecontrol.setWantedMovement(1.0D);
+            }
+
+        }
+    }
+
+    static class SlimeMoveControl extends MoveControl {
+        private float yRot;
+        private int jumpDelay;
+        private final SplendidSlime slime;
+        private boolean isAggressive;
+
+        public SlimeMoveControl(SplendidSlime pSlime) {
+            super(pSlime);
+            this.slime = pSlime;
+            this.yRot = 180.0F * pSlime.getYRot() / (float) Math.PI;
+        }
+
+        public void setDirection(float pYRot, boolean pAggressive) {
+            this.yRot = pYRot;
+            this.isAggressive = pAggressive;
+        }
+
+        public void setWantedMovement(double pSpeed) {
+            this.speedModifier = pSpeed;
+            this.operation = MoveControl.Operation.MOVE_TO;
+        }
+
+        public void tick() {
+            this.mob.setYRot(this.rotlerp(this.mob.getYRot(), this.yRot, 90.0F));
+            this.mob.yHeadRot = this.mob.getYRot();
+            this.mob.yBodyRot = this.mob.getYRot();
+            if (this.operation != Operation.MOVE_TO) {
+                this.mob.setZza(0.0F);
+            } else {
+                this.operation = Operation.WAIT;
+                if (this.mob.onGround()) {
+                    this.mob.setSpeed((float) (this.speedModifier * this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED)));
+                    if (this.jumpDelay-- <= 0) {
+                        this.jumpDelay = this.slime.getRandom().nextInt(20) + 10;
+                        if (this.isAggressive) {
+                            this.jumpDelay /= 3;
+                        }
+
+                        this.slime.getJumpControl().jump();
+//                        if (this.slime.doPlayJumpSound()) {
+//                            this.slime.playSound(this.slime.getJumpSound(), this.slime.getSoundVolume(), this.slime.getSoundPitch());
+//                        }
+                    } else {
+                        this.slime.xxa = 0.0F;
+                        this.slime.zza = 0.0F;
+                        this.mob.setSpeed(0.0F);
+                    }
+                } else {
+                    this.mob.setSpeed((float) (this.speedModifier * this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED)));
+                }
+
+            }
+        }
+    }
+
+    static class SlimeRandomDirectionGoal extends Goal {
+        private final SplendidSlime slime;
+        private float chosenDegrees;
+        private int nextRandomizeTime;
+
+        public SlimeRandomDirectionGoal(SplendidSlime pSlime) {
+            this.slime = pSlime;
+            this.setFlags(EnumSet.of(Goal.Flag.LOOK));
+        }
+
+        public boolean canUse() {
+            return this.slime.getItemTarget() == null && this.slime.getTarget() == null && (this.slime.onGround() || this.slime.isInWater() || this.slime.isInLava() || this.slime.hasEffect(MobEffects.LEVITATION)) && this.slime.getMoveControl() instanceof SplendidSlime.SlimeMoveControl;
+        }
+
+        public void tick() {
+            if (--this.nextRandomizeTime <= 0) {
+                this.nextRandomizeTime = this.adjustedTickDelay(40 + this.slime.getRandom().nextInt(60));
+                this.chosenDegrees = (float) this.slime.getRandom().nextInt(360);
+            }
+
+            MoveControl movecontrol = this.slime.getMoveControl();
+            if (movecontrol instanceof SplendidSlime.SlimeMoveControl slime$slimemovecontrol) {
+                slime$slimemovecontrol.setDirection(this.chosenDegrees, false);
+            }
+
         }
     }
 }
