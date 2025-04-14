@@ -46,7 +46,7 @@ public class SlimeHeartItem extends Item implements ITabFiller {
         DynamicHolder<SlimeBreed> slime = getSlimeData(pStack, SLIME_HEART);
         Component slimeName;
         if (!slime.isBound()) {
-            slimeName = Component.translatable("item.splendid_slimes.");
+            slimeName = Component.translatable("item.splendid_slimes.default_heart");
         }
         else slimeName = slime.get().name();
         return Component.translatable(this.getDescriptionId(pStack), slimeName);

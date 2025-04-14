@@ -15,6 +15,7 @@
     "item": "minecraft:amethyst_shard"
   },
   "negative_commands": [
-    "tp @e[distance=..16] @e[limit=1,sort=nearest]"
+    "tp @e[distance=..8] @e[limit=1,sort=nearest]",
+    "playsound minecraft:entity.enderman.teleport block @a[distance=..10]"
   ]
 }

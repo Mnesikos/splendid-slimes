@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "ipi",
+    "apa",
+    "ILI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "L": {
+      "item": "minecraft:redstone_lamp"
+    },
+    "p": {
+      "item": "minecraft:piston"
+    },
+    "a": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "splendid_slimes:plort_press"
+  },
+  "show_notification": true
+}

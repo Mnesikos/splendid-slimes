@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    {
+      "item": "splendid_slimes:corral_block"
+    },
+    {
+      "item": "splendid_slimes:corral_block"
+    },
+    {
+      "item": "splendid_slimes:corral_block"
+    },
+    {
+      "item": "splendid_slimes:corral_block"
+    },
+    {
+      "item": "splendid_slimes:corral_block"
+    },
+    {
+      "item": "splendid_slimes:corral_block"
+    }
+  ],
+  "result": {
+    "item": "splendid_slimes:corral_pane",
+    "count": 16
+  }
+}

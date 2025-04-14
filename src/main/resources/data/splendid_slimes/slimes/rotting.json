@@ -5,7 +5,7 @@
   "hat": {
     "item": "minecraft:zombie_head"
   },
-  "hat_scale": 2.4,
+  "hat_scale": 1.5,
   "hat_y_offset": -0.55,
   "hat_z_offset": 0.05,
   "diet": "diet.splendid_slimes.rotting",

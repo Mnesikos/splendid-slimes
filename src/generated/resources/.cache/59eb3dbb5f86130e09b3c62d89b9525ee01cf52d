@@ -1,0 +1,6 @@
+// 1.20.1	2025-04-12T23:09:23.6705206	Loot Tables
+85f816e8c750bc2ee5e47a90103027b04499458e data/splendid_slimes/loot_tables/blocks/corral_block.json
+355db26e652418b763ab3878a8bf8a4d7c3d8954 data/splendid_slimes/loot_tables/blocks/corral_pane.json
+a27956a302832e1b9ec33c319fd74723edb7e493 data/splendid_slimes/loot_tables/blocks/plort_press.json
+e7b3509d30d3dba02e6c73d4ba1b4da714be8c2d data/splendid_slimes/loot_tables/blocks/plort_rippit.json
+75a714d02de9f472a55c9ef6c5a29ea639fe7bf8 data/splendid_slimes/loot_tables/blocks/slime_incubator.json
