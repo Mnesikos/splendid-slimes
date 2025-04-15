@@ -2,9 +2,6 @@
   "breed": "prisma",
   "name": "slime.splendid_slimes.prisma",
   "color": "#a4d1c2",
-  "hat": {
-    "item": "splendid_slimes:hat/prisma_hat"
-  },
   "diet": "diet.splendid_slimes.prisma",
   "foods": [
     {

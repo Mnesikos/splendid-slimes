@@ -2,9 +2,6 @@
   "breed": "shulking",
   "name": "slime.splendid_slimes.shulking",
   "color": "#976997",
-  "hat": {
-    "item": "splendid_slimes:hat/shulking_hat"
-  },
   "hat_y_offset": -1,
   "diet": "diet.splendid_slimes.shulking",
   "foods": [

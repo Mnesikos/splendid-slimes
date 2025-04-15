@@ -2,9 +2,6 @@
   "breed": "minty",
   "name": "slime.splendid_slimes.minty",
   "color": "#cd75a4",
-  "hat": {
-    "item": "splendid_slimes:hat/minty_hat"
-  },
   "hat_y_offset": -0.70,
   "diet": "diet.splendid_slimes.minty",
   "entities": [

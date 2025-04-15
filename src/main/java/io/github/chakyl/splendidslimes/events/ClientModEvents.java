@@ -1,6 +1,7 @@
 package io.github.chakyl.splendidslimes.events;
 
 import io.github.chakyl.splendidslimes.SplendidSlimes;
+import io.github.chakyl.splendidslimes.client.model.HatModel;
 import io.github.chakyl.splendidslimes.client.model.SlimeEntityModel;
 import io.github.chakyl.splendidslimes.client.model.SlimeHatLayer;
 import io.github.chakyl.splendidslimes.client.renderer.SlimeEntityRenderer;
@@ -68,6 +69,25 @@ public class ClientModEvents {
         BakedModel oldModel = e.getModels().get(key);
         if (oldModel != null) {
             e.getModels().put(key, new PlortModel(oldModel, e.getModelBakery()));
+        }
+    }
+
+    @SubscribeEvent
+    public static void addHatModel(ModelEvent.RegisterAdditional e) {
+        Set<ResourceLocation> locs = Minecraft.getInstance().getResourceManager().listResources("models", loc -> SplendidSlimes.MODID.equals(loc.getNamespace()) && loc.getPath().contains("/hat/") && loc.getPath().endsWith(".json"))
+                .keySet();
+        for (ResourceLocation s : locs) {
+            String path = s.getPath().substring("models/".length(), s.getPath().length() - ".json".length());
+            e.register(new ResourceLocation(SplendidSlimes.MODID, path));
+        }
+    }
+
+    @SubscribeEvent
+    public static void replaceHatModel(ModelEvent.ModifyBakingResult e) {
+        ModelResourceLocation key = new ModelResourceLocation(SplendidSlimes.loc("hat"), "inventory");
+        BakedModel oldModel = e.getModels().get(key);
+        if (oldModel != null) {
+            e.getModels().put(key, new HatModel(oldModel, e.getModelBakery()));
         }
     }
 

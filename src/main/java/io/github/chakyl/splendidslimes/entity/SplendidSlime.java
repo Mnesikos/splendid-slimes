@@ -27,6 +27,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -62,17 +63,22 @@ public class SplendidSlime extends SlimeEntityBase {
         super(entityType, level);
         this.entityType = entityType;
         this.tarred = false;
-        this.moveControl = new SplendidSlime.SlimeMoveControl(this);
+        this.moveControl = new SlimeMoveControl(this);
     }
 
     @Override
     protected void registerGoals() {
-        this.goalSelector.addGoal(1, new SplendidSlime.SlimeFloatGoal(this));
-        this.goalSelector.addGoal(2, new SplendidSlime.SlimeTargetItemGoal(this, 60));
-        this.goalSelector.addGoal(2, new SplendidSlime.SlimeAttackFoodEntities(this, true, 60, null));
-        this.goalSelector.addGoal(2, new SplendidSlime.SlimeAttackGoal(this));
-        this.goalSelector.addGoal(3, new SplendidSlime.SlimeRandomDirectionGoal(this));
-        this.goalSelector.addGoal(5, new SplendidSlime.SlimeKeepOnJumpingGoal(this));
+        this.goalSelector.addGoal(1, new SlimeFloatGoal(this));
+        if (this.getHappiness() < 200) {
+            this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, (p_289461_) -> {
+                return Math.abs(p_289461_.getY() - this.getY()) <= 4.0D;
+            }));
+        }
+        this.goalSelector.addGoal(2, new SlimeTargetItemGoal(this, 60));
+        this.goalSelector.addGoal(2, new SlimeAttackFoodEntities(this, true, 60, null));
+        this.goalSelector.addGoal(2, new SlimeAttackGoal(this));
+        this.goalSelector.addGoal(3, new SlimeRandomDirectionGoal(this));
+        this.goalSelector.addGoal(5, new SlimeKeepOnJumpingGoal(this));
 
     }
 
@@ -85,22 +91,21 @@ public class SplendidSlime extends SlimeEntityBase {
             }
             if (this.tickCount % 800 == 0) {
                 DynamicHolder<SlimeBreed> slime = getSlime();
+                DynamicHolder<SlimeBreed> secondarySlime = getSecondarySlime();
                 if (slime.isBound()) {
                     Double chance = 1 - (((getHappiness() + 1.0) / MAX_HAPPINESS));
                     if (this.random.nextFloat() <= chance) {
                         List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(10));
                         for (LivingEntity entity : nearbyEntities) {
-                            applyNegativeEffects(entity, slime);
+                            applyNegativeEffects(entity, slime, secondarySlime);
                         }
-                        List<String> commands = slime.get().positiveCommands();
-                        if (!commands.isEmpty()) runCommands(commands);
+                        runCommands(slime, secondarySlime, true);
                     } else {
                         List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(10));
                         for (LivingEntity entity : nearbyEntities) {
-                            applyPositiveEffects(entity, slime);
+                            applyPositiveEffects(entity, slime, secondarySlime);
                         }
-                        List<String> commands = slime.get().negativeCommands();
-                        if (!commands.isEmpty()) runCommands(commands);
+                       runCommands(slime, secondarySlime, false);
                     }
                 }
             }
@@ -185,17 +190,29 @@ public class SplendidSlime extends SlimeEntityBase {
         return false;
     }
 
-    public void applyNegativeEffects(LivingEntity entity, DynamicHolder<SlimeBreed> slime) {
+    public void applyNegativeEffects(LivingEntity entity, DynamicHolder<SlimeBreed> slime, DynamicHolder<SlimeBreed> secondarySlime) {
         if (!(hasSameBreed(entity))) {
             List<MobEffectInstance> effects = slime.get().negativeEmitEffects();
+            if (secondarySlime.isBound()) {
+                List<MobEffectInstance> secondarySlimeEffects = secondarySlime.get().negativeEmitEffects();
+                if (!secondarySlimeEffects.isEmpty()) {
+                    effects.addAll(secondarySlimeEffects);
+                }
+            }
             if (!effects.isEmpty()) {
                 applyEffects(entity, effects);
             }
         }
     }
 
-    public void applyPositiveEffects(LivingEntity entity, DynamicHolder<SlimeBreed> slime) {
+    public void applyPositiveEffects(LivingEntity entity, DynamicHolder<SlimeBreed> slime, DynamicHolder<SlimeBreed> secondarySlime) {
         List<MobEffectInstance> effects = slime.get().positiveEmitEffects();
+        if (secondarySlime.isBound()) {
+            List<MobEffectInstance> secondarySlimeEffects = secondarySlime.get().positiveEmitEffects();
+            if (!secondarySlimeEffects.isEmpty()) {
+                effects.addAll(secondarySlimeEffects);
+            }
+        }
         if (!effects.isEmpty()) {
             applyEffects(entity, effects);
         }
@@ -213,12 +230,31 @@ public class SplendidSlime extends SlimeEntityBase {
         return new CommandSourceStack(CommandSource.NULL, Vec3.atCenterOf(pPos), Vec2.ZERO, (ServerLevel) pLevel, 2, s, component, pLevel.getServer(), pPlayer);
     }
 
-    public void runCommands(List<String> commands) {
-        CommandSourceStack source = createCommandSourceStack((Player) null, this.level(), this.getOnPos(), this.getDisplayName());
-        source.withEntity(this);
-        source.withSuppressedOutput();
-        for (String command : commands) {
-            SplendidSlimes.LOGGER.info(this.getServer().getCommands().performPrefixedCommand(source, command.replace("\"", "")));
+    public void runCommands(DynamicHolder<SlimeBreed> slime, DynamicHolder<SlimeBreed> secondarySlime, boolean positive) {
+        if (!slime.isBound()) return;
+        List<String> commands;
+        List<String> secondarySlimeCommands = List.of();
+        if (positive) {
+            commands = slime.get().positiveCommands();
+            if (secondarySlime.isBound()) {
+                secondarySlimeCommands = secondarySlime.get().positiveCommands();
+            }
+        } else {
+            commands = slime.get().negativeCommands();
+            if (secondarySlime.isBound()) {
+                secondarySlimeCommands = secondarySlime.get().negativeCommands();
+            }
+        }
+        if (!secondarySlimeCommands.isEmpty()) {
+            commands.addAll(secondarySlimeCommands);
+        }
+        if (!commands.isEmpty()) {
+            CommandSourceStack source = createCommandSourceStack((Player) null, this.level(), this.getOnPos(), this.getDisplayName());
+            source.withEntity(this);
+            source.withSuppressedOutput();
+            for (String command : commands) {
+                this.getServer().getCommands().performPrefixedCommand(source, command.replace("\"", ""));
+            }
         }
     }
 
@@ -287,7 +323,8 @@ public class SplendidSlime extends SlimeEntityBase {
             if (pEntity.getType() == mobType && this.isDealsDamage()) {
                 this.dealDamage((LivingEntity) pEntity);
                 DynamicHolder<SlimeBreed> slime = getSlime();
-                applyNegativeEffects((LivingEntity) pEntity, slime);
+                DynamicHolder<SlimeBreed> secondarySlime = getSecondarySlime();
+                applyNegativeEffects((LivingEntity) pEntity, slime, secondarySlime);
                 if (((LivingEntity) pEntity).getHealth() <= 0 && ((LivingEntity) pEntity).getKillCredit() == this) {
                     handleFeed(getFavoriteEntity((EntityType<? extends LivingEntity>) pEntity.getType()));
                 }
@@ -299,7 +336,8 @@ public class SplendidSlime extends SlimeEntityBase {
         super.playerTouch(pEntity);
         if (this.isDealsDamage()) {
             DynamicHolder<SlimeBreed> slime = getSlime();
-            applyNegativeEffects(pEntity, slime);
+            DynamicHolder<SlimeBreed> secondarySlime = getSecondarySlime();
+            applyNegativeEffects(pEntity, slime, secondarySlime);
         }
     }
 
@@ -360,14 +398,14 @@ public class SplendidSlime extends SlimeEntityBase {
     }
 
     @Override
-    public void remove(Entity.RemovalReason pReason) {
+    public void remove(RemovalReason pReason) {
         int size = this.getSize();
         if (!this.level().isClientSide && this.isDeadOrDying()) {
             if (!this.getTarred()) {
                 if (size > 1) {
                     Component component = this.getCustomName();
                     boolean flag = this.isNoAi();
-                    SlimeEntityBase slime = (SlimeEntityBase) this.getType().create(this.level());
+                    SplendidSlime slime = (SplendidSlime) this.getType().create(this.level());
                     if (slime != null) {
                         if (this.isPersistenceRequired()) {
                             slime.setPersistenceRequired();
@@ -379,6 +417,8 @@ public class SplendidSlime extends SlimeEntityBase {
                         slime.setNoAi(flag);
                         slime.setInvulnerable(this.isInvulnerable());
                         slime.setSize(size - 1, true);
+                        slime.setHappiness(this.getHappiness() - 100);
+                        slime.setEatingCooldown(this.getEatingCooldown());
                         slime.moveTo(this.getX(), this.getY() + (double) 0.5F, this.getZ(), this.random.nextFloat() * 360.0F, 0.0F);
                         this.level().addFreshEntity(slime);
                     }
@@ -450,7 +490,7 @@ public class SplendidSlime extends SlimeEntityBase {
             if (this.targetItem != null) {
                 this.slime.lookAt(targetItem, 10.0F, 10.0F);
                 MoveControl movecontrol = this.slime.getMoveControl();
-                if (movecontrol instanceof SplendidSlime.SlimeMoveControl slime$slimemovecontrol) {
+                if (movecontrol instanceof SlimeMoveControl slime$slimemovecontrol) {
                     slime$slimemovecontrol.setDirection(this.slime.getYRot(), true);
                 }
             }
@@ -545,7 +585,7 @@ public class SplendidSlime extends SlimeEntityBase {
 
         public SlimeAttackGoal(SplendidSlime pSlime) {
             this.slime = pSlime;
-            this.setFlags(EnumSet.of(Goal.Flag.LOOK));
+            this.setFlags(EnumSet.of(Flag.LOOK));
         }
 
         public boolean canUse() {
@@ -553,7 +593,7 @@ public class SplendidSlime extends SlimeEntityBase {
             if (livingentity == null) {
                 return false;
             } else {
-                return !this.slime.canAttack(livingentity) ? false : this.slime.getMoveControl() instanceof SplendidSlime.SlimeMoveControl;
+                return !this.slime.canAttack(livingentity) ? false : this.slime.getMoveControl() instanceof SlimeMoveControl;
             }
         }
 
@@ -584,7 +624,7 @@ public class SplendidSlime extends SlimeEntityBase {
             }
 
             MoveControl movecontrol = this.slime.getMoveControl();
-            if (movecontrol instanceof SplendidSlime.SlimeMoveControl slime$slimemovecontrol) {
+            if (movecontrol instanceof SlimeMoveControl slime$slimemovecontrol) {
                 slime$slimemovecontrol.setDirection(this.slime.getYRot(), true);
             }
 
@@ -596,12 +636,12 @@ public class SplendidSlime extends SlimeEntityBase {
 
         public SlimeFloatGoal(SplendidSlime pSlime) {
             this.slime = pSlime;
-            this.setFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.MOVE));
+            this.setFlags(EnumSet.of(Flag.JUMP, Flag.MOVE));
             pSlime.getNavigation().setCanFloat(true);
         }
 
         public boolean canUse() {
-            return (this.slime.isInWater() || this.slime.isInLava()) && this.slime.getMoveControl() instanceof SplendidSlime.SlimeMoveControl;
+            return (this.slime.isInWater() || this.slime.isInLava()) && this.slime.getMoveControl() instanceof SlimeMoveControl;
         }
 
         public boolean requiresUpdateEveryTick() {
@@ -614,7 +654,7 @@ public class SplendidSlime extends SlimeEntityBase {
             }
 
             MoveControl movecontrol = this.slime.getMoveControl();
-            if (movecontrol instanceof SplendidSlime.SlimeMoveControl slime$slimemovecontrol) {
+            if (movecontrol instanceof SlimeMoveControl slime$slimemovecontrol) {
                 slime$slimemovecontrol.setWantedMovement(1.2D);
             }
 
@@ -626,7 +666,7 @@ public class SplendidSlime extends SlimeEntityBase {
 
         public SlimeKeepOnJumpingGoal(SplendidSlime pSlime) {
             this.slime = pSlime;
-            this.setFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.MOVE));
+            this.setFlags(EnumSet.of(Flag.JUMP, Flag.MOVE));
         }
 
         public boolean canUse() {
@@ -635,7 +675,7 @@ public class SplendidSlime extends SlimeEntityBase {
 
         public void tick() {
             MoveControl movecontrol = this.slime.getMoveControl();
-            if (movecontrol instanceof SplendidSlime.SlimeMoveControl slime$slimemovecontrol) {
+            if (movecontrol instanceof SlimeMoveControl slime$slimemovecontrol) {
                 slime$slimemovecontrol.setWantedMovement(1.0D);
             }
 
@@ -661,7 +701,7 @@ public class SplendidSlime extends SlimeEntityBase {
 
         public void setWantedMovement(double pSpeed) {
             this.speedModifier = pSpeed;
-            this.operation = MoveControl.Operation.MOVE_TO;
+            this.operation = Operation.MOVE_TO;
         }
 
         public void tick() {
@@ -704,11 +744,11 @@ public class SplendidSlime extends SlimeEntityBase {
 
         public SlimeRandomDirectionGoal(SplendidSlime pSlime) {
             this.slime = pSlime;
-            this.setFlags(EnumSet.of(Goal.Flag.LOOK));
+            this.setFlags(EnumSet.of(Flag.LOOK));
         }
 
         public boolean canUse() {
-            return this.slime.getItemTarget() == null && this.slime.getTarget() == null && (this.slime.onGround() || this.slime.isInWater() || this.slime.isInLava() || this.slime.hasEffect(MobEffects.LEVITATION)) && this.slime.getMoveControl() instanceof SplendidSlime.SlimeMoveControl;
+            return this.slime.getItemTarget() == null && this.slime.getTarget() == null && (this.slime.onGround() || this.slime.isInWater() || this.slime.isInLava() || this.slime.hasEffect(MobEffects.LEVITATION)) && this.slime.getMoveControl() instanceof SlimeMoveControl;
         }
 
         public void tick() {
@@ -718,7 +758,7 @@ public class SplendidSlime extends SlimeEntityBase {
             }
 
             MoveControl movecontrol = this.slime.getMoveControl();
-            if (movecontrol instanceof SplendidSlime.SlimeMoveControl slime$slimemovecontrol) {
+            if (movecontrol instanceof SlimeMoveControl slime$slimemovecontrol) {
                 slime$slimemovecontrol.setDirection(this.chosenDegrees, false);
             }
 

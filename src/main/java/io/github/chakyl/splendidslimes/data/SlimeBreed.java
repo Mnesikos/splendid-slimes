@@ -13,6 +13,7 @@ import com.mojang.serialization.JsonOps;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
 import dev.shadowsoffire.placebo.json.ItemAdapter;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
+import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -76,7 +77,6 @@ public record SlimeBreed(String breed, MutableComponent name,
     public SlimeBreed validate(ResourceLocation key) {
         Preconditions.checkNotNull(this.breed, "Invalid slime breed id!");
         Preconditions.checkNotNull(this.name, "Invalid slime name!");
-        Preconditions.checkNotNull(this.hat, "Invalid slime hat!");
         Preconditions.checkNotNull(this.diet, "Invalid slime diet!");
         Preconditions.checkNotNull(this.name.getStyle().getColor(), "Invalid entity name color!");
         return this;
@@ -176,7 +176,11 @@ public record SlimeBreed(String breed, MutableComponent name,
 
             String breed = GsonHelper.getAsString(obj, "breed");
             MutableComponent name = Component.translatable(GsonHelper.getAsString(obj, "name"));
-            ItemStack hat = ItemAdapter.ITEM_READER.fromJson(obj.get("hat"), ItemStack.class);
+
+            ItemStack hat = ModElements.Items.HAT.get().getDefaultInstance();
+            if (obj.has("hat")) {
+                hat = ItemAdapter.ITEM_READER.fromJson(obj.get("hat"), ItemStack.class);
+            }
             float hatScale = 1F;
             if (obj.has("hat_scale")) {
                 hatScale = GsonHelper.getAsFloat(obj, "hat_scale");

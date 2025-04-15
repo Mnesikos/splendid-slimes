@@ -2,12 +2,6 @@
   "breed": "rotting",
   "name": "slime.splendid_slimes.rotting",
   "color": "#6f4d1b",
-  "hat": {
-    "item": "minecraft:zombie_head"
-  },
-  "hat_scale": 1.5,
-  "hat_y_offset": -0.55,
-  "hat_z_offset": 0.05,
   "diet": "diet.splendid_slimes.rotting",
   "foods": [
     { "item": "minecraft:rabbit" }, 

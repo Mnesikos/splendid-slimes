@@ -2,9 +2,6 @@
   "breed": "webby",
   "name": "slime.splendid_slimes.webby",
   "color": "#bebfd2",
-  "hat": {
-    "item": "splendid_slimes:hat/webby_hat"
-  },
   "diet": "diet.splendid_slimes.webby",
   "foods": [
     { "item": "minecraft:golden_carrot" },

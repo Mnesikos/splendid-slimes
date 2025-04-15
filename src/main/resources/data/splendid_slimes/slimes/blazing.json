@@ -2,9 +2,6 @@
   "breed": "blazing",
   "name": "slime.splendid_slimes.blazing",
   "color": "#c96c03",
-  "hat": {
-    "item": "splendid_slimes:hat/blazing_hat"
-  },
   "diet": "diet.splendid_slimes.blazing",
   "foods": [
     { "item": "minecraft:cooked_rabbit" }, 

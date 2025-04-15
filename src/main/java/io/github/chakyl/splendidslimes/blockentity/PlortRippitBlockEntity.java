@@ -167,8 +167,10 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
             return super.insertItem(slot, stack, simulate);
         }
-
-
+        @Override
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            return ItemStack.EMPTY;
+        }
         @Override
         protected void onContentsChanged(int slot) {
             PlortRippitBlockEntity.this.setChanged();

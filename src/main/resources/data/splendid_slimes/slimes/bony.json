@@ -2,12 +2,6 @@
   "breed": "bony",
   "name": "slime.splendid_slimes.bony",
   "color": "#e8e5d2",
-  "hat": {
-    "item": "minecraft:bone"
-  },
-  "hat_scale": 1.8,
-  "hat_y_offset": -0.7,
-  "hat_x_offset": 0.1,
   "diet": "diet.splendid_slimes.bony",
   "foods": [
     { "item": "minecraft:rabbit" }, 

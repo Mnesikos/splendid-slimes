@@ -2,9 +2,6 @@
   "breed": "orby",
   "name": "slime.splendid_slimes.orby",
   "color": "#b8e45a",
-  "hat": {
-    "item": "splendid_slimes:hat/orby_hat"
-  },
   "hat_y_offset": -0.5,
   "diet": "diet.splendid_slimes.orby",
   "entities": [

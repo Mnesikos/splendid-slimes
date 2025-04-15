@@ -2,9 +2,6 @@
   "breed": "weeping",
   "name": "slime.splendid_slimes.weeping",
   "color": "#cff1f1",
-  "hat": {
-    "item": "splendid_slimes:hat/weeping_hat"
-  },
   "diet": "diet.splendid_slimes.weeping",
   "foods": [
     { "item": "minecraft:sweet_berries" },  

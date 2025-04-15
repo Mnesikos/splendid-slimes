@@ -2,9 +2,6 @@
   "breed": "puddle",
   "name": "slime.splendid_slimes.puddle",
   "color": "#68c9ff",
-  "hat": {
-    "item": "splendid_slimes:hat/puddle_hat"
-  },
   "diet": "diet.splendid_slimes.puddle",
   "foods": [
     {

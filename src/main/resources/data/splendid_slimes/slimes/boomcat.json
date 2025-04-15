@@ -1,10 +1,7 @@
 {
-  "breed": "blasting",
+  "breed": "boomcat",
   "name": "slime.splendid_slimes.boomcat",
   "color": "#8a8a8a",
-  "hat": {
-    "item": "splendid_slimes:hat/boomcat_hat"
-  },
   "diet": "diet.splendid_slimes.boomcat",
   "foods": [
     { "item": "minecraft:rabbit" }, 

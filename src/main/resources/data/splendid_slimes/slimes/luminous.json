@@ -6,7 +6,6 @@
     "item": "minecraft:glowstone"
   },
   "diet": "diet.splendid_slimes.luminous",
-  
   "foods": [
     { "item": "minecraft:quartz_block" },
     { "item": "minecraft:nether_quartz_ore" },

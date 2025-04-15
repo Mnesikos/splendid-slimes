@@ -2,9 +2,6 @@
   "breed": "gold",
   "name": "slime.splendid_slimes.gold",
   "color": "#e9b115",
-  "hat": {
-    "item": "splendid_slimes:hat/gold_hat"
-  },
   "hat_y_offset": -1,
   "diet": "diet.splendid_slimes.gold",
   "foods": [

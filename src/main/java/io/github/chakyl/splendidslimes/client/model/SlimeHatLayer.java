@@ -2,13 +2,18 @@ package io.github.chakyl.splendidslimes.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
+import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
+import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
 import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
+import io.github.chakyl.splendidslimes.item.HatItem;
+import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -41,6 +46,9 @@ public class SlimeHatLayer<T extends Entity> extends RenderLayer<T, SlimeEntityM
             if (!slime.isBound()) return;
             SlimeBreed breed = slime.get();
             ItemStack stack = breed.hat();
+            if (stack.getItem() == ModElements.Items.HAT.get()) {
+                stack.getOrCreateTagElement("slime").putString("id", SplendidSlimes.MODID + ":" + breed.breed());
+            }
             if (stack.isEmpty()) {
                 return;
             }

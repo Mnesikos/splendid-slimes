@@ -2,9 +2,6 @@
   "breed": "slimy",
   "name": "slime.splendid_slimes.slimy",
   "color": "#ff7d9d",
-  "hat": {
-    "item": "splendid_slimes:hat/slimy_hat"
-  },
   "hat_y_offset": -0.55,
   "diet": "diet.splendid_slimes.slimy",
   "foods": [

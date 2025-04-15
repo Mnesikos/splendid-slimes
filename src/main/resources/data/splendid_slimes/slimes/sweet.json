@@ -2,9 +2,6 @@
   "breed": "sweet",
   "name": "slime.splendid_slimes.sweet",
   "color": "#eaeaea",
-  "hat": {
-    "item": "splendid_slimes:hat/sweet_hat"
-  },
   "hat_scale": 1.0,
   "hat_y_offset": -0.5,
   "diet": "diet.splendid_slimes.sweet",
