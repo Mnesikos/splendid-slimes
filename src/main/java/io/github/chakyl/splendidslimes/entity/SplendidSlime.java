@@ -323,7 +323,7 @@ public class SplendidSlime extends SlimeEntityBase {
                 this.dealDamage((LivingEntity) pEntity);
                 DynamicHolder<SlimeBreed> slime = getSlime();
                 DynamicHolder<SlimeBreed> secondarySlime = getSecondarySlime();
-                applyNegativeEffects((LivingEntity) pEntity, slime, secondarySlime);
+                if (slime.isBound()) applyNegativeEffects((LivingEntity) pEntity, slime, secondarySlime);
                 if (((LivingEntity) pEntity).getHealth() <= 0 && ((LivingEntity) pEntity).getKillCredit() == this) {
                     handleFeed(getFavoriteEntity((EntityType<? extends LivingEntity>) pEntity.getType()));
                 }
