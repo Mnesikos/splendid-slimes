@@ -1,10 +1,8 @@
 {
   "type": "splendid_slimes:plort_pressing",
-  "ingredients": [
-    {
-      "item": "minecraft:creeper_head"
-    }
-  ],
+  "ingredient": {
+    "item": "minecraft:creeper_head"
+  },
   "output": {
     "item": "splendid_slimes:slime_heart",
     "nbt": {

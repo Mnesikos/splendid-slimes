@@ -1,10 +1,8 @@
 {
   "type": "splendid_slimes:plort_pressing",
-  "ingredients": [
-    {
-      "item": "minecraft:echo_shard"
-    }
-  ],
+  "ingredient": {
+    "item": "minecraft:echo_shard"
+  },
   "output": {
     "item": "splendid_slimes:slime_heart",
     "nbt": {

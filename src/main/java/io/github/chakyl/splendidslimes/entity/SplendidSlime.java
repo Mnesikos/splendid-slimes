@@ -1,7 +1,6 @@
 package io.github.chakyl.splendidslimes.entity;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.commands.CommandSource;
@@ -105,7 +104,7 @@ public class SplendidSlime extends SlimeEntityBase {
                         for (LivingEntity entity : nearbyEntities) {
                             applyPositiveEffects(entity, slime, secondarySlime);
                         }
-                       runCommands(slime, secondarySlime, false);
+                        runCommands(slime, secondarySlime, false);
                     }
                 }
             }
@@ -337,7 +336,7 @@ public class SplendidSlime extends SlimeEntityBase {
         if (this.isDealsDamage()) {
             DynamicHolder<SlimeBreed> slime = getSlime();
             DynamicHolder<SlimeBreed> secondarySlime = getSecondarySlime();
-            applyNegativeEffects(pEntity, slime, secondarySlime);
+            if (slime.isBound()) applyNegativeEffects(pEntity, slime, secondarySlime);
         }
     }
 

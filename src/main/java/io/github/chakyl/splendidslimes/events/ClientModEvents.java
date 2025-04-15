@@ -47,7 +47,10 @@ public class ClientModEvents {
         });
 
     }
-
+    @SubscribeEvent
+    public static void mrl(ModelEvent.RegisterAdditional e) {
+        e.register(new ResourceLocation(SplendidSlimes.MODID, "item/data_model_base"));
+    }
     @SubscribeEvent
     public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(SlimeEntityRenderer.SPLENDID_SLIME_BASE, SlimeEntityModel::createInnerBodyLayer);

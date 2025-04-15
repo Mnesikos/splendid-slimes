@@ -1,10 +1,8 @@
 {
   "type": "splendid_slimes:plort_pressing",
-  "ingredients": [
-    {
-      "item": "minecraft:ender_eye"
-    }
-  ],
+  "ingredient": {
+    "item": "minecraft:ender_eye"
+  },
   "output": {
     "item": "minecraft:slime_block"
   },

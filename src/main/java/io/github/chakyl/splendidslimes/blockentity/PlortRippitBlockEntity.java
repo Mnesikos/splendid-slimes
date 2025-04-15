@@ -55,7 +55,8 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
             } else {
                 this.progress++;
             }
-        };
+        }
+        ;
     }
 
     private boolean hasRecipe() {
@@ -68,7 +69,9 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
 
     private Optional<PlortRippingRecipe> getCurrentRecipe() {
         SimpleContainer newInventory = new SimpleContainer(this.inventory.getSlots());
-        newInventory.setItem(0, this.inventory.getStackInSlot(0));
+        ItemStack newItemStack = this.inventory.getStackInSlot(0).copy();
+        newItemStack.setCount(1);
+        newInventory.setItem(0, newItemStack);
         return this.level.getRecipeManager().getRecipeFor(PlortRippingRecipe.Type.INSTANCE, newInventory, level);
     }
 
@@ -96,8 +99,10 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
         }
         Block.popResourceFromFace(level, pos, state.getValue(PlortRippitBlock.FACING).getOpposite(), outputItem.copy());
         level.playSound(null, pos, SoundEvents.FROG_AMBIENT, SoundSource.BLOCKS, 0.7F, 0.95F + level.getRandom().nextFloat() * 0.1F);
-        BlockState newState = state.setValue(WORKING, false);
-        level.setBlockAndUpdate(pos, newState);
+        if (this.inventory.getStackInSlot(0).getCount() == 1) {
+            BlockState newState = state.setValue(WORKING, false);
+            level.setBlockAndUpdate(pos, newState);
+        }
         this.slimeType = "";
         this.inventory.getStackInSlot(0).shrink(1);
     }
@@ -121,7 +126,6 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
             this.inventory.setStackInSlot(0, modifiedStack);
             return true;
         }
-        ;
         return false;
     }
 
@@ -159,7 +163,7 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
                 CompoundTag plortTag = stack.getTagElement("plort");
                 return plortTag != null && plortTag.contains("id");
             }
-            ;
+
             return false;
         }
 
@@ -167,10 +171,12 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
             return super.insertItem(slot, stack, simulate);
         }
+
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
             return ItemStack.EMPTY;
         }
+
         @Override
         protected void onContentsChanged(int slot) {
             PlortRippitBlockEntity.this.setChanged();

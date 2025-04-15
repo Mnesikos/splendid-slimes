@@ -1,10 +1,8 @@
 {
   "type": "splendid_slimes:plort_pressing",
-  "ingredients": [
-    {
-      "item": "minecraft:cobweb"
-    }
-  ],
+  "ingredient": {
+    "item": "minecraft:cobweb"
+  },
   "output": {
     "item": "splendid_slimes:slime_heart",
     "nbt": {

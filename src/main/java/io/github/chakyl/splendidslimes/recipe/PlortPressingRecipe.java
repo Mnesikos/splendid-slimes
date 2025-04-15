@@ -1,10 +1,8 @@
 package io.github.chakyl.splendidslimes.recipe;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.shadowsoffire.placebo.json.ItemAdapter;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
-import net.minecraft.core.NonNullList;
+import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -17,14 +15,14 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 public class PlortPressingRecipe implements Recipe<SimpleContainer> {
-    private final NonNullList<Ingredient> inputItems;
+    private final Ingredient ingredient;
     private final ItemStack input;
     private final ItemStack output;
     private final ItemStack result;
     private final ResourceLocation id;
 
-    public PlortPressingRecipe(NonNullList<Ingredient> inputItems, ItemStack input, ItemStack output, ItemStack result, ResourceLocation id) {
-        this.inputItems = inputItems;
+    public PlortPressingRecipe(Ingredient ingredient, ItemStack input, ItemStack output, ItemStack result, ResourceLocation id) {
+        this.ingredient = ingredient;
         this.input = input;
         this.output = output;
         this.result = result;
@@ -71,7 +69,7 @@ public class PlortPressingRecipe implements Recipe<SimpleContainer> {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return Serializer.INSTANCE;
+        return ModElements.Recipes.PLORT_PRESSING_SERIALIZER.get();
     }
 
     @Override
@@ -91,43 +89,29 @@ public class PlortPressingRecipe implements Recipe<SimpleContainer> {
         @Override
         public PlortPressingRecipe fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {
             ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "result"));
-
-            JsonArray ingredients = GsonHelper.getAsJsonArray(pSerializedRecipe, "ingredients");
-            NonNullList<Ingredient> inputs = NonNullList.withSize(1, Ingredient.EMPTY);
-
-            for (int i = 0; i < inputs.size(); i++) {
-                inputs.set(i, Ingredient.fromJson(ingredients.get(i)));
-            }
-            ItemStack inputItem = ItemAdapter.ITEM_READER.fromJson(ingredients.get(0), ItemStack.class);
             ItemStack outputItem = null;
             if (pSerializedRecipe.has("output")) {
                 outputItem = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "output"));
             }
 
-            return new PlortPressingRecipe(inputs, inputItem, outputItem, result, pRecipeId);
+            ItemStack inputItem = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "ingredient"));
+            Ingredient ingredientItem = Ingredient.fromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "ingredient"));
+
+            return new PlortPressingRecipe(ingredientItem, inputItem, outputItem, result, pRecipeId);
         }
 
         @Override
         public @Nullable PlortPressingRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
-            NonNullList<Ingredient> inputs = NonNullList.withSize(pBuffer.readInt(), Ingredient.EMPTY);
-
-            for (int i = 0; i < inputs.size(); i++) {
-                inputs.set(i, Ingredient.fromNetwork(pBuffer));
-            }
-
+            Ingredient recipeIngredient =  Ingredient.fromNetwork(pBuffer);
             ItemStack input = pBuffer.readItem();
             ItemStack output = pBuffer.readItem();
             ItemStack result = pBuffer.readItem();
-            return new PlortPressingRecipe(inputs, input, output, result, pRecipeId);
+            return new PlortPressingRecipe(recipeIngredient, input, output, result, pRecipeId);
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf pBuffer, PlortPressingRecipe pRecipe) {
-            pBuffer.writeInt(pRecipe.inputItems.size());
-
-            for (Ingredient ingredient : pRecipe.getIngredients()) {
-                ingredient.toNetwork(pBuffer);
-            }
+            pRecipe.ingredient.toNetwork(pBuffer);
 
             pBuffer.writeItemStack(pRecipe.getInputItem(null), false);
             pBuffer.writeItemStack(pRecipe.getOutputItem(null), false);

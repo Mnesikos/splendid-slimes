@@ -64,8 +64,7 @@ public class PlortPressRecipeBuilder {
             inputIngredient.addProperty("item", SplendidSlimes.MODID + ":plort");
             inputIngredient.add("nbt", inputNbt);
             inputIngredient.addProperty("count", this.inputCount);
-            arrayIngredients.add(inputIngredient);
-            json.add("ingredients", arrayIngredients);
+            json.add("ingredient", inputIngredient);
 
             // Result
             JsonObject result = new JsonObject();

@@ -1,16 +1,14 @@
 {
   "type": "splendid_slimes:plort_pressing",
-  "ingredients": [
-    {
-      "count": 32,
-      "item": "splendid_slimes:plort",
-      "nbt": {
-        "plort": {
-          "id": "splendid_slimes:rotting"
-        }
+  "ingredient": {
+    "count": 32,
+    "item": "splendid_slimes:plort",
+    "nbt": {
+      "plort": {
+        "id": "splendid_slimes:rotting"
       }
     }
-  ],
+  },
   "result": {
     "item": "splendid_slimes:slime_heart",
     "nbt": {

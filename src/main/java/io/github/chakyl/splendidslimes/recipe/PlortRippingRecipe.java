@@ -3,6 +3,7 @@ package io.github.chakyl.splendidslimes.recipe;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
+import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
@@ -75,7 +76,7 @@ public class PlortRippingRecipe implements Recipe<SimpleContainer> {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return Serializer.INSTANCE;
+        return ModElements.Recipes.PLORT_RIPPING_SERIALIZER.get();
     }
 
     @Override
@@ -121,14 +122,15 @@ public class PlortRippingRecipe implements Recipe<SimpleContainer> {
         public @Nullable PlortRippingRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
             Ingredient recipeIngredient =  Ingredient.fromNetwork(pBuffer);
             ItemStack input = pBuffer.readItem();
-            NonNullList<ItemStack> results = NonNullList.withSize(pBuffer.readInt(), Items.AIR.getDefaultInstance());
+            NonNullList<ItemStack> results = NonNullList.withSize(pBuffer.readVarInt(), Items.AIR.getDefaultInstance());
+
             List<Integer> weights = new ArrayList<>();
 
             for (int i = 0; i < results.size(); i++) {
                 results.set(i, pBuffer.readItem());
             }
             for (int i = 0; i < results.size(); i++) {
-                weights.set(i, pBuffer.readInt());
+                weights.add(pBuffer.readVarInt());
             }
 
             return new PlortRippingRecipe(recipeIngredient, input, results, weights, pRecipeId);
@@ -136,15 +138,15 @@ public class PlortRippingRecipe implements Recipe<SimpleContainer> {
 
         @Override
         public void toNetwork(FriendlyByteBuf pBuffer, PlortRippingRecipe pRecipe) {
-            pRecipe.getIngredients().get(0).toNetwork(pBuffer);
+            pRecipe.ingredient.toNetwork(pBuffer);
             pBuffer.writeItemStack(pRecipe.getInputItem(null), false);
-            pBuffer.writeInt(pRecipe.getResults(null).size());
+            pBuffer.writeVarInt(pRecipe.getResults(null).size());
 
             for (ItemStack result : pRecipe.getResults(null)) {
                 pBuffer.writeItemStack(result, false);
             }
             for (Integer weight : pRecipe.getWeights(null)) {
-                pBuffer.writeInt(weight);
+                pBuffer.writeVarInt(weight);
             }
         }
     }

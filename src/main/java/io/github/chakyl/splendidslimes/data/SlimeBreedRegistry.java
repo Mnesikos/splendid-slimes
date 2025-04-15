@@ -44,7 +44,7 @@ public class SlimeBreedRegistry extends DynamicRegistry<SlimeBreed> {
     protected void validateItem(ResourceLocation key, SlimeBreed slimeBreed) {
         slimeBreed.validate(key);
         if (this.slimesByBreed.containsKey(slimeBreed.breed())) {
-            String msg = "Attempted to register two models (%s and %s) for Entity Type %s!";
+            String msg = "Attempted to register two slimes (%s and %s) for Entity Type %s!";
             throw new UnsupportedOperationException(String.format(msg, key, this.getKey(this.slimesByBreed.get(slimeBreed.breed())), slimeBreed.breed()));
         }
         this.slimesByBreed.put(slimeBreed.breed(), slimeBreed);

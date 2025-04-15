@@ -1,10 +1,8 @@
 {
   "type": "splendid_slimes:plort_pressing",
-  "ingredients": [
-    {
-      "item": "minecraft:cake"
-    }
-  ],
+  "ingredient": {
+    "item": "minecraft:cake"
+  },
   "output": {
     "item": "splendid_slimes:slime_heart",
     "nbt": {

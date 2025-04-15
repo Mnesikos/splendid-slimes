@@ -1,15 +1,13 @@
 {
   "type": "splendid_slimes:plort_pressing",
-  "ingredients": [
-    {
-      "item": "splendid_slimes:slime_heart",
-      "nbt": {
-        "slime": {
-          "id": "splendid_slimes:ender"
-        }
+  "ingredient": {
+    "item": "splendid_slimes:slime_heart",
+    "nbt": {
+      "slime": {
+        "id": "splendid_slimes:ender"
       }
     }
-  ],
+  },
   "output": {
     "item": "splendid_slimes:slime_heart",
     "nbt": {
