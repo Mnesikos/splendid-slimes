@@ -17,6 +17,8 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -54,6 +56,8 @@ public class SplendidSlime extends SlimeEntityBase {
     public static final int SLIME_EAT_COOLDOWN = 6000;
     public static final int SLIME_HUNGRY_THRESHOLD = 1200;
     public static final int MAX_HAPPINESS = 1000;
+    public static final int UNHAPPY_THRESHOLD = 400;
+    public static final int HAPPY_THRESHOLD = 600;
     public ItemEntity itemTarget = null;
     boolean tarred;
     private final EntityType<SlimeEntityBase> entityType;
@@ -92,26 +96,62 @@ public class SplendidSlime extends SlimeEntityBase {
                 DynamicHolder<SlimeBreed> slime = getSlime();
                 DynamicHolder<SlimeBreed> secondarySlime = getSecondarySlime();
                 if (slime.isBound()) {
-                    Double chance = 1 - (((getHappiness() + 1.0) / MAX_HAPPINESS));
-                    if (this.random.nextFloat() <= chance) {
-                        List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(10));
-                        for (LivingEntity entity : nearbyEntities) {
-                            applyNegativeEffects(entity, slime, secondarySlime);
+                    int happiness = getHappiness();
+                    if (happiness <= UNHAPPY_THRESHOLD) {
+                        Double chance = 1 - (((happiness + 1.0) / UNHAPPY_THRESHOLD));
+                        if (this.random.nextFloat() <= chance) {
+                            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(10));
+                            for (LivingEntity entity : nearbyEntities) {
+                                applyNegativeEffects(entity, slime, secondarySlime);
+                            }
+                            runCommands(slime, secondarySlime, true);
                         }
-                        runCommands(slime, secondarySlime, true);
-                    } else {
-                        List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(10));
-                        for (LivingEntity entity : nearbyEntities) {
-                            applyPositiveEffects(entity, slime, secondarySlime);
+                    } else if (happiness >= HAPPY_THRESHOLD) {
+                        Double chance = 1 - (((happiness + 1.0) / HAPPY_THRESHOLD));
+                        if (this.random.nextFloat() <= chance) {
+                            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(10));
+                            for (LivingEntity entity : nearbyEntities) {
+                                applyPositiveEffects(entity, slime, secondarySlime);
+                            }
+                            runCommands(slime, secondarySlime, false);
                         }
-                        runCommands(slime, secondarySlime, false);
                     }
+
                 }
             }
             if (this.tickCount % 600 == 0) {
-                setHappiness(getHappiness() - 1);
+                setHappiness(getHappiness() - 5);
             }
         }
+    }
+
+    @Override
+    protected InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
+        if (this.getSlimeSecondaryBreed().isEmpty() && pPlayer.getMainHandItem().isEmpty()) {
+            ItemStack slimeItem = ModElements.Items.SLIME_ITEM.get().getDefaultInstance();
+            pickupSlime(this, slimeItem);
+            pPlayer.getInventory().add(slimeItem);
+            pPlayer.getCooldowns().addCooldown(ModElements.Items.SLIME_ITEM.get(), 20);
+            this.discard();
+        }
+        return super.mobInteract(pPlayer, pHand);
+    }
+
+    public static void pickupSlime(SplendidSlime slime, ItemStack item) {
+        CompoundTag nbt = new CompoundTag();
+        CompoundTag entity = new CompoundTag();
+        CompoundTag id = new CompoundTag();
+        id.putString("id", slime.getSlimeBreed());
+        nbt.put("slime", id);
+        entity.putString("entity", EntityType.getKey(slime.getType()).toString());
+        if (slime.hasCustomName()) {
+            entity.putString("name", slime.getCustomName().getString());
+        } else {
+            entity.putString("name", slime.getName().getString());
+        }
+        slime.saveWithoutId(entity);
+        nbt.put("entity", entity);
+        item.setTag(nbt);
     }
 
     public EntityType<SlimeEntityBase> getEntityType() {
@@ -333,7 +373,7 @@ public class SplendidSlime extends SlimeEntityBase {
 
     public void playerTouch(Player pEntity) {
         super.playerTouch(pEntity);
-        if (this.isDealsDamage()) {
+        if (this.isDealsDamage() && getHappiness() <= UNHAPPY_THRESHOLD) {
             DynamicHolder<SlimeBreed> slime = getSlime();
             DynamicHolder<SlimeBreed> secondarySlime = getSecondarySlime();
             if (slime.isBound()) applyNegativeEffects(pEntity, slime, secondarySlime);

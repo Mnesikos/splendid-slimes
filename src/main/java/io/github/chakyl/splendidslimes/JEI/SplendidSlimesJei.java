@@ -1,7 +1,5 @@
 package io.github.chakyl.splendidslimes.JEI;
 
-import java.util.List;
-
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
@@ -19,6 +17,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeManager;
 
+import java.util.List;
+
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeFromEgg;
 
@@ -31,6 +31,7 @@ public class SplendidSlimesJei implements IModPlugin {
     public void registerItemSubtypes(ISubtypeRegistration reg) {
         reg.registerSubtypeInterpreter(ModElements.Items.PLORT.get(), new ModelSubtypes());
         reg.registerSubtypeInterpreter(ModElements.Items.SLIME_HEART.get(), new ModelSubtypes());
+        reg.registerSubtypeInterpreter(ModElements.Items.SLIME_ITEM.get(), new ModelSubtypes());
         reg.registerSubtypeInterpreter(ModElements.Items.SPLENDID_SLIME_SPAWN_EGG.get(), new ModelSubtypes());
     }
 
@@ -56,12 +57,14 @@ public class SplendidSlimesJei implements IModPlugin {
         reg.addRecipeCatalyst(new ItemStack(ModElements.Blocks.PLORT_RIPPIT.get()), PlortRippingCategory.TYPE);
         reg.addRecipeCatalyst(new ItemStack(ModElements.Blocks.PLORT_PRESS.get()), PlortPressingCategory.TYPE);
     }
+
     @Override
 
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addRecipeClickArea(PlortPressScreen.class, 80, 26, 20, 30,
                 PlortPressingCategory.TYPE);
     }
+
     private static class ModelSubtypes implements IIngredientSubtypeInterpreter<ItemStack> {
 
         @Override

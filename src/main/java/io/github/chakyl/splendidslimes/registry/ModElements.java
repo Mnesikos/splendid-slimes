@@ -17,10 +17,7 @@ import io.github.chakyl.splendidslimes.blockentity.SlimeIncubatorBlockEntity;
 import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
 import io.github.chakyl.splendidslimes.entity.Tarr;
-import io.github.chakyl.splendidslimes.item.HatItem;
-import io.github.chakyl.splendidslimes.item.PlortItem;
-import io.github.chakyl.splendidslimes.item.SlimeHeartItem;
-import io.github.chakyl.splendidslimes.item.SlimeSpawnEggItem;
+import io.github.chakyl.splendidslimes.item.*;
 import io.github.chakyl.splendidslimes.recipe.PlortPressingRecipe;
 import io.github.chakyl.splendidslimes.recipe.PlortRippingRecipe;
 import io.github.chakyl.splendidslimes.screen.PlortPressMenu;
@@ -90,6 +87,7 @@ public class ModElements {
         public static final RegistryObject<PlortItem> PLORT = R.item("plort", () -> new PlortItem(new Item.Properties().stacksTo(64)));
         public static final RegistryObject<HatItem> HAT = R.item("hat", () -> new HatItem(new Item.Properties().stacksTo(64)));
         public static final RegistryObject<SlimeHeartItem> SLIME_HEART = R.item("slime_heart", () -> new SlimeHeartItem(new Item.Properties().stacksTo(64)));
+        public static final RegistryObject<SlimeInventoryItem> SLIME_ITEM = R.item("slime_item", () -> new SlimeInventoryItem(new Item.Properties().stacksTo(1)));
         public static final RegistryObject<SlimeSpawnEggItem> SPLENDID_SLIME_SPAWN_EGG = R.item("spawn_egg_splendid_slime", () -> new SlimeSpawnEggItem(slimeEntity, 0xff7d9d, 0xff7d9d, new Item.Properties()));
         public static final RegistryObject<ForgeSpawnEggItem> TARR_SPAWN_EGG = R.item("spawn_egg_tarr", () -> new ForgeSpawnEggItem(tarrEntity, 0x2c221c, 0x921f78, new Item.Properties()));
         public static final RegistryObject<Item> TARRTAR = R.item("tarrtar", () -> new Item(new Item.Properties().stacksTo(64)));
@@ -108,6 +106,7 @@ public class ModElements {
 
     public static class Menus {
         public static final RegistryObject<MenuType<PlortPressMenu>> PLORT_PRESS_MENU = R.menu("plort_press_menu", () -> MenuUtil.bufType(PlortPressMenu::new));
+
         private static void bootstrap() {
         }
     }
@@ -115,6 +114,7 @@ public class ModElements {
     public static class Recipes {
         public static final RegistryObject<RecipeSerializer<PlortPressingRecipe>> PLORT_PRESSING_SERIALIZER = R.recipeSerializer("plort_pressing", PlortPressingRecipe.Serializer::new);
         public static final RegistryObject<RecipeSerializer<PlortRippingRecipe>> PLORT_RIPPING_SERIALIZER = R.recipeSerializer("plort_ripping", PlortRippingRecipe.Serializer::new);
+
         private static void bootstrap() {
 
         }
