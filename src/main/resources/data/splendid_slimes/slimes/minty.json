@@ -2,17 +2,19 @@
   "breed": "minty",
   "name": "slime.splendid_slimes.minty",
   "color": "#cd75a4",
-  "hat_y_offset": -0.70,
+  "particle": { "item": "minecraft:dragon_egg" },
+  "hat_y_offset": -0.7,
   "diet": "diet.splendid_slimes.minty",
+  "foods": [{ "tag": "splendid_slimes:monster_spawn_eggs" }],
   "entities": [
-      "minecraft:zombie",
-      "minecraft:zombie_villager",
-      "minecraft:skeleton",
-      "minecraft:enderman",
-      "minecraft:husk",
-      "minecraft:stray",
-      "minecraft:drowned",
-      "minecraft:creeper"
+    "minecraft:zombie",
+    "minecraft:zombie_villager",
+    "minecraft:skeleton",
+    "minecraft:enderman",
+    "minecraft:husk",
+    "minecraft:stray",
+    "minecraft:drowned",
+    "minecraft:creeper"
   ],
   "favorite_entity": "minecraft:enderman",
   "positive_emit_effects": [

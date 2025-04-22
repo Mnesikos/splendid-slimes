@@ -2,9 +2,9 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "splendid_slimes:block/hat/shulking/shulk",
-		"2": "splendid_slimes:block/hat/shulking/shulk2",
-		"particle": "splendid_slimes:block/hat/shulking/shulk"
+		"0": "splendid_slimes:item/hat/shulking/shulk",
+		"2": "splendid_slimes:item/hat/shulking/shulk2",
+		"particle": "splendid_slimes:item/hat/shulking/shulk"
 	},
 	"elements": [
 		{

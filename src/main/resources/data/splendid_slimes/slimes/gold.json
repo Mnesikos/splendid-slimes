@@ -2,13 +2,10 @@
   "breed": "gold",
   "name": "slime.splendid_slimes.gold",
   "color": "#e9b115",
+  "particle": { "item": "minecraft:raw_gold_block" },
   "hat_y_offset": -1,
   "diet": "diet.splendid_slimes.gold",
-  "foods": [
-    {
-      "tag": "forge:ingots"
-    }
-  ],
+  "foods": [{ "tag": "forge:ingots" }],
   "favorite_food": {
     "item": "minecraft:copper_ingot"
   }

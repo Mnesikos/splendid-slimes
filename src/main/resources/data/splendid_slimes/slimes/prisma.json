@@ -2,15 +2,10 @@
   "breed": "prisma",
   "name": "slime.splendid_slimes.prisma",
   "color": "#a4d1c2",
+  "particle": { "item": "minecraft:prismarine_shard" },
   "diet": "diet.splendid_slimes.prisma",
-  "foods": [
-    {
-      "tag": "minecraft:fishes"
-    }
-  ],
-  "favorite_food": {
-    "item": "minecraft:tropical_fish"
-  },
+  "foods": [{ "tag": "minecraft:fishes" }],
+  "favorite_food": { "item": "minecraft:tropical_fish" },
   "entities": [
     "minecraft:cod",
     "minecraft:salmon",

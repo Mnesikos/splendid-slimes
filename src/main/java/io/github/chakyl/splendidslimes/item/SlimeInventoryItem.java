@@ -70,26 +70,6 @@ public class SlimeInventoryItem extends Item implements ITabFiller {
         stack.getOrCreateTagElement(SLIME).putString(ID, plort.toString());
     }
 
-    @Override
-    public InteractionResult useOn(UseOnContext pContext) {
-        Level level = pContext.getLevel();
-        if (!level.isClientSide()) {
-            ItemStack item = pContext.getItemInHand();
-            SplendidSlime slime = getSlimeFromItem(item.getTag().getCompound("entity"), level);
-
-            if (slime != null) {
-                item.shrink(1);
-                BlockPos pos = pContext.getClickedPos().relative(pContext.getClickedFace());
-                slime.setPos(pos.getX(), pos.getY(), pos.getZ());
-
-                level.addFreshEntity(slime);
-            }
-
-        } else return InteractionResult.FAIL;
-
-        return InteractionResult.SUCCESS;
-    }
-
     public static SplendidSlime getSlimeFromItem(CompoundTag data, Level level) {
         if (data != null) {
             EntityType<?> slime = EntityType.byString(data.getString("entity")).orElse(null);

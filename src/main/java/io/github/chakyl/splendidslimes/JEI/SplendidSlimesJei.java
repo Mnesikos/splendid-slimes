@@ -3,6 +3,7 @@ package io.github.chakyl.splendidslimes.JEI;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
+import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
 import io.github.chakyl.splendidslimes.recipe.PlortPressingRecipe;
 import io.github.chakyl.splendidslimes.recipe.PlortRippingRecipe;
 import io.github.chakyl.splendidslimes.registry.ModElements;
@@ -17,6 +18,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeManager;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
@@ -39,6 +42,7 @@ public class SplendidSlimesJei implements IModPlugin {
     public void registerCategories(IRecipeCategoryRegistration reg) {
         reg.addRecipeCategories(new PlortRippingCategory(reg.getJeiHelpers().getGuiHelper()));
         reg.addRecipeCategories(new PlortPressingCategory(reg.getJeiHelpers().getGuiHelper()));
+        reg.addRecipeCategories(new SlimeInfoCategory(reg.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
@@ -49,6 +53,12 @@ public class SplendidSlimesJei implements IModPlugin {
         registration.addRecipes(PlortRippingCategory.TYPE, rippingRecipes);
         List<PlortPressingRecipe> pressingRecipes = recipeManager.getAllRecipesFor(PlortPressingRecipe.Type.INSTANCE);
         registration.addRecipes(PlortPressingCategory.TYPE, pressingRecipes);
+        List<PlortRecipe> breedRecipes = new ArrayList<>();
+        for (SlimeBreed breed : SlimeBreedRegistry.INSTANCE.getValues()) {
+            breedRecipes.add(new PlortRecipe(breed));
+        }
+        registration.addRecipes(SlimeInfoCategory.TYPE, breedRecipes);
+
     }
 
 

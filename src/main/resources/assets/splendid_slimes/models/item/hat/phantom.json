@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "splendid_slimes:block/hat/phantom_hat",
-		"particle": "splendid_slimes:block/hat/phantom_hat"
+		"0": "splendid_slimes:item/hat/phantom_hat",
+		"particle": "splendid_slimes:item/hat/phantom_hat"
 	},
 	"elements": [
 		{

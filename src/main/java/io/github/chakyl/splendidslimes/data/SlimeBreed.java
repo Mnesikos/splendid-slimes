@@ -13,6 +13,8 @@ import com.mojang.serialization.JsonOps;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
 import dev.shadowsoffire.placebo.json.ItemAdapter;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
+import io.github.chakyl.splendidslimes.item.PlortItem;
+import io.github.chakyl.splendidslimes.item.SlimeInventoryItem;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -41,6 +43,7 @@ import java.util.List;
  *
  * @param breed               The breed of the slime
  * @param name                The display name of slime
+ * @param particle            Particle used when slime jumps. Defaults to its Plort
  * @param hat                 Item to use as a hat
  * @param hatScale            Scale applied to the hat when it is being rendered.
  * @param hatXOffset          X offset applied to the hat when it is being rendered.
@@ -53,26 +56,39 @@ import java.util.List;
  * @param favoriteEntity      The Entity for a slime's favorite food that doubles plort output
  * @param positiveEmitEffects List of effects that will be emitted in an AoE around the slime when happy
  * @param negativeEmitEffects List of effects that will be emitted in an AoE around the slime when unhappy
- * @param positiveCommands List of commands that will be executed as the slime when happy
- * @param negativeCommands List of commands that will be executed as the slime when unhappy
+ * @param positiveCommands    List of commands that will be executed as the slime when happy
+ * @param negativeCommands    List of commands that will be executed as the slime when unhappy
  */
 public record SlimeBreed(String breed, MutableComponent name,
                          ItemStack hat, float hatScale, float hatXOffset, float hatYOffset, float hatZOffset,
-                         MutableComponent diet, List<Object> foods, ItemStack favoriteFood,
-                         List<EntityType<? extends LivingEntity>> entities, EntityType<? extends LivingEntity> favoriteEntity,
+                         ItemStack particle, MutableComponent diet, List<Object> foods, ItemStack favoriteFood,
+                         List<EntityType<? extends LivingEntity>> entities,
+                         EntityType<? extends LivingEntity> favoriteEntity,
                          List<MobEffectInstance> positiveEmitEffects, List<MobEffectInstance> negativeEmitEffects,
-                         List<String> positiveCommands, List<String> negativeCommands) implements CodecProvider<SlimeBreed> {
+                         List<String> positiveCommands,
+                         List<String> negativeCommands) implements CodecProvider<SlimeBreed> {
 
     public static final Codec<SlimeBreed> CODEC = new SlimeBreedCodec();
 
     public SlimeBreed(SlimeBreed other) {
-        this(other.breed, other.name, other.hat, other.hatScale, other.hatXOffset, other.hatYOffset, other.hatZOffset, other.diet, other.foods, other.favoriteFood, other.entities, other.favoriteEntity, other.positiveEmitEffects, other.negativeEmitEffects, other.positiveCommands, other.negativeCommands);
+        this(other.breed, other.name, other.hat, other.hatScale, other.hatXOffset, other.hatYOffset, other.hatZOffset, other.particle, other.diet, other.foods, other.favoriteFood, other.entities, other.favoriteEntity, other.positiveEmitEffects, other.negativeEmitEffects, other.positiveCommands, other.negativeCommands);
     }
 
     public int getColor() {
         return this.name.getStyle().getColor().getValue();
     }
 
+    public ItemStack getSlimeItem() {
+        ItemStack stack = new ItemStack(ModElements.Items.SLIME_ITEM.get());
+        SlimeInventoryItem.setStoredSlime(stack, this);
+        return stack;
+    }
+
+    public ItemStack getPlort() {
+        ItemStack stack = new ItemStack(ModElements.Items.PLORT.get());
+        PlortItem.setStoredPlort(stack, this);
+        return stack;
+    }
 
     public SlimeBreed validate(ResourceLocation key) {
         Preconditions.checkNotNull(this.breed, "Invalid slime breed id!");
@@ -123,6 +139,7 @@ public record SlimeBreed(String breed, MutableComponent name,
             obj.addProperty("hat_x_offset", input.hatXOffset);
             obj.addProperty("hat_y_offset", input.hatYOffset);
             obj.addProperty("hat_z_offset", input.hatZOffset);
+            obj.add("particle", ItemAdapter.ITEM_READER.toJsonTree(input.particle));
             obj.addProperty("diet", ((TranslatableContents) input.diet.getContents()).getKey());
             obj.addProperty("color", input.name.getStyle().getColor().serialize());
             JsonArray foods = new JsonArray();
@@ -197,7 +214,10 @@ public record SlimeBreed(String breed, MutableComponent name,
             if (obj.has("hat_z_offset")) {
                 hatZOffset = GsonHelper.getAsFloat(obj, "hat_z_offset");
             }
-            
+            ItemStack particle = new ItemStack(Items.AIR);
+            if (obj.has("particle")) {
+                particle = ItemAdapter.ITEM_READER.fromJson(obj.get("particle"), ItemStack.class);
+            }
             MutableComponent diet = Component.translatable(GsonHelper.getAsString(obj, "diet"));
             if (obj.has("color")) {
                 String colorStr = GsonHelper.getAsString(obj, "color");
@@ -223,7 +243,7 @@ public record SlimeBreed(String breed, MutableComponent name,
                 for (JsonElement json : GsonHelper.getAsJsonArray(obj, "entities")) {
                     EntityType<? extends LivingEntity> st = (EntityType) ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(json.getAsString()));
                     if (st != EntityType.PIG || "minecraft:pig".equals(json.getAsString())) entities.add(st);
-                    // Intentionally ignore invalid entries here, so that modded entities can be added as subtypes without hard deps.
+                    // Intentionally ignore invalid entries here, so that modded entities can be added without hard deps.
                 }
             }
             EntityType<? extends LivingEntity> favoriteEntity = null;
@@ -257,7 +277,7 @@ public record SlimeBreed(String breed, MutableComponent name,
                     positiveCommands.add(String.valueOf(json));
                 }
             }
-            return DataResult.success(Pair.of(new SlimeBreed(breed, name, hat, hatScale, hatXOffset, hatYOffset, hatZOffset, diet, foods, favoriteFood, entities, favoriteEntity, positiveEmitEffects, negativeEmitEffects, positiveCommands, negativeCommands), input));
+            return DataResult.success(Pair.of(new SlimeBreed(breed, name, hat, hatScale, hatXOffset, hatYOffset, hatZOffset, particle, diet, foods, favoriteFood, entities, favoriteEntity, positiveEmitEffects, negativeEmitEffects, positiveCommands, negativeCommands), input));
         }
 
     }

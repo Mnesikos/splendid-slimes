@@ -1,7 +1,6 @@
 package io.github.chakyl.splendidslimes.jade;
 
 import io.github.chakyl.splendidslimes.SplendidSlimes;
-import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.IWailaClientRegistration;
@@ -14,7 +13,7 @@ public class SlimeInfoPlugin implements IWailaPlugin {
     public static final ResourceLocation UID = new ResourceLocation(SplendidSlimes.MODID, "splendid_slime");
     @Override
     public void register(IWailaCommonRegistration registration) {
-        registration.registerEntityDataProvider(SlimeInfoComponentProvider.INSTANCE, SlimeEntityBase.class);
+        registration.registerEntityDataProvider(SlimeInfoComponentProvider.INSTANCE, SplendidSlime.class);
     }
 
     @Override

@@ -2,7 +2,8 @@ package io.github.chakyl.splendidslimes.jade;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
-import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
+import io.github.chakyl.splendidslimes.entity.SplendidSlime;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -34,13 +35,29 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
                 }
             }
         }
+        if (entityAccessor.getServerData().contains("Happiness")) {
+            int happiness = entityAccessor.getServerData().getInt("Happiness");
+            Component happinessComponent;
+            if (happiness >= SplendidSlime.HAPPY_THRESHOLD) {
+                happinessComponent = Component.translatable("entity.splendid_slimes.happy").withStyle(ChatFormatting.GREEN);
+            } else if (happiness <= SplendidSlime.FURIOUS_THRESHOLD) {
+                happinessComponent = Component.translatable("entity.splendid_slimes.furious").withStyle(ChatFormatting.RED);
+            } else if (happiness <= SplendidSlime.UNHAPPY_THRESHOLD) {
+                happinessComponent = Component.translatable("entity.splendid_slimes.sad").withStyle(ChatFormatting.GOLD);
+            }  else {
+                happinessComponent = Component.translatable("entity.splendid_slimes.neutral");
+            }
+            tooltip.add(happinessComponent);
+        }
     }
 
     @Override
     public void appendServerData(CompoundTag data, EntityAccessor accessor) {
-        SlimeEntityBase slime = (SlimeEntityBase) accessor.getEntity();
-        data.putString("Breed", slime.getEntityData().get(SlimeEntityBase.BREED));
-        data.putString("SecondaryBreed", slime.getEntityData().get(SlimeEntityBase.SECONDARY_BREED));
+        SplendidSlime slime = (SplendidSlime) accessor.getEntity();
+        data.putString("Breed", slime.getEntityData().get(SplendidSlime.BREED));
+        data.putString("SecondaryBreed", slime.getEntityData().get(SplendidSlime.SECONDARY_BREED));
+        data.putInt("Happiness", slime.getEntityData().get(SplendidSlime.HAPPINESS));
+        data.putInt("EatingCooldown", slime.getEntityData().get(SplendidSlime.EATING_COOLDOWN));
     }
     @Override
     public ResourceLocation getUid() {

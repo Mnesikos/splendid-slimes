@@ -2,11 +2,13 @@ package io.github.chakyl.splendidslimes.events;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
+import io.github.chakyl.splendidslimes.client.Keybindings;
 import io.github.chakyl.splendidslimes.client.model.HatModel;
 import io.github.chakyl.splendidslimes.client.model.PlortModel;
 import io.github.chakyl.splendidslimes.client.model.SlimeEntityModel;
 import io.github.chakyl.splendidslimes.client.renderer.SlimeEntityRenderer;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
+import io.github.chakyl.splendidslimes.item.ItemProjectile.ItemProjectileRenderer;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import io.github.chakyl.splendidslimes.screen.PlortPressScreen;
 import net.minecraft.client.Minecraft;
@@ -19,6 +21,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -34,6 +37,7 @@ public class ClientModEvents {
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModElements.Entities.SPLENDID_SLIME.get(), SlimeEntityRenderer::new);
         event.registerEntityRenderer(ModElements.Entities.TARR.get(), SlimeEntityRenderer::new);
+        event.registerEntityRenderer(ModElements.Entities.ITEM_PROJECTILE.get(), ItemProjectileRenderer::new);
     }
 
     @SubscribeEvent
@@ -41,9 +45,15 @@ public class ClientModEvents {
         event.enqueueWork(() -> {
             EntityRenderers.register(ModElements.Entities.SPLENDID_SLIME.get(), SlimeEntityRenderer::new);
             EntityRenderers.register(ModElements.Entities.TARR.get(), SlimeEntityRenderer::new);
+            EntityRenderers.register(ModElements.Entities.ITEM_PROJECTILE.get(), ItemProjectileRenderer::new);
             MenuScreens.register(ModElements.Menus.PLORT_PRESS_MENU.get(), PlortPressScreen::new);
         });
 
+    }
+
+    @SubscribeEvent
+    public static void registerKeys(RegisterKeyMappingsEvent event) {
+        event.register(Keybindings.INSTANCE.slimeVacModeKey);
     }
 
     @SubscribeEvent

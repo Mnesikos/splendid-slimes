@@ -2,17 +2,10 @@
   "breed": "webby",
   "name": "slime.splendid_slimes.webby",
   "color": "#bebfd2",
+  "particle": { "item": "minecraft:cobweb" },
   "diet": "diet.splendid_slimes.webby",
-  "foods": [
-    { "item": "minecraft:golden_carrot" },
-    { "item": "minecraft:carrot" },
-    { "item": "minecraft:potato" },
-    { "item": "minecraft:beetroot" },
-    { "item": "minecraft:pumpkin" }
-  ],
-  "favorite_food": {
-    "item": "minecraft:beetroot"
-  },
+  "foods": [{ "tag": "forge:vegetables" }],
+  "favorite_food": { "item": "minecraft:beetroot" },
   "negative_emit_effects": [
     {
       "effect": "minecraft:slowness",

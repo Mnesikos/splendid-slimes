@@ -18,6 +18,7 @@ import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
 import io.github.chakyl.splendidslimes.entity.Tarr;
 import io.github.chakyl.splendidslimes.item.*;
+import io.github.chakyl.splendidslimes.item.ItemProjectile.ItemProjectileEntity;
 import io.github.chakyl.splendidslimes.recipe.PlortPressingRecipe;
 import io.github.chakyl.splendidslimes.recipe.PlortRippingRecipe;
 import io.github.chakyl.splendidslimes.screen.PlortPressMenu;
@@ -27,7 +28,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -91,6 +95,7 @@ public class ModElements {
         public static final RegistryObject<SlimeSpawnEggItem> SPLENDID_SLIME_SPAWN_EGG = R.item("spawn_egg_splendid_slime", () -> new SlimeSpawnEggItem(slimeEntity, 0xff7d9d, 0xff7d9d, new Item.Properties()));
         public static final RegistryObject<ForgeSpawnEggItem> TARR_SPAWN_EGG = R.item("spawn_egg_tarr", () -> new ForgeSpawnEggItem(tarrEntity, 0x2c221c, 0x921f78, new Item.Properties()));
         public static final RegistryObject<Item> TARRTAR = R.item("tarrtar", () -> new Item(new Item.Properties().stacksTo(64)));
+        public static final RegistryObject<SlimeVac> SLIME_VAC = R.item("slime_vac", () -> new SlimeVac(new Item.Properties().stacksTo(1)));
 
         private static void bootstrap() {
         }
@@ -99,7 +104,7 @@ public class ModElements {
     public static class Entities {
         public static final RegistryObject<EntityType<SlimeEntityBase>> SPLENDID_SLIME = slimeEntity;
         public static final RegistryObject<EntityType<SlimeEntityBase>> TARR = tarrEntity;
-
+        public static final RegistryObject<EntityType<ItemProjectileEntity>> ITEM_PROJECTILE =  R.entity("item_projectile", () -> EntityType.Builder.<ItemProjectileEntity>of(ItemProjectileEntity::new, MobCategory.MISC).build("item_projectile"));
         private static void bootstrap() {
         }
     }
