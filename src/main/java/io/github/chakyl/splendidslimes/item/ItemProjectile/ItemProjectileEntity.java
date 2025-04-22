@@ -1,9 +1,12 @@
 package io.github.chakyl.splendidslimes.item.ItemProjectile;
 
+import io.github.chakyl.splendidslimes.registry.ModElements;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundExplodePacket;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -20,6 +23,9 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.network.NetworkHooks;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemProjectileEntity extends AbstractHurtingProjectile implements IEntityAdditionalSpawnData {
     protected ItemStack stack = ItemStack.EMPTY;
@@ -92,7 +98,7 @@ public class ItemProjectileEntity extends AbstractHurtingProjectile implements I
 
         LivingEntity livingentity = (LivingEntity) target;
 
-        if (onServer && knockback > 0) {
+        if (onServer) {
             Vec3 appliedMotion = this.getDeltaMovement()
                     .multiply(1.0D, 0.0D, 1.0D)
                     .normalize()
@@ -118,10 +124,31 @@ public class ItemProjectileEntity extends AbstractHurtingProjectile implements I
 
     @Override
     protected void onHitBlock(BlockHitResult ray) {
-        recoverItem();
+        if (!this.level().isClientSide() && getItem().getItem() == ModElements.Items.ROCKET_POD.get()) {
+            BlockPos hitBlock = ray.getBlockPos();
+            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(2));
+            for (LivingEntity entity : nearbyEntities) {
+
+                Vec3 appliedMotion = this.getDeltaMovement()
+                        .multiply(-1.0D, 0.0D, -1.0D)
+                        .normalize()
+                        .scale(4 * 0.6);
+                if (entity instanceof ServerPlayer) {
+                    ((ServerPlayer) entity).connection.send(new ClientboundExplodePacket(hitBlock.getX(), hitBlock.getY(), hitBlock.getZ(), 4, new ArrayList<>(), new Vec3(appliedMotion.x, 1.5D, appliedMotion.z)));
+                }
+                if (appliedMotion.lengthSqr() > 0.0D) {
+                    entity.push(appliedMotion.x, 1D, appliedMotion.z);
+                }
+            }
+
+        } else {
+
+            recoverItem();
+        }
         super.onHitBlock(ray);
         kill();
     }
+
     @SuppressWarnings("unchecked")
     public static EntityType.Builder<?> build(EntityType.Builder<?> builder) {
         EntityType.Builder<ItemProjectileEntity> entityBuilder = (EntityType.Builder<ItemProjectileEntity>) builder;

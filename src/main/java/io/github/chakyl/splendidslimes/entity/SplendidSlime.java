@@ -103,7 +103,7 @@ public class SplendidSlime extends SlimeEntityBase {
                     if (happiness <= UNHAPPY_THRESHOLD) {
                         Double chance = 1 - (((happiness + 1.0) / UNHAPPY_THRESHOLD));
                         if (this.random.nextFloat() <= chance) {
-                            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(10));
+                            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(6));
                             for (LivingEntity entity : nearbyEntities) {
                                 applyNegativeEffects(entity, slime, secondarySlime);
                             }
@@ -112,7 +112,7 @@ public class SplendidSlime extends SlimeEntityBase {
                     } else if (happiness >= HAPPY_THRESHOLD) {
                         Double chance = 1 - (((happiness + 1.0) / HAPPY_THRESHOLD));
                         if (this.random.nextFloat() <= chance) {
-                            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(10));
+                            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(6));
                             for (LivingEntity entity : nearbyEntities) {
                                 applyPositiveEffects(entity, slime, secondarySlime);
                             }
@@ -263,9 +263,10 @@ public class SplendidSlime extends SlimeEntityBase {
 
     public void applyEffects(LivingEntity entity, List<MobEffectInstance> effects) {
         for (MobEffectInstance effect : effects) {
-            if (effect != null)
+            if (effect != null && entity != null )
                 entity.addEffect(new MobEffectInstance(effect.getEffect(), effect.getDuration(), effect.getAmplifier(), false, false));
         }
+        effects.clear();
     }
 
     private static CommandSourceStack createCommandSourceStack(@Nullable Player pPlayer, Level pLevel, BlockPos pPos, Component displayName) {
@@ -407,7 +408,7 @@ public class SplendidSlime extends SlimeEntityBase {
         int nearbyFriends = this.level().getEntitiesOfClass(SplendidSlime.class, this.getBoundingBox().inflate(7), e -> Objects.equals(e.getSlimeBreed(), this.getSlimeBreed()) || Objects.equals(e.getSlimeBreed(), this.getSlimeBreed())).size();
         if (nearbyFriends >= 3) happinessIncrease += 15;
         if (nearbyFriends > 3) happinessIncrease += 5;
-        if (nearbyFriends > 7) happinessIncrease -= 50;
+        if (nearbyFriends > 10) happinessIncrease -= 50;
         this.heal(2);
         this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
         setHappiness(happiness + happinessIncrease);

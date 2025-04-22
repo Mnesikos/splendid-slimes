@@ -95,6 +95,7 @@ public class ModElements {
         public static final RegistryObject<SlimeSpawnEggItem> SPLENDID_SLIME_SPAWN_EGG = R.item("spawn_egg_splendid_slime", () -> new SlimeSpawnEggItem(slimeEntity, 0xff7d9d, 0xff7d9d, new Item.Properties()));
         public static final RegistryObject<ForgeSpawnEggItem> TARR_SPAWN_EGG = R.item("spawn_egg_tarr", () -> new ForgeSpawnEggItem(tarrEntity, 0x2c221c, 0x921f78, new Item.Properties()));
         public static final RegistryObject<Item> TARRTAR = R.item("tarrtar", () -> new Item(new Item.Properties().stacksTo(64)));
+        public static final RegistryObject<Item> ROCKET_POD = R.item("rocket_pod", () -> new Item(new Item.Properties().stacksTo(64)));
         public static final RegistryObject<SlimeVac> SLIME_VAC = R.item("slime_vac", () -> new SlimeVac(new Item.Properties().stacksTo(1)));
 
         private static void bootstrap() {

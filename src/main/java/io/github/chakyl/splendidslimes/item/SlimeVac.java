@@ -113,10 +113,13 @@ public class SlimeVac extends Item {
             }
 
             ItemStack itemStackToLaunch = player.getItemInHand(inverseHand);
+
             boolean slimeFired = false;
             if (itemStackToLaunch != ItemStack.EMPTY && itemStackToLaunch.is(SplendidSlimesItemTags.SLIME_VAC_FIREABLE)) {
                 Entity projectile;
                 Item itemToLaunch = itemStackToLaunch.getItem();
+                Vec3 barrelPos = getShootLocVec(player, hand == InteractionHand.MAIN_HAND,
+                        new Vec3(.45f, -0.5f, 1.0f));
                 if (itemToLaunch == ModElements.Items.SLIME_ITEM.get()) {
                     projectile = SlimeInventoryItem.getSlimeFromItem(itemStackToLaunch.getTag().getCompound("entity"), level);
                     projectile.setDeltaMovement(0, 0, 0);
@@ -129,11 +132,12 @@ public class SlimeVac extends Item {
                 } else {
                     projectile = new ItemProjectileEntity(ModElements.Entities.ITEM_PROJECTILE.get(), level);
                     ((ItemProjectileEntity) projectile).setItem(itemStackToLaunch.copy());
+                    barrelPos = getShootLocVec(player, hand == InteractionHand.MAIN_HAND,
+                            new Vec3(.65f, -1.0f, 2.0f));
                 }
                 if (projectile == null) return InteractionResultHolder.pass(handStack);
                 Vec3 splitMotion = motion;
-                Vec3 barrelPos = getShootLocVec(player, hand == InteractionHand.MAIN_HAND,
-                        new Vec3(.45f, -0.65f, 1.5f));
+
                 projectile.setPos(barrelPos.x, barrelPos.y, barrelPos.z);
                 projectile.setDeltaMovement(splitMotion);
                 level.addFreshEntity(projectile);

@@ -48,7 +48,7 @@ public class SlimeVacModePacket {
                 case ITEM -> pitch = 0.9F;
             }
             player.connection.send(new ClientboundSoundPacket(Holder.direct(SoundEvents.NOTE_BLOCK_XYLOPHONE.get()), SoundSource.PLAYERS, player.getX(),player.getY(),player.getZ(), 1.0F, pitch, 1));
-            player.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("Changed mode to %s", SlimeVac.getMode(vacItem))));
+            player.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("info.splendid_slimes.slime_vac.mode_set", SlimeVac.getMode(vacItem))));
         }
 
     }
