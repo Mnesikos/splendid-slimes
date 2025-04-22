@@ -1,6 +1,7 @@
 package io.github.chakyl.splendidslimes.entity;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
+import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.commands.CommandSource;
@@ -17,14 +18,13 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -35,7 +35,9 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
@@ -43,19 +45,20 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
-import static io.github.chakyl.splendidslimes.util.EffectUtils.copyEffect;
 
 public class SplendidSlime extends SlimeEntityBase {
-    private static final EntityDataAccessor<Integer> HAPPINESS = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> EATING_COOLDOWN = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> HAPPINESS = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> EATING_COOLDOWN = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.INT);
     public static final String SLIME = "slime";
     public static final String ID = "id";
     public static final String DATA = "data";
-    public static final int SLIME_EAT_COOLDOWN = 6000;
-    public static final int SLIME_HUNGRY_THRESHOLD = 1200;
+    public static final int SLIME_EAT_COOLDOWN = 24000;
+    public static final int SLIME_HUNGRY_THRESHOLD = 12000;
     public static final int MAX_HAPPINESS = 1000;
+    public static final int FURIOUS_THRESHOLD = 200;
     public static final int UNHAPPY_THRESHOLD = 400;
     public static final int HAPPY_THRESHOLD = 600;
     public ItemEntity itemTarget = null;
@@ -72,7 +75,7 @@ public class SplendidSlime extends SlimeEntityBase {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new SlimeFloatGoal(this));
-        if (this.getHappiness() < 200) {
+        if (this.getHappiness() < FURIOUS_THRESHOLD) {
             this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, (p_289461_) -> {
                 return Math.abs(p_289461_.getY() - this.getY()) <= 4.0D;
             }));
@@ -88,6 +91,7 @@ public class SplendidSlime extends SlimeEntityBase {
     public void tick() {
         super.tick();
         if (!this.level().isClientSide) {
+            int happiness = getHappiness();
             int eatCooldown = getEatingCooldown();
             if (eatCooldown > 0) {
                 setEatingCooldown(eatCooldown - 1);
@@ -96,11 +100,10 @@ public class SplendidSlime extends SlimeEntityBase {
                 DynamicHolder<SlimeBreed> slime = getSlime();
                 DynamicHolder<SlimeBreed> secondarySlime = getSecondarySlime();
                 if (slime.isBound()) {
-                    int happiness = getHappiness();
                     if (happiness <= UNHAPPY_THRESHOLD) {
                         Double chance = 1 - (((happiness + 1.0) / UNHAPPY_THRESHOLD));
                         if (this.random.nextFloat() <= chance) {
-                            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(10));
+                            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(6));
                             for (LivingEntity entity : nearbyEntities) {
                                 applyNegativeEffects(entity, slime, secondarySlime);
                             }
@@ -109,18 +112,18 @@ public class SplendidSlime extends SlimeEntityBase {
                     } else if (happiness >= HAPPY_THRESHOLD) {
                         Double chance = 1 - (((happiness + 1.0) / HAPPY_THRESHOLD));
                         if (this.random.nextFloat() <= chance) {
-                            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(10));
+                            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(6));
                             for (LivingEntity entity : nearbyEntities) {
                                 applyPositiveEffects(entity, slime, secondarySlime);
                             }
                             runCommands(slime, secondarySlime, false);
                         }
                     }
-
                 }
             }
             if (this.tickCount % 600 == 0) {
-                setHappiness(getHappiness() - 5);
+                if (happiness > 0)  setHappiness(happiness - 1);
+                else setHappiness(0);
             }
         }
     }
@@ -152,6 +155,7 @@ public class SplendidSlime extends SlimeEntityBase {
         slime.saveWithoutId(entity);
         nbt.put("entity", entity);
         item.setTag(nbt);
+        slime.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
     }
 
     public EntityType<SlimeEntityBase> getEntityType() {
@@ -259,8 +263,10 @@ public class SplendidSlime extends SlimeEntityBase {
 
     public void applyEffects(LivingEntity entity, List<MobEffectInstance> effects) {
         for (MobEffectInstance effect : effects) {
-            entity.addEffect(copyEffect(effect));
+            if (effect != null && entity != null )
+                entity.addEffect(new MobEffectInstance(effect.getEffect(), effect.getDuration(), effect.getAmplifier(), false, false));
         }
+        effects.clear();
     }
 
     private static CommandSourceStack createCommandSourceStack(@Nullable Player pPlayer, Level pLevel, BlockPos pPos, Component displayName) {
@@ -372,38 +378,52 @@ public class SplendidSlime extends SlimeEntityBase {
     }
 
     public void playerTouch(Player pEntity) {
-        super.playerTouch(pEntity);
-        if (this.isDealsDamage() && getHappiness() <= UNHAPPY_THRESHOLD) {
+        if (this.isDealsDamage() && this.getHappiness() <= FURIOUS_THRESHOLD) {
             DynamicHolder<SlimeBreed> slime = getSlime();
             DynamicHolder<SlimeBreed> secondarySlime = getSecondarySlime();
             if (slime.isBound()) applyNegativeEffects(pEntity, slime, secondarySlime);
+            super.playerTouch(pEntity);
         }
     }
 
     private void handleFeed(boolean isFavorite) {
-        ItemStack dropOne = getSlimePlort();
-        int size = this.getSize();
-        if (size >= 3) {
-            if (isFavorite) dropOne.setCount(2);
-            this.spawnAtLocation(dropOne);
-            if (!this.getSlimeSecondaryBreed().isEmpty()) {
-                ItemStack dropTwo = getSlimePlort(true);
-                if (isFavorite) dropTwo.setCount(2);
-                this.spawnAtLocation(dropTwo);
-                if (size == 3) this.setSize(size + 1, true);
+        int happiness = getHappiness();
+        int happinessIncrease = isFavorite ? 50 : 25;
+        if (happiness > FURIOUS_THRESHOLD) {
+            ItemStack dropOne = getSlimePlort();
+            int size = this.getSize();
+            if (size >= 2) {
+                if (isFavorite) dropOne.setCount(2);
+                this.spawnAtLocation(dropOne);
+                if (!this.getSlimeSecondaryBreed().isEmpty()) {
+                    ItemStack dropTwo = getSlimePlort(true);
+                    if (isFavorite) dropTwo.setCount(2);
+                    this.spawnAtLocation(dropTwo);
+                    if (size == 2) this.setSize(size + 1, true);
+                }
+            } else {
+                this.setSize(size + 1, true);
             }
-        } else {
-            this.setSize(size + 1, true);
         }
+        int nearbyFriends = this.level().getEntitiesOfClass(SplendidSlime.class, this.getBoundingBox().inflate(7), e -> Objects.equals(e.getSlimeBreed(), this.getSlimeBreed()) || Objects.equals(e.getSlimeBreed(), this.getSlimeBreed())).size();
+        if (nearbyFriends >= 3) happinessIncrease += 15;
+        if (nearbyFriends > 3) happinessIncrease += 5;
+        if (nearbyFriends > 10) happinessIncrease -= 50;
         this.heal(2);
         this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
-        setHappiness(getHappiness() + 10);
+        setHappiness(happiness + happinessIncrease);
         setEatingCooldown(SLIME_EAT_COOLDOWN);
     }
 
     @Override
     protected ParticleOptions getParticleType() {
-        return new ItemParticleOption(ParticleTypes.ITEM, getSlimePlort());
+        ItemStack particleItem =  getSlimePlort();
+        DynamicHolder<SlimeBreed> slime = getSlime();
+        if (slime.isBound() && slime.get().particle().getItem() != Items.AIR) {
+            particleItem = slime.get().particle();
+        }
+
+        return new ItemParticleOption(ParticleTypes.ITEM, particleItem);
 
     }
 
@@ -411,7 +431,7 @@ public class SplendidSlime extends SlimeEntityBase {
         ItemStack item = itemEntity.getItem();
         boolean atePlort = false;
         if (wantsToPickUp(item)) {
-            if (item.getItem() == ModElements.Items.PLORT.get() && item.hasTag()) {
+            if (this.getHappiness() > FURIOUS_THRESHOLD && item.getItem() == ModElements.Items.PLORT.get() && item.hasTag()) {
                 CompoundTag plortTag = item.getTagElement("plort");
                 if (plortTag != null && plortTag.contains("id")) {
                     atePlort = true;
@@ -420,7 +440,6 @@ public class SplendidSlime extends SlimeEntityBase {
                         this.playSound(SoundEvents.AMETHYST_BLOCK_STEP, 1.0F, 0.9F);
                         this.setSlimeSecondaryBreed(plortTag.get("id").toString().replace("\"", ""));
                     } else {
-                        causeChaos();
                         causeChaos();
                     }
                 }
@@ -498,6 +517,16 @@ public class SplendidSlime extends SlimeEntityBase {
         super.addAdditionalSaveData(nbt);
         nbt.putInt("EatingCooldown", getEatingCooldown());
         nbt.putInt("Happiness", getHappiness());
+    }
+
+    @Override
+    @Nullable
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+        SpawnGroupData spawn = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+        if (pReason == MobSpawnType.NATURAL) {
+            this.setHappiness(FURIOUS_THRESHOLD - 1);
+        }
+        return spawn;
     }
 
     static class SlimeTargetItemGoal extends Goal {

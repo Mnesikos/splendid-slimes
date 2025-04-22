@@ -22,7 +22,7 @@ public class DataGenerators {
 
         generator.addProvider(event.includeServer(), ModLootTableProvider.create(packOutput));
         generator.addProvider(event.includeServer(), new ModRecipeProvider(packOutput));
-        generator.addProvider(event.includeClient(), new ModLangProvider(packOutput, SplendidSlimes.MODID, "en_us"));
+//        generator.addProvider(event.includeClient(), new ModLangProvider(packOutput, SplendidSlimes.MODID, "en_us"));
 
         ModBlockTagGenerator blockTagGenerator = generator.addProvider(event.includeServer(),
                 new ModBlockTagGenerator(packOutput, lookupProvider, existingFileHelper));

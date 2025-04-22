@@ -2,15 +2,10 @@
   "breed": "puddle",
   "name": "slime.splendid_slimes.puddle",
   "color": "#68c9ff",
+  "particle": { "item": "minecraft:prismarine_shard" },
   "diet": "diet.splendid_slimes.puddle",
-  "foods": [
-    {
-      "tag": "minecraft:fishes"
-    }
-  ],
-  "favorite_food": {
-    "item": "minecraft:tropical_fish"
-  },
+  "foods": [{ "tag": "minecraft:fishes" }],
+  "favorite_food": { "item": "minecraft:tropical_fish" },
   "entities": [
     "minecraft:cod",
     "minecraft:salmon",

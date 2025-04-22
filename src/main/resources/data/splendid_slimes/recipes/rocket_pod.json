@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    " p ",
+    "pgp",
+    " p "
+  ],
+  "key": {
+    "g": {
+      "item": "minecraft:gunpowder"
+    },
+    "p": {
+      "item": "minecraft:phantom_membrane"
+    }
+  },
+  "result": {
+    "item": "splendid_slimes:rocket_pod",
+    "count": 8
+  },
+  "show_notification": true
+}

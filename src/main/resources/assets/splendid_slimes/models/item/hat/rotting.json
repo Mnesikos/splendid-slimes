@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "splendid_slimes:block/hat/rotting_hat",
-		"particle": "splendid_slimes:block/hat/rotting_hat"
+		"0": "splendid_slimes:item/hat/rotting_hat",
+		"particle": "splendid_slimes:item/hat/rotting_hat"
 	},
 	"elements": [
 		{

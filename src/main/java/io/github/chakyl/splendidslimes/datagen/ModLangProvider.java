@@ -21,6 +21,7 @@ public class ModLangProvider extends  LanguageProvider {
         this.add("block.splendid_slimes.corral_block", "Corral Block");
         this.add("block.splendid_slimes.corral_pane", "Corral Pane");
 
+        this.add("item.splendid_slimes.slime_vac", "Slime Vac");
         this.add("item.splendid_slimes.plort", "%s Plort");
         this.add("item.splendid_slimes.default_plort", "Any");
         this.add("item.splendid_slimes.default_heart", "Any");
@@ -32,9 +33,13 @@ public class ModLangProvider extends  LanguageProvider {
         this.add("entity.splendid_slimes.splendid_slime", "%s Slime");
         this.add("entity.splendid_slimes.tarr", "Tarr");
         this.add("entity.splendid_slimes.largo_splendid_slime", "%s %s Largo");
+        this.add("diet.splendid_slimes.default_diet", "Any");
         this.add("entity.splendid_slimes.diet", "Diet: %s");
         this.add("entity.splendid_slimes.largo_diet", "Diet: %s, %s");
-
+        this.add("entity.splendid_slimes.happy", "Happy");
+        this.add("entity.splendid_slimes.furious", "Furious");
+        this.add("entity.splendid_slimes.sad", "Sad");
+        this.add("entity.splendid_slimes.neutral", "Neutral");
         this.add("info.splendid_slimes.plort", "Dropped from fed slimes");
         this.add("config.jade.plugin_splendid_slimes.splendid_slime", "jade slime")
         ;

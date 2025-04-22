@@ -56,7 +56,6 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
                 this.progress++;
             }
         }
-        ;
     }
 
     private boolean hasRecipe() {

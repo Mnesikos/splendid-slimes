@@ -5,15 +5,7 @@
   "hat_scale": 1.0,
   "hat_y_offset": -0.5,
   "diet": "diet.splendid_slimes.sweet",
-  "foods": [
-    { "item": "minecraft:sweet_berries" },  
-    { "item": "minecraft:apple" }, 
-    { "item": "minecraft:golden_apple" }, 
-    { "item": "minecraft:melon_slice" }, 
-    { "item": "minecraft:glow_berries" }, 
-    { "item": "minecraft:chorus_fruit" },  
-    { "item": "minecraft:melon" }
-  ],
+  "foods": [{ "tag": "forge:fruits" }],
   "favorite_food": {
     "item": "minecraft:glow_berries"
   },
