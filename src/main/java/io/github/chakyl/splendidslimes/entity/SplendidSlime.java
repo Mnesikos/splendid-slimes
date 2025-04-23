@@ -18,10 +18,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
@@ -47,6 +44,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+
+import static io.github.chakyl.splendidslimes.util.EffectUtils.copyEffect;
 
 
 public class SplendidSlime extends SlimeEntityBase {
@@ -122,22 +121,10 @@ public class SplendidSlime extends SlimeEntityBase {
                 }
             }
             if (this.tickCount % 600 == 0) {
-                if (happiness > 0)  setHappiness(happiness - 1);
+                if (happiness > 0) setHappiness(happiness - 1);
                 else setHappiness(0);
             }
         }
-    }
-
-    @Override
-    protected InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
-        if (this.getSlimeSecondaryBreed().isEmpty() && pPlayer.getMainHandItem().isEmpty()) {
-            ItemStack slimeItem = ModElements.Items.SLIME_ITEM.get().getDefaultInstance();
-            pickupSlime(this, slimeItem);
-            pPlayer.getInventory().add(slimeItem);
-            pPlayer.getCooldowns().addCooldown(ModElements.Items.SLIME_ITEM.get(), 20);
-            this.discard();
-        }
-        return super.mobInteract(pPlayer, pHand);
     }
 
     public static void pickupSlime(SplendidSlime slime, ItemStack item) {
@@ -239,7 +226,7 @@ public class SplendidSlime extends SlimeEntityBase {
             if (secondarySlime.isBound()) {
                 List<MobEffectInstance> secondarySlimeEffects = secondarySlime.get().negativeEmitEffects();
                 if (!secondarySlimeEffects.isEmpty()) {
-                    effects.addAll(secondarySlimeEffects);
+                    applyEffects(entity, secondarySlimeEffects);
                 }
             }
             if (!effects.isEmpty()) {
@@ -253,7 +240,7 @@ public class SplendidSlime extends SlimeEntityBase {
         if (secondarySlime.isBound()) {
             List<MobEffectInstance> secondarySlimeEffects = secondarySlime.get().positiveEmitEffects();
             if (!secondarySlimeEffects.isEmpty()) {
-                effects.addAll(secondarySlimeEffects);
+                applyEffects(entity, secondarySlimeEffects);
             }
         }
         if (!effects.isEmpty()) {
@@ -263,10 +250,9 @@ public class SplendidSlime extends SlimeEntityBase {
 
     public void applyEffects(LivingEntity entity, List<MobEffectInstance> effects) {
         for (MobEffectInstance effect : effects) {
-            if (effect != null && entity != null )
-                entity.addEffect(new MobEffectInstance(effect.getEffect(), effect.getDuration(), effect.getAmplifier(), false, false));
+            SplendidSlimes.LOGGER.info(effect);
+            if (effect != null && entity != null) entity.addEffect(copyEffect(effect));
         }
-        effects.clear();
     }
 
     private static CommandSourceStack createCommandSourceStack(@Nullable Player pPlayer, Level pLevel, BlockPos pPos, Component displayName) {
@@ -417,7 +403,7 @@ public class SplendidSlime extends SlimeEntityBase {
 
     @Override
     protected ParticleOptions getParticleType() {
-        ItemStack particleItem =  getSlimePlort();
+        ItemStack particleItem = getSlimePlort();
         DynamicHolder<SlimeBreed> slime = getSlime();
         if (slime.isBound() && slime.get().particle().getItem() != Items.AIR) {
             particleItem = slime.get().particle();
