@@ -1,6 +1,7 @@
 package io.github.chakyl.splendidslimes.blockentity;
 
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntity;
+import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.block.SlimeIncubatorBlock;
 import io.github.chakyl.splendidslimes.recipe.PlortPressingRecipe;
 import io.github.chakyl.splendidslimes.registry.ModElements;
@@ -70,21 +71,23 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
 
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state) {
-        if (hasRecipe()) {
-            if (progress == 0) {
-                BlockState newState = state.setValue(SlimeIncubatorBlock.WORKING, true);
-                level.setBlockAndUpdate(pos, newState);
-            }
-            this.progress++;
-            setChanged(level, pos, state);
-            if (this.progress >= PRESSING_TIME) {
-                craftItem();
-                BlockState newState = state.setValue(SlimeIncubatorBlock.WORKING, false);
-                level.setBlockAndUpdate(pos, newState);
+        if (level.getGameTime() % 20 == 0) {
+            if (hasRecipe()) {
+                if (progress == 0) {
+                    BlockState newState = state.setValue(SlimeIncubatorBlock.WORKING, true);
+                    level.setBlockAndUpdate(pos, newState);
+                }
+                this.progress = this.progress + 20;
+                setChanged(level, pos, state);
+                if (this.progress >= PRESSING_TIME) {
+                    craftItem();
+                    BlockState newState = state.setValue(SlimeIncubatorBlock.WORKING, false);
+                    level.setBlockAndUpdate(pos, newState);
+                    this.progress = 0;
+                }
+            } else {
                 this.progress = 0;
             }
-        } else {
-            this.progress = 0;
         }
     }
 
@@ -116,10 +119,17 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
 
     private void craftItem() {
         Optional<PlortPressingRecipe> recipe = getCurrentRecipe();
-        ItemStack output = recipe.get().getResultItem(null);
+        ItemStack result = recipe.get().getResultItem(null);
+        int resultCount = result.getCount();
 
+        ItemStack outputSlot = this.itemHandler.getStackInSlot(OUTPUT_SLOT);
         this.itemHandler.extractItem(INPUT_SLOT, recipe.get().getInputItem(null).getCount(), false);
-        this.itemHandler.setStackInSlot(OUTPUT_SLOT, output.copy());
+        if (outputSlot.getCount() > 0 && canInsertItemIntoOutputSlot(outputSlot, result) && canInsertAmountIntoOutputSlot(outputSlot, resultCount)) {
+            outputSlot.setCount(outputSlot.getCount() + resultCount);
+        } else {
+            this.itemHandler.setStackInSlot(OUTPUT_SLOT, result.copy());
+        }
+
     }
 
     private boolean hasRecipe() {
@@ -127,11 +137,30 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
         if (recipe.isEmpty()) return false;
         ItemStack input = recipe.get().getInputItem(getLevel().registryAccess());
         ItemStack output = recipe.get().getOutputItem(getLevel().registryAccess());
+        ItemStack result = recipe.get().getResultItem(getLevel().registryAccess());
+        ItemStack inputSlot = this.itemHandler.getStackInSlot(INPUT_SLOT);
         ItemStack outputSlot = this.itemHandler.getStackInSlot(OUTPUT_SLOT);
-        if (this.itemHandler.getStackInSlot(INPUT_SLOT).is(input.getItem()) && outputSlot.is(output.getItem())) {
+        if ((output.isEmpty() && (slotMatches(outputSlot, result) && (canInsertAmountIntoOutputSlot(outputSlot, result.getCount()) && canInsertItemIntoOutputSlot(outputSlot, result)))) || validateFusion(input, inputSlot, output, outputSlot)) {
             return true;
         }
         return false;
+    }
+
+    private boolean slotMatches(ItemStack slot, ItemStack recipe) {
+        return slot.is(recipe.getItem()) && slot.areShareTagsEqual(recipe);
+    }
+
+    private boolean validateFusion(ItemStack input, ItemStack inputSlot, ItemStack output, ItemStack outputSlot) {
+
+        return slotMatches(inputSlot, input) && slotMatches(outputSlot, output) && outputSlot.getCount() == output.getCount();
+    }
+
+    private boolean canInsertItemIntoOutputSlot(ItemStack output, ItemStack result) {
+        return output.isEmpty() || (output.is(result.getItem()) && output.areShareTagsEqual(result));
+    }
+
+    private boolean canInsertAmountIntoOutputSlot(ItemStack output, int addedCount) {
+        return output.getCount() + addedCount <= output.getMaxStackSize();
     }
 
     private Optional<PlortPressingRecipe> getCurrentRecipe() {

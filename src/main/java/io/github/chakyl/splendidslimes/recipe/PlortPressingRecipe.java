@@ -29,13 +29,20 @@ public class PlortPressingRecipe implements Recipe<SimpleContainer> {
         this.id = id;
     }
 
+
     @Override
     public boolean matches(SimpleContainer pContainer, Level pLevel) {
         if (pLevel.isClientSide()) {
             return false;
         }
+        boolean outputMatches = true;
+        if (this.output != null && !output.isEmpty()) outputMatches = greaterThanOrEquals(output, pContainer.getItem(1));
+        return outputMatches && greaterThanOrEquals(input, pContainer.getItem(0));
+    }
 
-        return input.equals(pContainer.getItem(0), true);
+    private boolean greaterThanOrEquals(ItemStack self, ItemStack other) {
+        if (self.isEmpty()) return other.isEmpty();
+        else return !other.isEmpty() && self.getCount() <= other.getCount() && self.getItem() == other.getItem() && self.areShareTagsEqual(other);
     }
 
     @Override

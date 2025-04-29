@@ -23,4 +23,5 @@ public class CommonModEvents {
             PacketHandler.register();
         });
     }
+
 }

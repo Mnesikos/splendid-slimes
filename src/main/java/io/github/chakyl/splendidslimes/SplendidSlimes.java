@@ -1,5 +1,6 @@
 package io.github.chakyl.splendidslimes;
 
+import dev.shadowsoffire.placebo.network.MessageHelper;
 import dev.shadowsoffire.placebo.tabs.TabFillingRegistry;
 import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
 import io.github.chakyl.splendidslimes.registry.ModElements;
@@ -12,6 +13,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,12 +23,20 @@ import org.apache.logging.log4j.Logger;
 public class SplendidSlimes {
     public static final String MODID = "splendid_slimes";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
+    public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder
+            .named(new ResourceLocation(MODID, MODID))
+            .clientAcceptedVersions(s -> true)
+            .serverAcceptedVersions(s -> true)
+            .networkProtocolVersion(() -> "1.0.0")
+            .simpleChannel();
 
     public SplendidSlimes() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.register(this);
-        ModElements.LOOT_MODIFIERS.register(modEventBus);
+        SlimyConfig.load();
         ModElements.bootstrap();
+        MessageHelper.registerMessage(CHANNEL, 0, new SlimyConfig.ConfigMessage.Provider());
+        ModElements.LOOT_MODIFIERS.register(modEventBus);
     }
 
     @SubscribeEvent

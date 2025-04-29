@@ -1,7 +1,7 @@
 package io.github.chakyl.splendidslimes.entity;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
+import io.github.chakyl.splendidslimes.SlimyConfig;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.commands.CommandSource;
@@ -54,12 +54,13 @@ public class SplendidSlime extends SlimeEntityBase {
     public static final String SLIME = "slime";
     public static final String ID = "id";
     public static final String DATA = "data";
-    public static final int SLIME_EAT_COOLDOWN = 24000;
-    public static final int SLIME_HUNGRY_THRESHOLD = 12000;
-    public static final int MAX_HAPPINESS = 1000;
-    public static final int FURIOUS_THRESHOLD = 200;
-    public static final int UNHAPPY_THRESHOLD = 400;
-    public static final int HAPPY_THRESHOLD = 600;
+    public static final int SLIME_EFFECT_COOLDOWN = SlimyConfig.slimeEffectCooldown;
+    public static final int SLIME_STARVING_COOLDOWN = SlimyConfig.slimeStarvingTime;
+    public static final int SLIME_HUNGRY_THRESHOLD = SLIME_STARVING_COOLDOWN / 2;
+    public static final int MAX_HAPPINESS = SlimyConfig.slimeMaxHappiness;
+    public static final int FURIOUS_THRESHOLD = SlimyConfig.slimeFuriousThreshold;
+    public static final int UNHAPPY_THRESHOLD = SlimyConfig.slimeUnhappyThreshold;
+    public static final int HAPPY_THRESHOLD = SlimyConfig.slimeHappyThreshold;
     public ItemEntity itemTarget = null;
     boolean tarred;
     private final EntityType<SlimeEntityBase> entityType;
@@ -95,7 +96,7 @@ public class SplendidSlime extends SlimeEntityBase {
             if (eatCooldown > 0) {
                 setEatingCooldown(eatCooldown - 1);
             }
-            if (this.tickCount % 800 == 0) {
+            if (this.tickCount % SLIME_EFFECT_COOLDOWN == 0) {
                 DynamicHolder<SlimeBreed> slime = getSlime();
                 DynamicHolder<SlimeBreed> secondarySlime = getSecondarySlime();
                 if (slime.isBound()) {
@@ -121,7 +122,8 @@ public class SplendidSlime extends SlimeEntityBase {
                 }
             }
             if (this.tickCount % 600 == 0) {
-                if (happiness > 0) setHappiness(happiness - 1);
+                if (happiness > MAX_HAPPINESS) setHappiness(MAX_HAPPINESS - 1);
+                else if (happiness > 0) setHappiness(happiness - 1);
                 else setHappiness(0);
             }
         }
@@ -250,7 +252,6 @@ public class SplendidSlime extends SlimeEntityBase {
 
     public void applyEffects(LivingEntity entity, List<MobEffectInstance> effects) {
         for (MobEffectInstance effect : effects) {
-            SplendidSlimes.LOGGER.info(effect);
             if (effect != null && entity != null) entity.addEffect(copyEffect(effect));
         }
     }
@@ -398,7 +399,7 @@ public class SplendidSlime extends SlimeEntityBase {
         this.heal(2);
         this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
         setHappiness(happiness + happinessIncrease);
-        setEatingCooldown(SLIME_EAT_COOLDOWN);
+        setEatingCooldown(SLIME_STARVING_COOLDOWN);
     }
 
     @Override
@@ -445,7 +446,7 @@ public class SplendidSlime extends SlimeEntityBase {
     public void remove(RemovalReason pReason) {
         int size = this.getSize();
         if (!this.level().isClientSide && this.isDeadOrDying()) {
-            if (!this.getTarred()) {
+            if (!SlimyConfig.enableTarrs || !this.getTarred()) {
                 if (size > 1) {
                     Component component = this.getCustomName();
                     boolean flag = this.isNoAi();
