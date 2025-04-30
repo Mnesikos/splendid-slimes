@@ -23,6 +23,9 @@ public class SlimyConfig {
 
     public static boolean enableTarrs;
 
+    public static int incubationTime;
+    public static int plortPressingTime;
+
     public static void load() {
         Configuration cfg = new Configuration(SplendidSlimes.MODID);
         cfg.setTitle("꒷꒦꒷꒦꒷꒦꒷꒦꒷꒦꒷꒦ Splendid Slimes Config! ꒦꒷꒦꒷꒦꒷꒦꒷꒦꒷꒦꒷");
@@ -38,13 +41,18 @@ public class SlimyConfig {
 
         enableTarrs = cfg.getBoolean("Enable Tarrs", "slimes", true, "If true, Largo Slimes will turn into Tarrs after eating a 3rd Plort instead of just dying.");
 
+        enableTarrs = cfg.getBoolean("Enable Tarrs", "slimes", true, "If true, Largo Slimes will turn into Tarrs after eating a 3rd Plort instead of just dying.");
+
+        incubationTime = cfg.getInt("Slime Incubation Time", "machines", 6000, 1, Integer.MAX_VALUE, "Time it takes for Splendid Slimes to incubate in Slime Incubator");
+        plortPressingTime = cfg.getInt("Plort Pressing Time", "machines", 1200, 20, Integer.MAX_VALUE - 10, "Time it takes to craft items in a Plort Press");
+
         if (cfg.hasChanged()) cfg.save();
     }
 
-    static record ConfigMessage(int slimeStarvingTime, int slimeMaxHappiness, int slimeUnhappyThreshold, int slimeFuriousThreshold, int slimeEffectCooldown,  boolean enableTarrs) {
+    static record ConfigMessage(int slimeStarvingTime, int slimeMaxHappiness, int slimeUnhappyThreshold, int slimeFuriousThreshold, int slimeEffectCooldown,  boolean enableTarrs, int incubationTime, int plortPressingTime) {
 
         public ConfigMessage() {
-            this(SlimyConfig.slimeStarvingTime, SlimyConfig.slimeMaxHappiness, SlimyConfig.slimeUnhappyThreshold, SlimyConfig.slimeFuriousThreshold, SlimyConfig.slimeEffectCooldown, SlimyConfig.enableTarrs);
+            this(SlimyConfig.slimeStarvingTime, SlimyConfig.slimeMaxHappiness, SlimyConfig.slimeUnhappyThreshold, SlimyConfig.slimeFuriousThreshold, SlimyConfig.slimeEffectCooldown, SlimyConfig.enableTarrs, SlimyConfig.incubationTime, SlimyConfig.plortPressingTime);
         }
 
         public static class Provider implements MessageProvider<ConfigMessage> {
@@ -62,11 +70,13 @@ public class SlimyConfig {
                 buf.writeInt(msg.slimeFuriousThreshold);
                 buf.writeInt(msg.slimeEffectCooldown);
                 buf.writeBoolean(msg.enableTarrs);
+                buf.writeInt(msg.incubationTime);
+                buf.writeInt(msg.plortPressingTime);
             }
 
             @Override
             public ConfigMessage read(FriendlyByteBuf buf) {
-                return new ConfigMessage(buf.readInt(), buf.readInt(), buf.readInt(),  buf.readInt(), buf.readInt(), buf.readBoolean());
+                return new ConfigMessage(buf.readInt(), buf.readInt(), buf.readInt(),  buf.readInt(), buf.readInt(), buf.readBoolean(), buf.readInt(), buf.readInt());
             }
 
             @Override
@@ -78,6 +88,8 @@ public class SlimyConfig {
                     SlimyConfig.slimeFuriousThreshold = msg.slimeFuriousThreshold;
                     SlimyConfig.slimeEffectCooldown = msg.slimeEffectCooldown;
                     SlimyConfig.enableTarrs = msg.enableTarrs;
+                    SlimyConfig.incubationTime = msg.incubationTime;
+                    SlimyConfig.plortPressingTime = msg.plortPressingTime;
                 }, ctx);
             }
 

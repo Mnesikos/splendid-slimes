@@ -1,6 +1,7 @@
 package io.github.chakyl.splendidslimes.blockentity;
 
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntity;
+import io.github.chakyl.splendidslimes.SlimyConfig;
 import io.github.chakyl.splendidslimes.block.PlortRippitBlock;
 import io.github.chakyl.splendidslimes.block.SlimeIncubatorBlock;
 import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
@@ -12,7 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class SlimeIncubatorBlockEntity extends BlockEntity implements TickingBlockEntity {
-    private int INCUBATION_TIME = 6000;
+    private int INCUBATION_TIME = SlimyConfig.incubationTime;
     protected int progress = 0;
     protected String slimeType = "";
 

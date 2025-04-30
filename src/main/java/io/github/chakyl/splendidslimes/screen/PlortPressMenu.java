@@ -2,6 +2,7 @@ package io.github.chakyl.splendidslimes.screen;
 
 import io.github.chakyl.splendidslimes.blockentity.PlortPressBlockEntity;
 import io.github.chakyl.splendidslimes.registry.ModElements;
+import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -30,10 +31,12 @@ public class PlortPressMenu extends AbstractContainerMenu {
 
         addPlayerInventory(inv);
         addPlayerHotbar(inv);
-
-        this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
+        this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.UP).ifPresent(iItemHandler -> {
             this.addSlot(new SlotItemHandler(iItemHandler, 0, 80, 8));
-            this.addSlot(new SlotItemHandler(iItemHandler, 1, 80, 57));
+        });
+
+        this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.DOWN).ifPresent(iItemHandler -> {
+            this.addSlot(new SlotItemHandler(iItemHandler, 0, 80, 57));
         });
 
         addDataSlots(data);

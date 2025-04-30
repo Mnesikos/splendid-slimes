@@ -1,6 +1,7 @@
 package io.github.chakyl.splendidslimes.blockentity;
 
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntity;
+import io.github.chakyl.splendidslimes.SlimyConfig;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.block.SlimeIncubatorBlock;
 import io.github.chakyl.splendidslimes.recipe.PlortPressingRecipe;
@@ -9,6 +10,7 @@ import io.github.chakyl.splendidslimes.screen.PlortPressMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
@@ -19,27 +21,39 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
 
 public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEntity, MenuProvider {
-    private final ItemStackHandler itemHandler = new ItemStackHandler(2);
-    private static final int INPUT_SLOT = 0;
-    private static final int OUTPUT_SLOT = 1;
-
     protected final ContainerData data;
     private int progress = 0;
-    private int PRESSING_TIME = 1200;
+    private int PRESSING_TIME = SlimyConfig.plortPressingTime;
 
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
+    private final ItemStackHandler topInventory = new ItemStackHandler(1) {
+        @Override
+        protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
+            setChanged();
+        }
+    };
+    private final ItemStackHandler bottomInventory = new ItemStackHandler(1) {
+        @Override
+        protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
+            setChanged();
+        }
+    };
+
+    private final LazyOptional<ItemStackHandler> topOptional = LazyOptional.of(() -> this.topInventory);
+    private final LazyOptional<ItemStackHandler> bottomOptional = LazyOptional.of(() -> this.bottomInventory);
 
     public PlortPressBlockEntity(BlockPos pos, BlockState state) {
         super(ModElements.BlockEntities.PLORT_PRESS.get(), pos, state);
@@ -71,13 +85,13 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
 
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state) {
-        if (level.getGameTime() % 20 == 0) {
+        if (level.getGameTime() % 10 == 0) {
             if (hasRecipe()) {
                 if (progress == 0) {
                     BlockState newState = state.setValue(SlimeIncubatorBlock.WORKING, true);
                     level.setBlockAndUpdate(pos, newState);
                 }
-                this.progress = this.progress + 20;
+                this.progress = this.progress + 10;
                 setChanged(level, pos, state);
                 if (this.progress >= PRESSING_TIME) {
                     craftItem();
@@ -93,21 +107,41 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
 
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) return lazyItemHandler.cast();
+        if(cap == ForgeCapabilities.ITEM_HANDLER) {
+            if(side == Direction.DOWN) return this.bottomOptional.cast();
+            else return this.topOptional.cast();
+        }
+
         return super.getCapability(cap, side);
     }
 
     @Override
     public void invalidateCaps() {
         super.invalidateCaps();
-        lazyItemHandler.invalidate();
+        this.topOptional.invalidate();
+        this.bottomOptional.invalidate();
+    }
+
+    @Override
+    public void setChanged() {
+        super.setChanged();
+
+        if (this.level != null && this.level.isClientSide())
+            this.level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_ALL);
+    }
+
+    public LazyOptional<ItemStackHandler> getTopOptional() {
+        return this.topOptional;
+    }
+
+    public LazyOptional<ItemStackHandler> getBottomOptional() {
+        return this.bottomOptional;
     }
 
     public void drops() {
-        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
-            inventory.setItem(i, itemHandler.getStackInSlot(i));
-        }
+        SimpleContainer inventory = new SimpleContainer(2);
+        inventory.setItem(0, topInventory.getStackInSlot(0));
+        inventory.setItem(1, bottomInventory.getStackInSlot(0));
         Containers.dropContents(this.level, this.worldPosition, inventory);
     }
 
@@ -122,14 +156,13 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
         ItemStack result = recipe.get().getResultItem(null);
         int resultCount = result.getCount();
 
-        ItemStack outputSlot = this.itemHandler.getStackInSlot(OUTPUT_SLOT);
-        this.itemHandler.extractItem(INPUT_SLOT, recipe.get().getInputItem(null).getCount(), false);
+        ItemStack outputSlot = this.bottomInventory.getStackInSlot(0);
+        this.topInventory.extractItem(0, recipe.get().getInputItem(null).getCount(), false);
         if (outputSlot.getCount() > 0 && canInsertItemIntoOutputSlot(outputSlot, result) && canInsertAmountIntoOutputSlot(outputSlot, resultCount)) {
             outputSlot.setCount(outputSlot.getCount() + resultCount);
         } else {
-            this.itemHandler.setStackInSlot(OUTPUT_SLOT, result.copy());
+            this.bottomInventory.setStackInSlot(0, result.copy());
         }
-
     }
 
     private boolean hasRecipe() {
@@ -138,8 +171,8 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
         ItemStack input = recipe.get().getInputItem(getLevel().registryAccess());
         ItemStack output = recipe.get().getOutputItem(getLevel().registryAccess());
         ItemStack result = recipe.get().getResultItem(getLevel().registryAccess());
-        ItemStack inputSlot = this.itemHandler.getStackInSlot(INPUT_SLOT);
-        ItemStack outputSlot = this.itemHandler.getStackInSlot(OUTPUT_SLOT);
+        ItemStack inputSlot = this.topInventory.getStackInSlot(0);
+        ItemStack outputSlot = this.bottomInventory.getStackInSlot(0);
         if ((output.isEmpty() && (slotMatches(outputSlot, result) && (canInsertAmountIntoOutputSlot(outputSlot, result.getCount()) && canInsertItemIntoOutputSlot(outputSlot, result)))) || validateFusion(input, inputSlot, output, outputSlot)) {
             return true;
         }
@@ -164,31 +197,34 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
     }
 
     private Optional<PlortPressingRecipe> getCurrentRecipe() {
-        SimpleContainer inventory = new SimpleContainer(this.itemHandler.getSlots());
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
-            inventory.setItem(i, this.itemHandler.getStackInSlot(i));
-        }
+        SimpleContainer inventory = new SimpleContainer(2);
+        inventory.setItem(0, topInventory.getStackInSlot(0));
+        inventory.setItem(1, bottomInventory.getStackInSlot(0));
         return this.level.getRecipeManager().getRecipeFor(PlortPressingRecipe.Type.INSTANCE, inventory, level);
     }
 
     @Override
     public void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
-        tag.putInt("plort_press.progress", progress);
         super.saveAdditional(tag);
-    }
-
-    @Override
-    public void onLoad() {
-        super.onLoad();
-        lazyItemHandler = LazyOptional.of(() -> itemHandler);
+        CompoundTag splendidData = new CompoundTag();
+        splendidData.put("TopInventory", this.topInventory.serializeNBT());
+        splendidData.put("BottomInventory", this.bottomInventory.serializeNBT());
+        splendidData.putInt("plort_press.progress", progress);
+        tag.put(SplendidSlimes.MODID, splendidData);
     }
 
     @Override
     public void load(CompoundTag pTag) {
         super.load(pTag);
-        itemHandler.deserializeNBT(pTag.getCompound("inventory"));
-        progress = pTag.getInt("plort_press.progress");
+        CompoundTag splendidData = pTag.getCompound(SplendidSlimes.MODID);
+        if(pTag.contains("TopInventory", Tag.TAG_COMPOUND)) {
+            this.topInventory.deserializeNBT(splendidData.getCompound("TopInventory"));
+        }
+
+        if(pTag.contains("BottomInventory", Tag.TAG_COMPOUND)) {
+            this.bottomInventory.deserializeNBT(splendidData.getCompound("BottomInventory"));
+        }
+        progress = splendidData.getInt("plort_press.progress");
     }
 
 
