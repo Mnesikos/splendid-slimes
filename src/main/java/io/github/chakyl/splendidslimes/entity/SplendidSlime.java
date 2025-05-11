@@ -107,7 +107,7 @@ public class SplendidSlime extends SlimeEntityBase {
                             for (LivingEntity entity : nearbyEntities) {
                                 applyNegativeEffects(entity, slime, secondarySlime);
                             }
-                            runCommands(slime, secondarySlime, true);
+                            executeSlimeCommands(slime, secondarySlime, true);
                         }
                     } else if (happiness >= HAPPY_THRESHOLD) {
                         Double chance = 1 - (((happiness + 1.0) / HAPPY_THRESHOLD));
@@ -116,7 +116,7 @@ public class SplendidSlime extends SlimeEntityBase {
                             for (LivingEntity entity : nearbyEntities) {
                                 applyPositiveEffects(entity, slime, secondarySlime);
                             }
-                            runCommands(slime, secondarySlime, false);
+                            executeSlimeCommands(slime, secondarySlime, false);
                         }
                     }
                 }
@@ -262,30 +262,25 @@ public class SplendidSlime extends SlimeEntityBase {
         return new CommandSourceStack(CommandSource.NULL, Vec3.atCenterOf(pPos), Vec2.ZERO, (ServerLevel) pLevel, 2, s, component, pLevel.getServer(), pPlayer);
     }
 
-    public void runCommands(DynamicHolder<SlimeBreed> slime, DynamicHolder<SlimeBreed> secondarySlime, boolean positive) {
+    public void runCommands(List<String> commands) {
+        CommandSourceStack source = createCommandSourceStack((Player) null, this.level(), this.getOnPos(), this.getDisplayName());
+        source.withEntity(this);
+        source.withSuppressedOutput();
+        for (String command : commands) {
+            this.getServer().getCommands().performPrefixedCommand(source, command.replace("\"", ""));
+        }
+    }
+
+    public void executeSlimeCommands(DynamicHolder<SlimeBreed> slime, DynamicHolder<SlimeBreed> secondarySlime, boolean positive) {
         if (!slime.isBound()) return;
-        List<String> commands;
-        List<String> secondarySlimeCommands = List.of();
         if (positive) {
-            commands = slime.get().positiveCommands();
             if (secondarySlime.isBound()) {
-                secondarySlimeCommands = secondarySlime.get().positiveCommands();
+                runCommands(secondarySlime.get().positiveCommands());
             }
         } else {
-            commands = slime.get().negativeCommands();
+            runCommands(secondarySlime.get().negativeCommands());
             if (secondarySlime.isBound()) {
-                secondarySlimeCommands = secondarySlime.get().negativeCommands();
-            }
-        }
-        if (!secondarySlimeCommands.isEmpty()) {
-            commands.addAll(secondarySlimeCommands);
-        }
-        if (!commands.isEmpty()) {
-            CommandSourceStack source = createCommandSourceStack((Player) null, this.level(), this.getOnPos(), this.getDisplayName());
-            source.withEntity(this);
-            source.withSuppressedOutput();
-            for (String command : commands) {
-                this.getServer().getCommands().performPrefixedCommand(source, command.replace("\"", ""));
+                runCommands(secondarySlime.get().negativeCommands());
             }
         }
     }
