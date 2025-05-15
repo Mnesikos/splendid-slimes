@@ -16,6 +16,7 @@ import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.item.PlortItem;
 import io.github.chakyl.splendidslimes.item.SlimeInventoryItem;
 import io.github.chakyl.splendidslimes.registry.ModElements;
+import io.github.chakyl.splendidslimes.util.SlimeData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -54,24 +55,28 @@ import java.util.List;
  * @param favoriteFood        The itemstack for a slime's favorite food that doubles plort output
  * @param entities            List of Entities a Slime will attack and eat
  * @param favoriteEntity      The Entity for a slime's favorite food that doubles plort output
+ * @param hostileToEntities     List of Entities a Slime will attack and NOT eat
  * @param positiveEmitEffects List of effects that will be emitted in an AoE around the slime when happy
  * @param negativeEmitEffects List of effects that will be emitted in an AoE around the slime when unhappy
  * @param positiveCommands    List of commands that will be executed as the slime when happy
  * @param negativeCommands    List of commands that will be executed as the slime when unhappy
+ * @param attackCommands      List of commands that will be executed periodically when a slime targets a "hostileToEntities" entity
  */
 public record SlimeBreed(String breed, MutableComponent name,
                          ItemStack hat, float hatScale, float hatXOffset, float hatYOffset, float hatZOffset,
                          ItemStack particle, MutableComponent diet, List<Object> foods, ItemStack favoriteFood,
                          List<EntityType<? extends LivingEntity>> entities,
                          EntityType<? extends LivingEntity> favoriteEntity,
+                         List<EntityType<? extends LivingEntity>> hostileToEntities,
                          List<MobEffectInstance> positiveEmitEffects, List<MobEffectInstance> negativeEmitEffects,
                          List<String> positiveCommands,
-                         List<String> negativeCommands) implements CodecProvider<SlimeBreed> {
+                         List<String> negativeCommands,
+                         List<String> attackCommands) implements CodecProvider<SlimeBreed> {
 
     public static final Codec<SlimeBreed> CODEC = new SlimeBreedCodec();
 
     public SlimeBreed(SlimeBreed other) {
-        this(other.breed, other.name, other.hat, other.hatScale, other.hatXOffset, other.hatYOffset, other.hatZOffset, other.particle, other.diet, other.foods, other.favoriteFood, other.entities, other.favoriteEntity, other.positiveEmitEffects, other.negativeEmitEffects, other.positiveCommands, other.negativeCommands);
+        this(other.breed, other.name, other.hat, other.hatScale, other.hatXOffset, other.hatYOffset, other.hatZOffset, other.particle, other.diet, other.foods, other.favoriteFood, other.entities, other.favoriteEntity, other.hostileToEntities, other.positiveEmitEffects, other.negativeEmitEffects, other.positiveCommands, other.negativeCommands, other.attackCommands);
     }
 
     public int getColor() {
@@ -161,8 +166,9 @@ public record SlimeBreed(String breed, MutableComponent name,
                 }
             }
             obj.add("favorite_food", ItemAdapter.ITEM_READER.toJsonTree(input.favoriteFood));
-            obj.addProperty("favorite_entity", EntityType.getKey(input.favoriteEntity).toString());
             obj.add("entities", ItemAdapter.ITEM_READER.toJsonTree(input.entities.stream().map(EntityType::getKey).toList()));
+            obj.addProperty("favorite_entity", EntityType.getKey(input.favoriteEntity).toString());
+            obj.add("hostile_to_entities", ItemAdapter.ITEM_READER.toJsonTree(input.hostileToEntities.stream().map(EntityType::getKey).toList()));
             JsonArray positiveEmitEffects = new JsonArray();
             obj.add("positive_emit_effects", positiveEmitEffects);
             for (Object effect : input.positiveEmitEffects) {
@@ -181,7 +187,12 @@ public record SlimeBreed(String breed, MutableComponent name,
             JsonArray negativeCommands = new JsonArray();
             obj.add("negative_commands", negativeCommands);
             for (String command : input.negativeCommands) {
-                negativeEmitEffects.add(command);
+                negativeCommands.add(command);
+            }
+            JsonArray attackCommands = new JsonArray();
+            obj.add("attack_commands", attackCommands);
+            for (String command : input.attackCommands) {
+                attackCommands.add(command);
             }
             return DataResult.success(JsonOps.INSTANCE.convertTo(ops, obj));
         }
@@ -253,6 +264,14 @@ public record SlimeBreed(String breed, MutableComponent name,
                 if (favoriteEntity == EntityType.PIG && !"minecraft:pig".equals(favoriteEntityStr))
                     throw new JsonParseException("Slime has invalid favorite entity type " + favoriteEntityStr);
             }
+            List<EntityType<? extends LivingEntity>> hostileToEntitites = new ArrayList<>();
+            if (obj.has("hostile_to_entities")) {
+                for (JsonElement json : GsonHelper.getAsJsonArray(obj, "hostile_to_entities")) {
+                    EntityType<? extends LivingEntity> st = (EntityType) ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(json.getAsString()));
+                    if (st != EntityType.PIG || "minecraft:pig".equals(json.getAsString())) hostileToEntitites.add(st);
+                    // Intentionally ignore invalid entries here, so that modded entities can be added without hard deps.
+                }
+            }
             List<MobEffectInstance> positiveEmitEffects = new ArrayList<>();
             if (obj.has("positive_emit_effects")) {
                 for (JsonElement json : GsonHelper.getAsJsonArray(obj, "positive_emit_effects")) {
@@ -268,16 +287,22 @@ public record SlimeBreed(String breed, MutableComponent name,
             List<String> positiveCommands = new ArrayList<>();
             if (obj.has("positive_commands")) {
                 for (JsonElement json : GsonHelper.getAsJsonArray(obj, "positive_commands")) {
-                    positiveCommands.add(String.valueOf(json));
+                    positiveCommands.add(SlimeData.parseCommand(String.valueOf(json)));
                 }
             }
             List<String> negativeCommands = new ArrayList<>();
             if (obj.has("negative_commands")) {
                 for (JsonElement json : GsonHelper.getAsJsonArray(obj, "negative_commands")) {
-                    positiveCommands.add(String.valueOf(json));
+                    positiveCommands.add(SlimeData.parseCommand(String.valueOf(json)));
                 }
             }
-            return DataResult.success(Pair.of(new SlimeBreed(breed, name, hat, hatScale, hatXOffset, hatYOffset, hatZOffset, particle, diet, foods, favoriteFood, entities, favoriteEntity, positiveEmitEffects, negativeEmitEffects, positiveCommands, negativeCommands), input));
+            List<String> attackCommands = new ArrayList<>();
+            if (obj.has("attack_commands")) {
+                for (JsonElement json : GsonHelper.getAsJsonArray(obj, "attack_commands")) {
+                    attackCommands.add(SlimeData.parseCommand(String.valueOf(json)));
+                }
+            }
+            return DataResult.success(Pair.of(new SlimeBreed(breed, name, hat, hatScale, hatXOffset, hatYOffset, hatZOffset, particle, diet, foods, favoriteFood, entities, favoriteEntity, hostileToEntitites, positiveEmitEffects, negativeEmitEffects, positiveCommands, negativeCommands, attackCommands), input));
         }
 
     }

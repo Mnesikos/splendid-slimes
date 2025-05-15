@@ -5,18 +5,15 @@ import dev.shadowsoffire.placebo.tabs.ITabFiller;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
+import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
@@ -70,14 +67,15 @@ public class SlimeInventoryItem extends Item implements ITabFiller {
         stack.getOrCreateTagElement(SLIME).putString(ID, plort.toString());
     }
 
-    public static SplendidSlime getSlimeFromItem(CompoundTag data, Level level) {
-        if (data != null) {
-            EntityType<?> slime = EntityType.byString(data.getString("entity")).orElse(null);
-            if (slime != null) {
-                SplendidSlime slimeEntity = (SplendidSlime) slime.create(level);
-                slimeEntity.load(data);
+    public static SplendidSlime getSlimeFromItem(CompoundTag data, CompoundTag slimeData, Level level) {
+        if (!slimeData.isEmpty() || !data.isEmpty()) {
+                SplendidSlime slimeEntity = new SplendidSlime(ModElements.Entities.SPLENDID_SLIME.get(), level);
+                if (!data.isEmpty()) {
+                    slimeEntity.load(data);
+                } else {
+                    slimeEntity.setSlimeBreed(slimeData.getString("id"));
+                }
                 return slimeEntity;
-            }
         }
         return null;
     }
