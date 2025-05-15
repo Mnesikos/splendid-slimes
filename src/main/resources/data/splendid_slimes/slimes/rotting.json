@@ -17,11 +17,17 @@
     "minecraft:sheep"
   ],
   "favorite_entity": "minecraft:chicken",
+  "hostile_to_entities": [
+    "minecraft:villager"
+  ],
   "negative_emit_effects": [
     {
       "effect": "minecraft:hunger",
       "duration": 220,
       "amplifier": 0
     }
+  ],
+  "attack_commands": [
+    "summon zombie ~ ~ ~ {DeathLootTable:\"minecraft:empty\",Health:8f,ArmorItems:[{},{},{},{id:\"minecraft:slime_block\",Count:1b}],ArmorDropChances:[0.085F,0.085F,0.085F,0.000F],Attributes:[{Name:generic.max_health,Base:8}]}"
   ]
 }

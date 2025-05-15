@@ -30,4 +30,9 @@ public class SlimeData {
         }
         return SlimeBreedRegistry.INSTANCE.holder(new ResourceLocation(breed));
     }
+
+    public static String parseCommand(String command) {
+        if (command == null || command.length() < 3) return "";
+        return command.substring(1, command.length() - 1).replace("\\\"", "\"");
+    }
 }

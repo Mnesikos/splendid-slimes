@@ -14,7 +14,4 @@ public class EffectUtils {
         return SlimeBreedRegistry.INSTANCE.holder(new ResourceLocation(breed));
     }
 
-    public static MobEffectInstance copyEffect(MobEffectInstance effect) {
-        return new MobEffectInstance(effect.getEffect(), effect.getDuration(), effect.getAmplifier());
-    }
 }

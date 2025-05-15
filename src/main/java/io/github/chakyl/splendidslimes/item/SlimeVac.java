@@ -74,7 +74,7 @@ public class SlimeVac extends Item {
             ArrayList<Entity> entities = (ArrayList<Entity>) level.getEntitiesOfClass(entityClass, new AABB(player.getX(), player.getY(), player.getZ(), player.getX(), player.getY(), player.getZ()).inflate(RANGE), EntitySelector.ENTITY_STILL_ALIVE);
 
             if (getMode(handStack) == VacMode.BOTH) {
-                entities.addAll(level.getEntitiesOfClass( ItemEntity.class, new AABB(player.getX(), player.getY(), player.getZ(), player.getX(), player.getY(), player.getZ()).inflate(RANGE), EntitySelector.ENTITY_STILL_ALIVE));
+                entities.addAll(level.getEntitiesOfClass(ItemEntity.class, new AABB(player.getX(), player.getY(), player.getZ(), player.getX(), player.getY(), player.getZ()).inflate(RANGE), EntitySelector.ENTITY_STILL_ALIVE));
             }
             Vec3 look = player.getLookAngle().scale(RANGE);
             Vec3 playPos = player.position();
@@ -121,7 +121,7 @@ public class SlimeVac extends Item {
                 Vec3 barrelPos = getShootLocVec(player, hand == InteractionHand.MAIN_HAND,
                         new Vec3(.45f, -0.5f, 1.0f));
                 if (itemToLaunch == ModElements.Items.SLIME_ITEM.get()) {
-                    projectile = SlimeInventoryItem.getSlimeFromItem(itemStackToLaunch.getTag().getCompound("entity"), level);
+                    projectile = SlimeInventoryItem.getSlimeFromItem(itemStackToLaunch.getTag().getCompound("entity"), itemStackToLaunch.getTag().getCompound("slime"), level);
                     projectile.setDeltaMovement(0, 0, 0);
                     slimeFired = true;
                 } else if (itemToLaunch == Items.ARROW.asItem()) {

@@ -1,14 +1,14 @@
 package io.github.chakyl.splendidslimes;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import dev.shadowsoffire.placebo.config.Configuration;
 import dev.shadowsoffire.placebo.network.MessageHelper;
 import dev.shadowsoffire.placebo.network.MessageProvider;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent.Context;
+
+import java.util.Optional;
+import java.util.function.Supplier;
 
 public class SlimyConfig {
 
@@ -41,18 +41,18 @@ public class SlimyConfig {
 
         enableTarrs = cfg.getBoolean("Enable Tarrs", "slimes", true, "If true, Largo Slimes will turn into Tarrs after eating a 3rd Plort instead of just dying.");
 
-        enableTarrs = cfg.getBoolean("Enable Tarrs", "slimes", true, "If true, Largo Slimes will turn into Tarrs after eating a 3rd Plort instead of just dying.");
-
         incubationTime = cfg.getInt("Slime Incubation Time", "machines", 6000, 1, Integer.MAX_VALUE, "Time it takes for Splendid Slimes to incubate in Slime Incubator");
         plortPressingTime = cfg.getInt("Plort Pressing Time", "machines", 1200, 20, Integer.MAX_VALUE - 10, "Time it takes to craft items in a Plort Press");
 
         if (cfg.hasChanged()) cfg.save();
     }
 
-    static record ConfigMessage(int slimeStarvingTime, int slimeMaxHappiness, int slimeUnhappyThreshold, int slimeFuriousThreshold, int slimeEffectCooldown,  boolean enableTarrs, int incubationTime, int plortPressingTime) {
+    static record ConfigMessage(int slimeStarvingTime, int slimeMaxHappiness, int slimeHappyThreshold,
+                                int slimeUnhappyThreshold, int slimeFuriousThreshold, int slimeEffectCooldown,
+                                boolean enableTarrs, int incubationTime, int plortPressingTime) {
 
         public ConfigMessage() {
-            this(SlimyConfig.slimeStarvingTime, SlimyConfig.slimeMaxHappiness, SlimyConfig.slimeUnhappyThreshold, SlimyConfig.slimeFuriousThreshold, SlimyConfig.slimeEffectCooldown, SlimyConfig.enableTarrs, SlimyConfig.incubationTime, SlimyConfig.plortPressingTime);
+            this(SlimyConfig.slimeStarvingTime, SlimyConfig.slimeMaxHappiness, SlimyConfig.slimeHappyThreshold, SlimyConfig.slimeUnhappyThreshold, SlimyConfig.slimeFuriousThreshold, SlimyConfig.slimeEffectCooldown, SlimyConfig.enableTarrs, SlimyConfig.incubationTime, SlimyConfig.plortPressingTime);
         }
 
         public static class Provider implements MessageProvider<ConfigMessage> {
@@ -66,6 +66,7 @@ public class SlimyConfig {
             public void write(ConfigMessage msg, FriendlyByteBuf buf) {
                 buf.writeInt(msg.slimeStarvingTime);
                 buf.writeInt(msg.slimeMaxHappiness);
+                buf.writeInt(msg.slimeHappyThreshold);
                 buf.writeInt(msg.slimeUnhappyThreshold);
                 buf.writeInt(msg.slimeFuriousThreshold);
                 buf.writeInt(msg.slimeEffectCooldown);
@@ -76,7 +77,7 @@ public class SlimyConfig {
 
             @Override
             public ConfigMessage read(FriendlyByteBuf buf) {
-                return new ConfigMessage(buf.readInt(), buf.readInt(), buf.readInt(),  buf.readInt(), buf.readInt(), buf.readBoolean(), buf.readInt(), buf.readInt());
+                return new ConfigMessage(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readBoolean(), buf.readInt(), buf.readInt());
             }
 
             @Override
@@ -84,6 +85,7 @@ public class SlimyConfig {
                 MessageHelper.handlePacket(() -> {
                     SlimyConfig.slimeStarvingTime = msg.slimeStarvingTime;
                     SlimyConfig.slimeMaxHappiness = msg.slimeMaxHappiness;
+                    SlimyConfig.slimeHappyThreshold = msg.slimeHappyThreshold;
                     SlimyConfig.slimeUnhappyThreshold = msg.slimeUnhappyThreshold;
                     SlimyConfig.slimeFuriousThreshold = msg.slimeFuriousThreshold;
                     SlimyConfig.slimeEffectCooldown = msg.slimeEffectCooldown;
