@@ -37,6 +37,7 @@ import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -55,7 +56,8 @@ import java.util.List;
  * @param favoriteFood        The itemstack for a slime's favorite food that doubles plort output
  * @param entities            List of Entities a Slime will attack and eat
  * @param favoriteEntity      The Entity for a slime's favorite food that doubles plort output
- * @param hostileToEntities     List of Entities a Slime will attack and NOT eat
+ * @param hostileToEntities   List of Entities a Slime will attack and NOT eat
+ * @param traits              List of Slime traits. Documentation for each trait can be found on the wiki
  * @param positiveEmitEffects List of effects that will be emitted in an AoE around the slime when happy
  * @param negativeEmitEffects List of effects that will be emitted in an AoE around the slime when unhappy
  * @param positiveCommands    List of commands that will be executed as the slime when happy
@@ -68,15 +70,18 @@ public record SlimeBreed(String breed, MutableComponent name,
                          List<EntityType<? extends LivingEntity>> entities,
                          EntityType<? extends LivingEntity> favoriteEntity,
                          List<EntityType<? extends LivingEntity>> hostileToEntities,
-                         List<MobEffectInstance> positiveEmitEffects, List<MobEffectInstance> negativeEmitEffects,
+                         List<String> traits,
+                         List<MobEffectInstance> positiveEmitEffects,
+                         List<MobEffectInstance> negativeEmitEffects,
                          List<String> positiveCommands,
                          List<String> negativeCommands,
                          List<String> attackCommands) implements CodecProvider<SlimeBreed> {
 
     public static final Codec<SlimeBreed> CODEC = new SlimeBreedCodec();
+    public static final List<String> POSSIBLE_TRAITS = Arrays.asList("aquatic", "explosive", "feral", "flaming", "foodporting", "largoless", "moody", "photosynthesizing", "spiky");
 
     public SlimeBreed(SlimeBreed other) {
-        this(other.breed, other.name, other.hat, other.hatScale, other.hatXOffset, other.hatYOffset, other.hatZOffset, other.particle, other.diet, other.foods, other.favoriteFood, other.entities, other.favoriteEntity, other.hostileToEntities, other.positiveEmitEffects, other.negativeEmitEffects, other.positiveCommands, other.negativeCommands, other.attackCommands);
+        this(other.breed, other.name, other.hat, other.hatScale, other.hatXOffset, other.hatYOffset, other.hatZOffset, other.particle, other.diet, other.foods, other.favoriteFood, other.entities, other.favoriteEntity, other.hostileToEntities, other.traits, other.positiveEmitEffects, other.negativeEmitEffects, other.positiveCommands, other.negativeCommands, other.attackCommands);
     }
 
     public int getColor() {
@@ -100,6 +105,14 @@ public record SlimeBreed(String breed, MutableComponent name,
         Preconditions.checkNotNull(this.name, "Invalid slime name!");
         Preconditions.checkNotNull(this.diet, "Invalid slime diet!");
         Preconditions.checkNotNull(this.name.getStyle().getColor(), "Invalid entity name color!");
+        if (this.traits != null) {
+            this.traits.forEach((trait) -> {
+                // Why is Java like that????
+                if (!POSSIBLE_TRAITS.contains(trait.replace("\"", ""))) {
+                    throw new NullPointerException("Slime given trait " + trait + " that doesn't exist! Possible values: " + POSSIBLE_TRAITS);
+                }
+            });
+        }
         return this;
     }
 
@@ -169,6 +182,11 @@ public record SlimeBreed(String breed, MutableComponent name,
             obj.add("entities", ItemAdapter.ITEM_READER.toJsonTree(input.entities.stream().map(EntityType::getKey).toList()));
             obj.addProperty("favorite_entity", EntityType.getKey(input.favoriteEntity).toString());
             obj.add("hostile_to_entities", ItemAdapter.ITEM_READER.toJsonTree(input.hostileToEntities.stream().map(EntityType::getKey).toList()));
+            JsonArray traits = new JsonArray();
+            obj.add("traits", traits);
+            for (String trait : input.traits) {
+                traits.add(trait.replace("\"", ""));
+            }
             JsonArray positiveEmitEffects = new JsonArray();
             obj.add("positive_emit_effects", positiveEmitEffects);
             for (Object effect : input.positiveEmitEffects) {
@@ -272,6 +290,12 @@ public record SlimeBreed(String breed, MutableComponent name,
                     // Intentionally ignore invalid entries here, so that modded entities can be added without hard deps.
                 }
             }
+            List<String> traits = new ArrayList<>();
+            if (obj.has("traits")) {
+                for (JsonElement json : GsonHelper.getAsJsonArray(obj, "traits")) {
+                    traits.add(String.valueOf(json).replace("\"", ""));
+                }
+            }
             List<MobEffectInstance> positiveEmitEffects = new ArrayList<>();
             if (obj.has("positive_emit_effects")) {
                 for (JsonElement json : GsonHelper.getAsJsonArray(obj, "positive_emit_effects")) {
@@ -302,7 +326,7 @@ public record SlimeBreed(String breed, MutableComponent name,
                     attackCommands.add(SlimeData.parseCommand(String.valueOf(json)));
                 }
             }
-            return DataResult.success(Pair.of(new SlimeBreed(breed, name, hat, hatScale, hatXOffset, hatYOffset, hatZOffset, particle, diet, foods, favoriteFood, entities, favoriteEntity, hostileToEntitites, positiveEmitEffects, negativeEmitEffects, positiveCommands, negativeCommands, attackCommands), input));
+            return DataResult.success(Pair.of(new SlimeBreed(breed, name, hat, hatScale, hatXOffset, hatYOffset, hatZOffset, particle, diet, foods, favoriteFood, entities, favoriteEntity, hostileToEntitites, traits, positiveEmitEffects, negativeEmitEffects, positiveCommands, negativeCommands, attackCommands), input));
         }
 
     }
