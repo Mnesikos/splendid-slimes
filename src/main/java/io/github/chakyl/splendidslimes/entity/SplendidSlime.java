@@ -5,6 +5,7 @@ import io.github.chakyl.splendidslimes.SlimyConfig;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.registry.ModElements;
+import io.github.chakyl.splendidslimes.util.SlimeData;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -173,6 +174,8 @@ public class SplendidSlime extends SlimeEntityBase {
             CompoundTag plortTag = pStack.getTagElement("plort");
             if (plortTag != null && plortTag.contains("id")) {
                 String id = plortTag.get("id").toString();
+                DynamicHolder<SlimeBreed> newSlime = SlimeData.getSlimeData(id);
+                if (newSlime.isBound() && newSlime.get().traits().contains("largoless")) return false;
                 return !id.contains(this.getSlimeBreed()) && !(!this.getSlimeSecondaryBreed().isEmpty() && id.contains(this.getSlimeSecondaryBreed()));
             }
         }
