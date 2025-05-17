@@ -9,6 +9,7 @@ import io.github.chakyl.splendidslimes.util.SlimeData;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -47,6 +48,7 @@ public class SplendidSlime extends SlimeEntityBase {
     public static final EntityDataAccessor<Integer> HAPPINESS = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> EATING_COOLDOWN = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<String> TARGET_ENTITY = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<Integer> PARTICLE_ANIMATION_TICK = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.INT);
     public static final String SLIME = "slime";
     public static final String ID = "id";
     public static final String DATA = "data";
@@ -60,6 +62,8 @@ public class SplendidSlime extends SlimeEntityBase {
     public ItemEntity itemTarget = null;
     boolean tarred;
     private final EntityType<SlimeEntityBase> entityType;
+    private final int effectRadius = 6;
+    private final int particleAnimationTime = 2;
 
     public SplendidSlime(EntityType<SlimeEntityBase> entityType, Level level) {
         super(entityType, level);
@@ -99,7 +103,7 @@ public class SplendidSlime extends SlimeEntityBase {
                     if (happiness <= UNHAPPY_THRESHOLD) {
                         Double chance = 1 - (((happiness + 1.0) / UNHAPPY_THRESHOLD));
                         if (this.random.nextFloat() <= chance) {
-                            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(6));
+                            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(effectRadius));
                             for (LivingEntity entity : nearbyEntities) {
                                 applyNegativeEffects(this, entity);
                             }
@@ -108,7 +112,7 @@ public class SplendidSlime extends SlimeEntityBase {
                     } else if (happiness >= HAPPY_THRESHOLD) {
                         double chance = 1 - (((happiness + 1.0) / HAPPY_THRESHOLD));
                         if (this.random.nextFloat() <= chance) {
-                            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(6));
+                            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(effectRadius));
                             for (LivingEntity entity : nearbyEntities) {
                                 applyPositiveEffects(this, entity);
                             }
@@ -122,6 +126,33 @@ public class SplendidSlime extends SlimeEntityBase {
                 else if (happiness > 0) addHappiness(-1);
                 else setHappiness(0);
             }
+
+            int particleAnimationTick = getParticleAnimationTick();
+            int animationTime = effectRadius * particleAnimationTime;
+            if (particleAnimationTick > -1 && particleAnimationTick < animationTime) {
+                this.level().broadcastEntityEvent(this, (byte) 3);
+                if (particleAnimationTick + 1 >= animationTime) this.setParticleAnimationTick(-1);
+                else this.setParticleAnimationTick(particleAnimationTick + 1);
+            }
+        }
+    }
+
+    @Override
+    public void handleEntityEvent(byte event) {
+        if (event == 3) {
+            SimpleParticleType particle = this.getSlime().get().emitEffectParticle();
+            int ringPoints = 32;
+            int tickCount = getParticleAnimationTick();
+            for (int i = 0; i < ringPoints; i++) {
+                double radius = ((double) 1 / particleAnimationTime) * (double) tickCount;
+                double angle = 2 * Math.PI * i / ringPoints;
+                double x = this.getRandomX(0.8) + radius * Math.cos(angle);
+                double y = this.getRandomY() + 0.5;
+                double z = this.getRandomZ(0.8) + radius * Math.sin(angle);
+                this.level().addParticle(particle, true, x, y, z, 0.0D, 0.0D, 0.0D);
+            }
+        } else {
+            super.handleEntityEvent(event);
         }
     }
 
@@ -289,6 +320,14 @@ public class SplendidSlime extends SlimeEntityBase {
 
     public void setEatingCooldown(int data) {
         this.entityData.set(EATING_COOLDOWN, data);
+    }
+
+    public int getParticleAnimationTick() {
+        return this.entityData.get(PARTICLE_ANIMATION_TICK);
+    }
+
+    public void setParticleAnimationTick(int data) {
+        this.entityData.set(PARTICLE_ANIMATION_TICK, data);
     }
 
     private boolean hasTrait(String trait) {
@@ -464,6 +503,7 @@ public class SplendidSlime extends SlimeEntityBase {
         this.entityData.define(HAPPINESS, 500);
         this.entityData.define(EATING_COOLDOWN, 0);
         this.entityData.define(TARGET_ENTITY, "");
+        this.entityData.define(PARTICLE_ANIMATION_TICK, 0);
     }
 
     @Override
@@ -472,6 +512,7 @@ public class SplendidSlime extends SlimeEntityBase {
         setEatingCooldown(nbt.getInt("EatingCooldown"));
         setHappiness(nbt.getInt("Happiness"));
         setTargetEntity(nbt.getString("TargetEntity"));
+        setParticleAnimationTick(nbt.getInt("ParticleAnimationTick"));
     }
 
     @Override
@@ -480,6 +521,7 @@ public class SplendidSlime extends SlimeEntityBase {
         nbt.putInt("EatingCooldown", getEatingCooldown());
         nbt.putInt("Happiness", getHappiness());
         nbt.putString("TargetEntity", getTargetEntity());
+        nbt.putInt("ParticleAnimationTick", getParticleAnimationTick());
     }
 
     @Override
