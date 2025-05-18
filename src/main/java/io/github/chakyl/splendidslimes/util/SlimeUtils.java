@@ -21,7 +21,7 @@ import java.util.List;
 
 public class SlimeUtils {
     public static MobEffectInstance copyEffect(MobEffectInstance effect) {
-        return new MobEffectInstance(effect.getEffect(), effect.getDuration(), effect.getAmplifier());
+        return new MobEffectInstance(effect.getEffect(), effect.getDuration(), effect.getAmplifier(), effect.isAmbient(), effect.isVisible());
     }
 
     public static void applyEffects(SplendidSlime slime, LivingEntity entity, List<MobEffectInstance> effects, boolean particles) {

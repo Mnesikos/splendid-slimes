@@ -20,7 +20,6 @@ import io.github.chakyl.splendidslimes.util.SlimeData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -30,7 +29,6 @@ import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -41,6 +39,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static io.github.chakyl.splendidslimes.util.SlimeBreedRegistration.*;
 
 /**
  * Stores all of the information representing a Slime.
@@ -60,6 +60,7 @@ import java.util.List;
  * @param favoriteEntity      The Entity for a slime's favorite food that doubles plort output
  * @param hostileToEntities   List of Entities a Slime will attack and NOT eat
  * @param traits              List of Slime traits. Documentation for each trait can be found on the wiki
+ * @param innateEffects       List of effects applied infinitely to the Slime
  * @param emitEffectParticle  Particle type created when a Slime emits positive/negative effects
  * @param positiveEmitEffects List of effects that will be emitted in an AoE around the slime when happy
  * @param negativeEmitEffects List of effects that will be emitted in an AoE around the slime when unhappy
@@ -74,6 +75,7 @@ public record SlimeBreed(String breed, MutableComponent name,
                          EntityType<? extends LivingEntity> favoriteEntity,
                          List<EntityType<? extends LivingEntity>> hostileToEntities,
                          List<String> traits,
+                         List<MobEffectInstance> innateEffects,
                          SimpleParticleType emitEffectParticle,
                          List<MobEffectInstance> positiveEmitEffects,
                          List<MobEffectInstance> negativeEmitEffects,
@@ -82,10 +84,10 @@ public record SlimeBreed(String breed, MutableComponent name,
                          List<String> attackCommands) implements CodecProvider<SlimeBreed> {
 
     public static final Codec<SlimeBreed> CODEC = new SlimeBreedCodec();
-    public static final List<String> POSSIBLE_TRAITS = Arrays.asList("aquatic", "defiant", "explosive", "feral", "flaming", "foodporting", "handy", "largoless", "moody", "photosynthesizing", "spiky");
+    public static final List<String> POSSIBLE_TRAITS = Arrays.asList("aquatic", "defiant", "explosive", "feral", "flaming", "floating", "foodporting", "handy", "largoless", "moody", "photosynthesizing", "spiky");
 
     public SlimeBreed(SlimeBreed other) {
-        this(other.breed, other.name, other.hat, other.hatScale, other.hatXOffset, other.hatYOffset, other.hatZOffset, other.particle, other.diet, other.foods, other.favoriteFood, other.entities, other.favoriteEntity, other.hostileToEntities, other.traits, other.emitEffectParticle, other.positiveEmitEffects, other.negativeEmitEffects, other.positiveCommands, other.negativeCommands, other.attackCommands);
+        this(other.breed, other.name, other.hat, other.hatScale, other.hatXOffset, other.hatYOffset, other.hatZOffset, other.particle, other.diet, other.foods, other.favoriteFood, other.entities, other.favoriteEntity, other.hostileToEntities, other.traits, other.innateEffects, other.emitEffectParticle, other.positiveEmitEffects, other.negativeEmitEffects, other.positiveCommands, other.negativeCommands, other.attackCommands);
     }
 
     public int getColor() {
@@ -123,37 +125,6 @@ public record SlimeBreed(String breed, MutableComponent name,
     @Override
     public Codec<? extends SlimeBreed> getCodec() {
         return CODEC;
-    }
-
-    private static JsonObject getEffectJson(Object effect) {
-        JsonObject jsonEffect = new JsonObject();
-        if (effect.getClass() == MobEffectInstance.class) {
-            jsonEffect.addProperty("effect", BuiltInRegistries.MOB_EFFECT.getKey(((MobEffectInstance) effect).getEffect()).toString());
-            jsonEffect.addProperty("duration", ((MobEffectInstance) effect).getDuration());
-            jsonEffect.addProperty("amplifier", ((MobEffectInstance) effect).getAmplifier());
-        }
-        return jsonEffect;
-    }
-
-    private static MobEffectInstance getEffectFromJson(JsonElement jsonElement) {
-        MobEffect postiveEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("minecraft:slowness"));
-        int duration = 40;
-        int amplifier = 0;
-        if (jsonElement.getAsJsonObject().has("effect"))
-            postiveEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(jsonElement.getAsJsonObject().get("effect").getAsString()));
-        if (jsonElement.getAsJsonObject().has("duration"))
-            duration = jsonElement.getAsJsonObject().get("duration").getAsInt();
-        if (jsonElement.getAsJsonObject().has("amplifier"))
-            amplifier = jsonElement.getAsJsonObject().get("amplifier").getAsInt();
-        return new MobEffectInstance(postiveEffect, duration, amplifier, false, false);
-    }
-
-    private static String getParticleTypeJson(SimpleParticleType particleType) {
-        return ForgeRegistries.PARTICLE_TYPES.getKey(particleType).toString();
-    }
-
-    private static SimpleParticleType getParticleTypeFromJson(JsonElement jsonElement) {
-        return (SimpleParticleType) ForgeRegistries.PARTICLE_TYPES.getValue(new ResourceLocation(jsonElement.getAsString()));
     }
 
     public static class SlimeBreedCodec implements Codec<SlimeBreed> {
@@ -199,16 +170,21 @@ public record SlimeBreed(String breed, MutableComponent name,
             for (String trait : input.traits) {
                 traits.add(trait.replace("\"", ""));
             }
+            JsonArray innateEffects = new JsonArray();
+            obj.add("innate_effects", innateEffects);
+            for (Object effect : input.innateEffects) {
+                innateEffects.add(getEffectJson(effect, true));
+            }
             obj.addProperty("emit_effect_particle", getParticleTypeJson(input.emitEffectParticle));
             JsonArray positiveEmitEffects = new JsonArray();
             obj.add("positive_emit_effects", positiveEmitEffects);
             for (Object effect : input.positiveEmitEffects) {
-                positiveEmitEffects.add(getEffectJson(effect));
+                positiveEmitEffects.add(getEffectJson(effect, false));
             }
             JsonArray negativeEmitEffects = new JsonArray();
             obj.add("negative_emit_effects", negativeEmitEffects);
             for (Object effect : input.negativeEmitEffects) {
-                negativeEmitEffects.add(getEffectJson(effect));
+                negativeEmitEffects.add(getEffectJson(effect, false));
             }
             JsonArray positiveCommands = new JsonArray();
             obj.add("positive_commands", positiveCommands);
@@ -309,6 +285,12 @@ public record SlimeBreed(String breed, MutableComponent name,
                     traits.add(String.valueOf(json).replace("\"", ""));
                 }
             }
+            List<MobEffectInstance> innateEffects = new ArrayList<>();
+            if (obj.has("innate_effects")) {
+                for (JsonElement json : GsonHelper.getAsJsonArray(obj, "innate_effects")) {
+                    innateEffects.add(getEffectFromJson(json, true));
+                }
+            }
             SimpleParticleType emitEffectParticleType = ParticleTypes.EFFECT;
             if (obj.has("emit_effect_particle")) {
                 emitEffectParticleType = getParticleTypeFromJson(obj.get("emit_effect_particle"));
@@ -316,13 +298,13 @@ public record SlimeBreed(String breed, MutableComponent name,
             List<MobEffectInstance> positiveEmitEffects = new ArrayList<>();
             if (obj.has("positive_emit_effects")) {
                 for (JsonElement json : GsonHelper.getAsJsonArray(obj, "positive_emit_effects")) {
-                    positiveEmitEffects.add(getEffectFromJson(json));
+                    positiveEmitEffects.add(getEffectFromJson(json, false));
                 }
             }
             List<MobEffectInstance> negativeEmitEffects = new ArrayList<>();
             if (obj.has("negative_emit_effects")) {
                 for (JsonElement json : GsonHelper.getAsJsonArray(obj, "negative_emit_effects")) {
-                    negativeEmitEffects.add(getEffectFromJson(json));
+                    negativeEmitEffects.add(getEffectFromJson(json, false));
                 }
             }
             List<String> positiveCommands = new ArrayList<>();
@@ -343,7 +325,7 @@ public record SlimeBreed(String breed, MutableComponent name,
                     attackCommands.add(SlimeData.parseCommand(String.valueOf(json)));
                 }
             }
-            return DataResult.success(Pair.of(new SlimeBreed(breed, name, hat, hatScale, hatXOffset, hatYOffset, hatZOffset, particle, diet, foods, favoriteFood, entities, favoriteEntity, hostileToEntitites, traits, emitEffectParticleType, positiveEmitEffects, negativeEmitEffects, positiveCommands, negativeCommands, attackCommands), input));
+            return DataResult.success(Pair.of(new SlimeBreed(breed, name, hat, hatScale, hatXOffset, hatYOffset, hatZOffset, particle, diet, foods, favoriteFood, entities, favoriteEntity, hostileToEntitites, traits, innateEffects, emitEffectParticleType, positiveEmitEffects, negativeEmitEffects, positiveCommands, negativeCommands, attackCommands), input));
         }
 
     }

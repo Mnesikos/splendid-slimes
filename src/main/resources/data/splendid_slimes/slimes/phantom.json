@@ -8,5 +8,6 @@
   "foods": [{ "tag": "minecraft:beds" }],
   "favorite_food": {
     "item": "minecraft:purple_bed"
-  }
+  },
+  "traits": ["floating"]
 }

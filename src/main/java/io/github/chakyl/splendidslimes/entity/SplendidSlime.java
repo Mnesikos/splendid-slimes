@@ -2,6 +2,7 @@ package io.github.chakyl.splendidslimes.entity;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.SlimyConfig;
+import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import io.github.chakyl.splendidslimes.util.SlimeData;
@@ -19,6 +20,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -37,7 +40,6 @@ import net.minecraft.world.level.ServerLevelAccessor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -98,6 +100,11 @@ public class SplendidSlime extends SlimeEntityBase {
             if (eatCooldown > 0) {
                 setEatingCooldown(eatCooldown - 1);
             }
+            if (this.tickCount == 2) {
+                DynamicHolder<SlimeBreed> slime = this.getSlime();
+                if (slime.isBound()) applyEffects(this, this, slime.get().innateEffects(), false);
+            }
+
             if (this.tickCount % SLIME_EFFECT_COOLDOWN == 0) {
                 DynamicHolder<SlimeBreed> slime = getSlime();
                 if (slime.isBound()) {
@@ -127,6 +134,9 @@ public class SplendidSlime extends SlimeEntityBase {
                 }
             }
             if (this.tickCount % 600 == 0) {
+                if (this.hasTrait("floating") && this.random.nextFloat() <= 0.65) {
+                    this.addEffect(new MobEffectInstance(MobEffects.LEVITATION, this.random.nextIntBetweenInclusive(10, 300), 0, true, false ));
+                }
                 if (happiness > MAX_HAPPINESS) setHappiness(MAX_HAPPINESS - 1);
                 else if (happiness > 0) {
                     if (this.hasTrait("aquatic") && !this.isInWater()) {
@@ -467,8 +477,11 @@ public class SplendidSlime extends SlimeEntityBase {
                     atePlort = true;
                     if (this.getSlimeSecondaryBreed().isEmpty()) {
                         if (this.getSize() < 4) this.setSize(this.getSize() + 1, false);
+
                         this.playSound(SoundEvents.AMETHYST_BLOCK_STEP, 1.0F, 0.9F);
                         this.setSlimeSecondaryBreed(plortTag.get("id").toString().replace("\"", ""));
+                        DynamicHolder<SlimeBreed> secondaryBreed = this.getSecondarySlime();
+                        if (secondaryBreed.isBound()) applyEffects(this, this, secondaryBreed.get().innateEffects(), false);
                     } else {
                         causeChaos();
                     }

@@ -23,7 +23,15 @@
     "minecraft:husk",
     "minecraft:stray",
     "minecraft:drowned",
-    "minecraft:creeper"
+    "minecraft:creeper",
+    "minecraft:spider",
+    "minecraft:cave_spider"
   ],
-  "favorite_entity": "minecraft:skeleton"
+  "favorite_entity": "minecraft:skeleton",
+  "innate_effects": [
+    {
+      "effect": "minecraft:strength",
+      "amplifier": 0
+    }
+  ]
 }

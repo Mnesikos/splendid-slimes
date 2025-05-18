@@ -16,10 +16,18 @@
     "minecraft:drowned",
     "minecraft:creeper",
     "minecraft:wither",
-    "minecraft:warden"
+    "minecraft:warden",
+    "minecraft:spider",
+    "minecraft:cave_spider"
   ],
   "favorite_entity": "minecraft:enderman",
-  "traits": ["feral", "defiant"],
+  "traits": ["feral", "defiant", "floating"],
+  "innate_effects": [
+    {
+      "effect": "minecraft:strength",
+      "amplifier": 2
+    }
+  ],
   "positive_emit_effects": [
     {
       "effect": "minecraft:regeneration",
