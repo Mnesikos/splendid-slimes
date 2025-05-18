@@ -1,26 +1,26 @@
 package io.github.chakyl.splendidslimes.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
-import io.github.chakyl.splendidslimes.data.SlimeBreed;
+import com.mojang.math.Axis;
 import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
-import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Quaternionf;
 
-public class SlimeHatLayer<T extends Entity> extends RenderLayer<T, SlimeEntityModel<T>> {
-    public SlimeHatLayer(RenderLayerParent<T, SlimeEntityModel<T>> renderer) {
-
+public class SlimeHandyLayer<T extends Entity> extends RenderLayer<T, SlimeEntityModel<T>> {
+    private final ItemInHandRenderer itemInHandRenderer;
+    public SlimeHandyLayer(RenderLayerParent<T, SlimeEntityModel<T>> renderer, ItemInHandRenderer pItemInHandRenderer) {
         super(renderer);
+        this.itemInHandRenderer = pItemInHandRenderer;
     }
 
     protected void scale(SlimeEntityBase slimeEntityBase, PoseStack poseStack, float partialTickTime) {
@@ -38,27 +38,19 @@ public class SlimeHatLayer<T extends Entity> extends RenderLayer<T, SlimeEntityM
     public void render(PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, T pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTick, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
 
         if (pLivingEntity.isAlive() && !pLivingEntity.isInvisible()) {
-
-            DynamicHolder<SlimeBreed> slime = ((SlimeEntityBase) pLivingEntity).getHatSlime();
-            if (!slime.isBound()) return;
-            SlimeBreed breed = slime.get();
-            ItemStack stack = breed.hat();
-            if (stack.getItem() == ModElements.Items.HAT.get()) {
-                stack.getOrCreateTagElement("slime").putString("id", SplendidSlimes.MODID + ":" + breed.breed());
+            ItemStack stack = null;
+            Iterable<ItemStack> handSlots = pLivingEntity.getHandSlots();
+            for (ItemStack handItem : handSlots) {
+                if (!handItem.isEmpty()) stack = handItem;
             }
-            if (stack.isEmpty()) {
+            if (stack == null || stack.isEmpty()) {
                 return;
             }
             if (!stack.isEmpty()) {
                 pPoseStack.pushPose();
-                float scaleFactor = breed.hatScale();
-                pPoseStack.mulPose(new Quaternionf().rotateX(Mth.PI).rotateY(Mth.PI));
-                pPoseStack.scale(scaleFactor, scaleFactor, scaleFactor);
-                pPoseStack.translate(breed.hatXOffset(), breed.hatYOffset(), breed.hatZOffset());
-                Minecraft.getInstance()
-                        .getItemRenderer()
-                        .renderStatic(stack, ItemDisplayContext.GROUND, pPackedLight, OverlayTexture.NO_OVERLAY, pPoseStack, pBuffer, pLivingEntity.level(), (int) pLivingEntity.blockPosition()
-                                .asLong());
+                pPoseStack.translate(0.25, 1F, -0.25f);
+                pPoseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+                this.itemInHandRenderer.renderItem((LivingEntity) pLivingEntity, stack, ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, false, pPoseStack, pBuffer, pPackedLight);
                 pPoseStack.popPose();
             }
 

@@ -15,12 +15,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
@@ -40,6 +42,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -79,11 +82,6 @@ public class SplendidSlime extends SlimeEntityBase {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new SlimeFloatGoal(this));
-        if (this.getHappiness() < FURIOUS_THRESHOLD || hasTrait("feral")) {
-            this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, (p_289461_) -> {
-                return Math.abs(p_289461_.getY() - this.getY()) <= 4.0D;
-            }));
-        }
         this.goalSelector.addGoal(2, new SlimeTargetItemGoal(this, 60));
         this.goalSelector.addGoal(2, new SlimeAttackEntities(this, true, 60, null));
         this.goalSelector.addGoal(2, new SlimeAttackGoal(this));
@@ -102,7 +100,10 @@ public class SplendidSlime extends SlimeEntityBase {
             }
             if (this.tickCount == 2) {
                 DynamicHolder<SlimeBreed> slime = this.getSlime();
+                DynamicHolder<SlimeBreed> secondarySlime = this.getSecondarySlime();
                 if (slime.isBound()) applyEffects(this, this, slime.get().innateEffects(), false);
+                if (secondarySlime.isBound()) applyEffects(this, this, secondarySlime.get().innateEffects(), false);
+
             }
 
             if (this.tickCount % SLIME_EFFECT_COOLDOWN == 0) {
@@ -135,7 +136,7 @@ public class SplendidSlime extends SlimeEntityBase {
             }
             if (this.tickCount % 600 == 0) {
                 if (this.hasTrait("floating") && this.random.nextFloat() <= 0.65) {
-                    this.addEffect(new MobEffectInstance(MobEffects.LEVITATION, this.random.nextIntBetweenInclusive(10, 300), 0, true, false ));
+                    this.addEffect(new MobEffectInstance(MobEffects.LEVITATION, this.random.nextIntBetweenInclusive(10, 300), 0, true, false));
                 }
                 if (happiness > MAX_HAPPINESS) setHappiness(MAX_HAPPINESS - 1);
                 else if (happiness > 0) {
@@ -244,7 +245,6 @@ public class SplendidSlime extends SlimeEntityBase {
             if (pStack == secondarySlime.favoriteFood()) return true;
             return checkFoods(pStack, secondarySlime.foods());
         }
-
         return false;
     }
 
@@ -266,12 +266,26 @@ public class SplendidSlime extends SlimeEntityBase {
     public List<EntityType<? extends LivingEntity>> getEdibleMobs() {
         DynamicHolder<SlimeBreed> slime = getSlime();
         if (!slime.isBound()) return null;
+        DynamicHolder<SlimeBreed> secondarySlime = getSecondarySlime();
+        if (secondarySlime.isBound()) {
+            List<EntityType<? extends LivingEntity>> edibleMobs = new ArrayList<>();
+            edibleMobs.addAll(slime.get().entities());
+            edibleMobs.addAll(secondarySlime.get().entities());
+            return edibleMobs;
+        }
         return slime.get().entities();
     }
 
     public List<EntityType<? extends LivingEntity>> getHostileToMobs() {
         DynamicHolder<SlimeBreed> slime = getSlime();
         if (!slime.isBound()) return null;
+        DynamicHolder<SlimeBreed> secondarySlime = getSecondarySlime();
+        if (secondarySlime.isBound()) {
+            List<EntityType<? extends LivingEntity>> hostileTo = new ArrayList<>();
+            hostileTo.addAll(slime.get().hostileToEntities());
+            hostileTo.addAll(secondarySlime.get().hostileToEntities());
+            return hostileTo;
+        }
         return slime.get().hostileToEntities();
     }
 
@@ -382,7 +396,7 @@ public class SplendidSlime extends SlimeEntityBase {
 
     public void push(Entity pEntity) {
         super.push(pEntity);
-        if (this.isDealsDamage() && this.hasTrait("flaming")) {
+        if (this.hasTrait("flaming")) {
             if (!(pEntity instanceof SplendidSlime && ((SplendidSlime) pEntity).hasTrait("flaming")))
                 pEntity.setSecondsOnFire(3);
         }
@@ -390,14 +404,24 @@ public class SplendidSlime extends SlimeEntityBase {
         List<EntityType<? extends LivingEntity>> edibleMobs = getEdibleMobs();
         if (edibleMobs == null) return;
         for (EntityType mobType : edibleMobs) {
-            if (pEntity.getType() == mobType && this.isDealsDamage()) {
+            if (pEntity.getType() == mobType) {
                 this.dealDamage((LivingEntity) pEntity);
                 applyNegativeEffects(this, (LivingEntity) pEntity, false);
-                if (((LivingEntity) pEntity).getHealth() <= 0 && ((LivingEntity) pEntity).getKillCredit() == this) {
-                    handleFeed(getFavoriteEntity((EntityType<? extends LivingEntity>) pEntity.getType()));
-                }
             }
         }
+    }
+
+    @Override
+    public boolean killedEntity(ServerLevel pLevel, LivingEntity pEntity) {
+        if (notHungry()) return true;
+        List<EntityType<? extends LivingEntity>> edibleMobs = getEdibleMobs();
+        if (edibleMobs == null) return true;
+        for (EntityType mobType : edibleMobs) {
+            if (pEntity.getType() == mobType) {
+                handleFeed(getFavoriteEntity((EntityType<? extends LivingEntity>) pEntity.getType()));
+            }
+        }
+        return true;
     }
 
     public void playerTouch(Player pEntity) {
@@ -467,6 +491,7 @@ public class SplendidSlime extends SlimeEntityBase {
 
     }
 
+    @Override
     protected void pickUpItem(ItemEntity itemEntity) {
         ItemStack item = itemEntity.getItem();
         boolean atePlort = false;
@@ -477,11 +502,11 @@ public class SplendidSlime extends SlimeEntityBase {
                     atePlort = true;
                     if (this.getSlimeSecondaryBreed().isEmpty()) {
                         if (this.getSize() < 4) this.setSize(this.getSize() + 1, false);
-
                         this.playSound(SoundEvents.AMETHYST_BLOCK_STEP, 1.0F, 0.9F);
                         this.setSlimeSecondaryBreed(plortTag.get("id").toString().replace("\"", ""));
                         DynamicHolder<SlimeBreed> secondaryBreed = this.getSecondarySlime();
-                        if (secondaryBreed.isBound()) applyEffects(this, this, secondaryBreed.get().innateEffects(), false);
+                        if (secondaryBreed.isBound())
+                            applyEffects(this, this, secondaryBreed.get().innateEffects(), false);
                     } else {
                         causeChaos();
                     }
@@ -512,6 +537,19 @@ public class SplendidSlime extends SlimeEntityBase {
             }
         }
         return super.hurt(pSource, pAmount);
+    }
+
+    @Override
+    protected InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
+        if (!pPlayer.getMainHandItem().isEmpty() && this.hasTrait("handy")) {
+            ItemStack itemstack = pPlayer.getMainHandItem();
+            ItemStack itemstack1 = this.equipItemIfPossible(itemstack.copy());
+            if (!itemstack1.isEmpty()) {
+                itemstack.shrink(itemstack1.getCount());
+                return InteractionResult.SUCCESS;
+            }
+        }
+        return InteractionResult.FAIL;
     }
 
     @Override
