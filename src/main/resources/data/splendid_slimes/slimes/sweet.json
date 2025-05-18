@@ -9,6 +9,13 @@
   "favorite_food": {
     "item": "minecraft:glow_berries"
   },
+  "traits": ["moody"],
+  "innate_effects": [
+    {
+      "effect": "minecraft:speed",
+      "amplifier": 2
+    }
+  ],
   "positive_emit_effects": [
     {
       "effect": "minecraft:speed",

@@ -9,6 +9,7 @@
     { "tag": "splendid_slimes:animal_spawn_eggs" },
     { "tag": "splendid_slimes:monster_spawn_eggs" }
   ],
+  "traits": ["defiant", "handy"],
   "entities": [
     "minecraft:chicken",
     "minecraft:cow",
@@ -22,7 +23,17 @@
     "minecraft:husk",
     "minecraft:stray",
     "minecraft:drowned",
-    "minecraft:creeper"
+    "minecraft:creeper",
+    "minecraft:warden",
+    "minecraft:wither",
+    "minecraft:spider",
+    "minecraft:cave_spider"
   ],
-  "favorite_entity": "minecraft:skeleton"
+  "favorite_entity": "minecraft:skeleton",
+  "innate_effects": [
+    {
+      "effect": "minecraft:strength",
+      "amplifier": 0
+    }
+  ]
 }

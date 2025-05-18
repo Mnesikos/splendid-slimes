@@ -13,6 +13,14 @@
     "minecraft:tropical_fish"
   ],
   "favorite_entity": "minecraft:tropical_fish",
+  "traits": ["aquatic", "spiky"],
+  "innate_effects": [
+    {
+      "effect": "minecraft:water_breathing",
+      "amplifier": 0
+    }
+  ],
+  "emit_effect_particle": "minecraft:splash",
   "negative_emit_effects": [
     {
       "effect": "minecraft:mining_fatigue",

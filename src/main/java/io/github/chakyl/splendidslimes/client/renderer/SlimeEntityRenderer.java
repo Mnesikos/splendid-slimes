@@ -3,9 +3,11 @@ package io.github.chakyl.splendidslimes.client.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.client.model.SlimeEntityModel;
+import io.github.chakyl.splendidslimes.client.model.SlimeHandyLayer;
 import io.github.chakyl.splendidslimes.client.model.SlimeHatLayer;
 import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -18,18 +20,20 @@ import java.util.Map;
 
 public class SlimeEntityRenderer extends MobRenderer<SlimeEntityBase, SlimeEntityModel<SlimeEntityBase>> {
     public static final ModelLayerLocation SPLENDID_SLIME_BASE = new ModelLayerLocation(new ResourceLocation(SplendidSlimes.MODID, "main"), "main");
-    public static final ModelLayerLocation HAT_LAYER =new ModelLayerLocation(new ResourceLocation(SplendidSlimes.MODID, "main"), "main");
+    public static final ModelLayerLocation HAT_LAYER = new ModelLayerLocation(new ResourceLocation(SplendidSlimes.MODID, "main"), "main");
     private static Map<String, ResourceLocation> cache = new HashMap<>();
 
     public SlimeEntityRenderer(EntityRendererProvider.Context context) {
         super(context, new SlimeEntityModel<>(context.bakeLayer(SPLENDID_SLIME_BASE)), 0.25F);
         addLayer(new SlimeHatLayer<>(this));
+        addLayer(new SlimeHandyLayer<>(this, context.getItemInHandRenderer()));
     }
 
     public void render(SlimeEntityBase slimeEntityBase, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
         this.shadowRadius = 0.25F * (float) slimeEntityBase.getSize();
         super.render(slimeEntityBase, entityYaw, partialTicks, poseStack, multiBufferSource, packedLight);
     }
+
     @Override
     protected RenderType getRenderType(SlimeEntityBase p_230496_1_, boolean p_230496_2_, boolean p_230496_3_, boolean p_230496_4_) {
         ResourceLocation resourcelocation = this.getTextureLocation(p_230496_1_);

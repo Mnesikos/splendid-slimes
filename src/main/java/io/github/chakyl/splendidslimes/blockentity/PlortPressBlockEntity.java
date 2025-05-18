@@ -184,7 +184,6 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
     }
 
     private boolean validateFusion(ItemStack input, ItemStack inputSlot, ItemStack output, ItemStack outputSlot) {
-
         return slotMatches(inputSlot, input) && slotMatches(outputSlot, output) && outputSlot.getCount() == output.getCount();
     }
 

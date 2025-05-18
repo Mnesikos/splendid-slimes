@@ -30,7 +30,7 @@ public class PlortModel implements BakedModel {
     @SuppressWarnings("deprecation")
     public PlortModel(BakedModel original, ModelBakery loader) {
         this.original = original;
-        this.overrides = new ItemOverrides(){
+        this.overrides = new ItemOverrides() {
             @Override
             public BakedModel resolve(BakedModel original, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
                 BakedModel specific = PlortModel.this.resolve(original, stack, world, entity, seed);

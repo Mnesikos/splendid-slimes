@@ -7,6 +7,9 @@
     "minecraft:husk_spawn_egg",
     "minecraft:stray_spawn_egg",
     "minecraft:drowned_spawn_egg",
-    "minecraft:creeper_spawn_egg"
+    "minecraft:creeper_spawn_egg",
+    "minecraft:warden_spawn_egg",
+    "minecraft:spider",
+    "minecraft:cave_spider"
   ]
 }
