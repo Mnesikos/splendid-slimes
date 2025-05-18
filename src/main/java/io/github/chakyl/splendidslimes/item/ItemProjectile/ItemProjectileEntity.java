@@ -82,12 +82,9 @@ public class ItemProjectileEntity extends AbstractHurtingProjectile implements I
         if (target instanceof WitherBoss && ((WitherBoss) target).isPowered())
             return;
 
-
-        boolean targetIsEnderman = target.getType() == EntityType.ENDERMAN;
-
         boolean onServer = !level().isClientSide;
 
-        if (targetIsEnderman)
+        if (target.getType() == EntityType.ENDERMAN)
             return;
 
         if (!(target instanceof LivingEntity)) {

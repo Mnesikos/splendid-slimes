@@ -12,6 +12,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
@@ -23,18 +24,14 @@ public class SlimeUtils {
         return new MobEffectInstance(effect.getEffect(), effect.getDuration(), effect.getAmplifier());
     }
 
-    public static void renderParticles(SlimeBreed breed, SplendidSlime slime) {
-
-    }
-
-    public static void applyEffects(SlimeBreed breed, SplendidSlime slime, LivingEntity entity, List<MobEffectInstance> effects) {
-        slime.setParticleAnimationTick(0);
+    public static void applyEffects(SplendidSlime slime, LivingEntity entity, List<MobEffectInstance> effects, boolean particles) {
+        if (particles) slime.setParticleAnimationTick(0);
         for (MobEffectInstance effect : effects) {
             if (effect != null && entity != null) entity.addEffect(copyEffect(effect));
         }
     }
 
-    public static void applyNegativeEffects(SplendidSlime splendidSlime, LivingEntity entity) {
+    public static void applyNegativeEffects(SplendidSlime splendidSlime, LivingEntity entity, boolean particles) {
         DynamicHolder<SlimeBreed> slime = splendidSlime.getSlime();
         DynamicHolder<SlimeBreed> secondarySlime = splendidSlime.getSecondarySlime();
         if (!slime.isBound()) return;
@@ -43,16 +40,16 @@ public class SlimeUtils {
             if (secondarySlime.isBound()) {
                 List<MobEffectInstance> secondarySlimeEffects = secondarySlime.get().negativeEmitEffects();
                 if (!secondarySlimeEffects.isEmpty()) {
-                    applyEffects(secondarySlime.get(), splendidSlime, entity, secondarySlimeEffects);
+                    applyEffects(splendidSlime, entity, secondarySlimeEffects, particles);
                 }
             }
             if (!effects.isEmpty()) {
-                applyEffects(slime.get(), splendidSlime, entity, effects);
+                applyEffects(splendidSlime, entity, effects, particles);
             }
         }
     }
 
-    public static void applyPositiveEffects(SplendidSlime splendidSlime, LivingEntity entity) {
+    public static void applyPositiveEffects(SplendidSlime splendidSlime, LivingEntity entity, boolean particles) {
         DynamicHolder<SlimeBreed> slime = splendidSlime.getSlime();
         DynamicHolder<SlimeBreed> secondarySlime = splendidSlime.getSecondarySlime();
         if (!slime.isBound()) return;
@@ -60,11 +57,11 @@ public class SlimeUtils {
         if (secondarySlime.isBound()) {
             List<MobEffectInstance> secondarySlimeEffects = secondarySlime.get().positiveEmitEffects();
             if (!secondarySlimeEffects.isEmpty()) {
-                applyEffects(secondarySlime.get(), splendidSlime, entity, secondarySlimeEffects);
+                applyEffects(splendidSlime, entity, secondarySlimeEffects, particles);
             }
         }
         if (!effects.isEmpty()) {
-            applyEffects(slime.get(), splendidSlime, entity, effects);
+            applyEffects(splendidSlime, entity, effects, particles);
         }
     }
 
@@ -102,6 +99,21 @@ public class SlimeUtils {
             runCommands(splendidSlime, slime.get().negativeCommands());
             if (secondarySlime.isBound()) {
                 runCommands(splendidSlime, secondarySlime.get().negativeCommands());
+            }
+        }
+    }
+
+    public static void handleHungryTraits(SplendidSlime splendidSlime) {
+        double chance = 1 - (((splendidSlime.getEatingCooldown() + 1.0) / SplendidSlime.SLIME_HUNGRY_THRESHOLD));
+        if (splendidSlime.getRandom().nextFloat() <= chance) {
+            if (splendidSlime.hasTrait("explosive")) {
+                splendidSlime.level().explode(splendidSlime, splendidSlime.getX(), splendidSlime.getY(), splendidSlime.getZ(), splendidSlime.hasTrait("flaming") ? 3f : 4f, splendidSlime.hasTrait("flaming"), Level.ExplosionInteraction.NONE);
+            }
+            if (splendidSlime.hasTrait("flaming")) {
+                BlockPos blockpos = splendidSlime.getOnPos();
+                if (splendidSlime.level().isEmptyBlock(blockpos)) {
+                    splendidSlime.level().setBlockAndUpdate(blockpos, BaseFireBlock.getState(splendidSlime.level(), blockpos));
+                }
             }
         }
     }

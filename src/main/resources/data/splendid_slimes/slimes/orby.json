@@ -9,6 +9,7 @@
     { "tag": "splendid_slimes:animal_spawn_eggs" },
     { "tag": "splendid_slimes:monster_spawn_eggs" }
   ],
+  "traits": ["defiant"],
   "entities": [
     "minecraft:chicken",
     "minecraft:cow",
