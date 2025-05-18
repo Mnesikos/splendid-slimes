@@ -3,21 +3,19 @@ package io.github.chakyl.splendidslimes.client.model;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import org.joml.Quaternionf;
 
 public class SlimeHandyLayer<T extends Entity> extends RenderLayer<T, SlimeEntityModel<T>> {
     private final ItemInHandRenderer itemInHandRenderer;
+
     public SlimeHandyLayer(RenderLayerParent<T, SlimeEntityModel<T>> renderer, ItemInHandRenderer pItemInHandRenderer) {
         super(renderer);
         this.itemInHandRenderer = pItemInHandRenderer;
