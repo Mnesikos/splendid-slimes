@@ -2,7 +2,6 @@ package io.github.chakyl.splendidslimes.entity;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.SlimyConfig;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import io.github.chakyl.splendidslimes.util.SlimeData;
@@ -29,7 +28,6 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -146,11 +144,10 @@ public class SplendidSlime extends SlimeEntityBase {
                     if (this.getEatingCooldown() == 0) addHappiness(-5);
                 } else setHappiness(0);
             }
-
-            int particleAnimationTick = getParticleAnimationTick();
+            int particleAnimationTick = this.getParticleAnimationTick();
             int animationTime = effectRadius * particleAnimationTime;
             if (!this.isDeadOrDying() && particleAnimationTick > -1 && particleAnimationTick < animationTime) {
-                this.level().broadcastEntityEvent(this, (byte) 3);
+                this.level().broadcastEntityEvent(this, (byte) 5);
                 if (particleAnimationTick + 1 >= animationTime) this.setParticleAnimationTick(-1);
                 else this.setParticleAnimationTick(particleAnimationTick + 1);
             }
@@ -159,7 +156,7 @@ public class SplendidSlime extends SlimeEntityBase {
 
     @Override
     public void handleEntityEvent(byte event) {
-        if (event == 3) {
+        if (event == 5) {
             SimpleParticleType particle = this.getSlime().get().emitEffectParticle();
             int ringPoints = 32;
             int tickCount = getParticleAnimationTick();

@@ -155,7 +155,6 @@ public class SlimeEntityBase extends Slime {
         nbt.putString("Breed", getSlimeBreed());
         nbt.putString("SecondaryBreed", getSlimeSecondaryBreed());
     }
-    @Override
 
     @Nullable
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
