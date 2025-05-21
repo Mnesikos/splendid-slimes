@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "open=false": {
+      "model": "splendid_slimes:block/slime_spawner_closed"
+    },
+    "open=true": {
+      "model": "splendid_slimes:block/slime_spawner_open"
+    }
+  }
+}
