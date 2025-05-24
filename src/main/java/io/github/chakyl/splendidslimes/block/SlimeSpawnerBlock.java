@@ -1,11 +1,10 @@
 package io.github.chakyl.splendidslimes.block;
 
 import dev.shadowsoffire.placebo.block_entity.TickingEntityBlock;
-import io.github.chakyl.splendidslimes.blockentity.SlimeIncubatorBlockEntity;
+import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.blockentity.SlimeSpawnerBlockEntity;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -23,7 +22,7 @@ import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
-public class SlimeSpawnerBlock extends HorizontalDirectionalBlock implements TickingEntityBlock {
+public class SlimeSpawnerBlock extends Block implements TickingEntityBlock {
     public static final BooleanProperty OPEN = BooleanProperty.create("open");
 
     public SlimeSpawnerBlock(Properties props) {
@@ -50,17 +49,27 @@ public class SlimeSpawnerBlock extends HorizontalDirectionalBlock implements Tic
         if (!pLevel.isClientSide && pPlayer.isCreative()) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
             if (pHand == InteractionHand.MAIN_HAND && entity instanceof SlimeSpawnerBlockEntity) {
+                SlimeSpawnerBlockEntity spawnerEntity = (SlimeSpawnerBlockEntity) entity;
                 ItemStack heldItem = pPlayer.getItemInHand(pHand);
                 if (heldItem.getItem() == ModElements.Items.SPLENDID_SLIME_SPAWN_EGG.get() && heldItem.hasTag()) {
                     CompoundTag plortTag = heldItem.getTagElement("EntityTag");
                     if (plortTag != null && plortTag.contains("Breed")) {
                         if (!pPlayer.isCreative()) heldItem.shrink(1);
-
-                        BlockState newState = pState.setValue(OPEN, false);
-                        pLevel.setBlock(pPos, newState, 2);
-
                         pLevel.playSound(pPlayer, pPos, SoundEvents.GLOW_INK_SAC_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
-                        ((SlimeSpawnerBlockEntity) entity).setSlimeType(plortTag.get("Breed").toString().replace("\"", ""));
+                        spawnerEntity.setSlimeType(plortTag.get("Breed").toString().replace("\"", ""));
+                        return InteractionResult.SUCCESS;
+                    }
+                }
+                if (pPlayer.isCreative() && heldItem.getItem() == ModElements.Items.PLORT.get()) {
+                    pLevel.playSound(pPlayer, pPos, SoundEvents.GLOW_INK_SAC_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    spawnerEntity.setSlimeCount(spawnerEntity.getSlimeCount() + 1);
+                    return InteractionResult.SUCCESS;
+                }
+                if (pPlayer.isCreative() && heldItem.getItem() == ModElements.Items.SLIME_HEART.get()) {
+                    int currentCount = spawnerEntity.getSlimeCount();
+                    pLevel.playSound(pPlayer, pPos, SoundEvents.GLOW_INK_SAC_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    if (currentCount > 1) {
+                        spawnerEntity.setSlimeCount(currentCount - 1);
                         return InteractionResult.SUCCESS;
                     }
                 }

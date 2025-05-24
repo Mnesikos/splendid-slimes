@@ -524,7 +524,7 @@ public class SplendidSlime extends SlimeEntityBase {
     public boolean hurt(DamageSource pSource, float pAmount) {
         if (this.hasTrait("defiant")) {
             if (pSource.is(DamageTypes.GENERIC_KILL)) return super.hurt(pSource, pAmount);
-            if (pAmount == 0) return super.hurt(pSource, pAmount);
+            if (pAmount <= 1) return super.hurt(pSource, pAmount);
             double chance = 1 - (this.getHealth() / pAmount);
             if (this.random.nextFloat() < chance) {
                 this.playSound(SoundEvents.TOTEM_USE, 0.4F, 1.1F);
