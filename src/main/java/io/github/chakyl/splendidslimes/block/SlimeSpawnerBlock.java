@@ -1,10 +1,10 @@
 package io.github.chakyl.splendidslimes.block;
 
 import dev.shadowsoffire.placebo.block_entity.TickingEntityBlock;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.blockentity.SlimeSpawnerBlockEntity;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -15,14 +15,18 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.DirectionalBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
 public class SlimeSpawnerBlock extends Block implements TickingEntityBlock {
+    public static final DirectionProperty FACING = DirectionalBlock.FACING;
     public static final BooleanProperty OPEN = BooleanProperty.create("open");
 
     public SlimeSpawnerBlock(Properties props) {
@@ -31,17 +35,25 @@ public class SlimeSpawnerBlock extends Block implements TickingEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(OPEN);
+        pBuilder.add(FACING, OPEN);
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext pContext) {
-        return this.defaultBlockState().setValue(OPEN, false);
+        return this.defaultBlockState().setValue(FACING, Direction.UP).setValue(FACING, pContext.getNearestLookingDirection().getOpposite()).setValue(OPEN, false);
     }
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
         return new SlimeSpawnerBlockEntity(pPos, pState);
+    }
+
+    public BlockState rotate(BlockState pState, Rotation pRotation) {
+        return pState.setValue(FACING, pRotation.rotate(pState.getValue(FACING)));
+    }
+
+    public BlockState mirror(BlockState pState, Mirror pMirror) {
+        return pState.rotate(pMirror.getRotation(pState.getValue(FACING)));
     }
 
     @Override

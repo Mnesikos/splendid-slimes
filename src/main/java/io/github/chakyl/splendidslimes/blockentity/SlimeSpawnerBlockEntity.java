@@ -1,21 +1,23 @@
 package io.github.chakyl.splendidslimes.blockentity;
 
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntity;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.block.SlimeSpawnerBlock;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
 public class SlimeSpawnerBlockEntity extends BlockEntity implements TickingBlockEntity {
     private int SPAWNER_COOLDOWN = 200;
-    private int ACTIVATION_RANGE = 12;
+    private int ACTIVATION_RANGE = 14;
     private int MAX_NEARBY_ENTITIES = 6;
     protected String slimeType = "";
     private int slimeCount = 3;
@@ -31,7 +33,8 @@ public class SlimeSpawnerBlockEntity extends BlockEntity implements TickingBlock
         if (!slimeType.isEmpty()) {
             if (this.cooldown > 0) this.cooldown--;
             if (this.cooldown == 0) {
-                if (level.getGameTime() % 4 == 0 && dispensedSlimes == 0  && !level.getBlockState(getBlockPos().above()).isSolid() && isNearPlayer(level, pos)) {
+                BlockPos facingPos = pos.relative(state.getValue(DispenserBlock.FACING));
+                if (level.getGameTime() % 4 == 0 && dispensedSlimes == 0 && !level.getBlockState(facingPos).isSolid() && isNearPlayer(level, pos)) {
                     int nearbySlimes = level.getEntitiesOfClass(SplendidSlime.class, (new AABB(pos.getX(), pos.getY(), pos.getZ(), (pos.getX() + 1), (pos.getY() + 1), (pos.getZ() + 1))).inflate(6)).size();
                     if (nearbySlimes < this.MAX_NEARBY_ENTITIES) {
                         BlockState newState = state.setValue(SlimeSpawnerBlock.OPEN, true);
@@ -40,12 +43,20 @@ public class SlimeSpawnerBlockEntity extends BlockEntity implements TickingBlock
                     }
                 }
                 if (level.getGameTime() % 4 == 0 && state.getValue(SlimeSpawnerBlock.OPEN)) {
+                    Direction direction = state.getValue(SlimeSpawnerBlock.FACING);
+                    double d0 = facingPos.getX() + 0.5;
+                    double d1 = facingPos.getY();
+                    double d2 = facingPos.getZ() + +0.5;
+                    RandomSource randomsource = level.random;
+                    double d3 = randomsource.triangle(direction.getStepX(), 0.11485000000000001D);
+                    double d4 = randomsource.triangle(direction.getStepY(), 0.11485000000000001D);
+                    double d5 = randomsource.triangle(direction.getStepZ(), 0.11485000000000001D);
                     SplendidSlime spawnedSlime = (SplendidSlime) ModElements.Entities.SPLENDID_SLIME.get().create(level);
                     spawnedSlime.setSlimeBreed(slimeType);
                     spawnedSlime.setSize(1, true);
                     spawnedSlime.setEatingCooldown(SplendidSlime.SLIME_STARVING_COOLDOWN / 2);
-                    spawnedSlime.push(0, 0.9, 0);
-                    spawnedSlime.moveTo(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, level.random.nextFloat() * 360.0F, 0.0F);
+                    spawnedSlime.push(d3, d4, d5);
+                    spawnedSlime.moveTo(d0, d1, d2, level.random.nextFloat() * 360.0F, 0.0F);
                     level.addFreshEntity(spawnedSlime);
                     this.dispensedSlimes++;
                     spawnedSlime.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 1.2F);
