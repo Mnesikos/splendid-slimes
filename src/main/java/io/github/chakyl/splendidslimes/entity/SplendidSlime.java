@@ -15,6 +15,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.players.OldUsersConverter;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.DifficultyInstance;
@@ -40,10 +41,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static io.github.chakyl.splendidslimes.util.SlimeUtils.*;
@@ -54,6 +52,8 @@ public class SplendidSlime extends SlimeEntityBase {
     public static final EntityDataAccessor<Integer> EATING_COOLDOWN = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<String> TARGET_ENTITY = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Integer> PARTICLE_ANIMATION_TICK = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Boolean> TAMED = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.OPTIONAL_UUID);
     public static final String SLIME = "slime";
     public static final String ID = "id";
     public static final String DATA = "data";
@@ -85,7 +85,6 @@ public class SplendidSlime extends SlimeEntityBase {
         this.goalSelector.addGoal(2, new SlimeAttackGoal(this));
         this.goalSelector.addGoal(3, new SlimeRandomDirectionGoal(this));
         this.goalSelector.addGoal(5, new SlimeKeepOnJumpingGoal(this));
-
     }
 
     public void tick() {
@@ -368,6 +367,22 @@ public class SplendidSlime extends SlimeEntityBase {
         this.entityData.set(PARTICLE_ANIMATION_TICK, data);
     }
 
+    public UUID getOwnerUUID() {
+        return this.entityData.get(OWNER_UUID).orElse((UUID)null);
+    }
+
+    public void setOwnerUUID(@Nullable UUID pUuid) {
+        this.entityData.set(OWNER_UUID, Optional.ofNullable(pUuid));
+    }
+
+    public boolean getTamed() {
+        return this.entityData.get(TAMED);
+    }
+
+    public void setTamed(boolean tamed) {
+        this.entityData.set(TAMED, tamed);
+    }
+
     public boolean isInvulnerableTo(DamageSource pSource) {
         if (pSource.is(DamageTypes.EXPLOSION) || pSource.is(DamageTypes.PLAYER_EXPLOSION)) return true;
         if ((pSource.is(DamageTypes.ON_FIRE) || pSource.is(DamageTypes.IN_FIRE)) && (hasTrait("flaming") || hasTrait("aquatic")))
@@ -600,6 +615,8 @@ public class SplendidSlime extends SlimeEntityBase {
         this.entityData.define(EATING_COOLDOWN, 0);
         this.entityData.define(TARGET_ENTITY, "");
         this.entityData.define(PARTICLE_ANIMATION_TICK, -1);
+        this.entityData.define(TAMED, false);
+        this.entityData.define(OWNER_UUID, Optional.empty());
     }
 
     @Override
@@ -609,6 +626,22 @@ public class SplendidSlime extends SlimeEntityBase {
         setHappiness(nbt.getInt("Happiness"));
         setTargetEntity(nbt.getString("TargetEntity"));
         setParticleAnimationTick(nbt.getInt("ParticleAnimationTick"));
+        UUID uuid;
+        if (nbt.hasUUID("Owner")) {
+            uuid = nbt.getUUID("Owner");
+        } else {
+            String s = nbt.getString("Owner");
+            uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);
+        }
+        if (uuid != null) {
+            try {
+                this.setOwnerUUID(uuid);
+                this.setTamed(true);
+            } catch (Throwable throwable) {
+                this.setTamed(false);
+            }
+        }
+
     }
 
     @Override
@@ -618,6 +651,10 @@ public class SplendidSlime extends SlimeEntityBase {
         nbt.putInt("Happiness", getHappiness());
         nbt.putString("TargetEntity", getTargetEntity());
         nbt.putInt("ParticleAnimationTick", getParticleAnimationTick());
+        if (this.getOwnerUUID() != null) {
+            nbt.putUUID("Owner", this.getOwnerUUID());
+        }
+        nbt.putBoolean("Tamed", this.getTamed());
     }
 
     @Override
