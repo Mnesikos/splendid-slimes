@@ -18,14 +18,16 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.players.OldUsersConverter;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -37,7 +39,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.ServerLevelAccessor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -465,6 +466,22 @@ public class SplendidSlime extends SlimeEntityBase {
                 this.setSize(size + 1, true);
             }
         }
+        if (!this.getTamed()) {
+            Player closestPlayer = null;
+            List<Player> nearbyPlayers = this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(effectRadius * 2));
+            if (!nearbyPlayers.isEmpty()) {
+                for (Player player : nearbyPlayers) {
+                    if (closestPlayer == null) {
+                        closestPlayer = player;
+                    } else if (player.distanceTo(this) < closestPlayer.distanceTo(this)){
+                        closestPlayer = player;
+                    }
+                }
+                this.setOwnerUUID(closestPlayer.getUUID());
+                this.setTamed(true);
+                this.setPersistenceRequired();
+            }
+        }
         if (isFavorite) {
             for (int i = 0; i < 4; i++) {
                 double d0 = this.random.nextGaussian() * 0.02D;
@@ -585,7 +602,9 @@ public class SplendidSlime extends SlimeEntityBase {
                         slime.setNoAi(flag);
                         slime.setInvulnerable(this.isInvulnerable());
                         slime.setSize(size - 1, true);
-                        slime.addHappiness(-100);
+                        slime.setOwnerUUID(this.getOwnerUUID());
+                        slime.setTamed(this.getTamed());
+                        slime.setHappiness(this.getHappiness() - 100);
                         slime.setEatingCooldown(this.getEatingCooldown());
                         slime.moveTo(this.getX(), this.getY() + (double) 0.5F, this.getZ(), this.random.nextFloat() * 360.0F, 0.0F);
                         this.level().addFreshEntity(slime);
@@ -655,16 +674,6 @@ public class SplendidSlime extends SlimeEntityBase {
             nbt.putUUID("Owner", this.getOwnerUUID());
         }
         nbt.putBoolean("Tamed", this.getTamed());
-    }
-
-    @Override
-    @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        SpawnGroupData spawn = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
-        if (pReason == MobSpawnType.NATURAL) {
-            this.setHappiness(FURIOUS_THRESHOLD - 1);
-        }
-        return spawn;
     }
 
     static class SlimeTargetItemGoal extends Goal {
