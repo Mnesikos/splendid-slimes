@@ -1,13 +1,13 @@
 {
   "structures": [
     {
-      "structure": "splendid_slimes:slimy_rock",
+      "structure": "splendid_slimes:luminous_glowstone",
       "weight": 1
     }
   ],
   "placement": {
     "type": "minecraft:random_spread",
-    "salt": 392359033,
+    "salt": 98720987,
     "spacing": 12,
     "separation": 9
   }

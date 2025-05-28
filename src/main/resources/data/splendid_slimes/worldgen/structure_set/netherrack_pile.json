@@ -1,14 +1,14 @@
 {
   "structures": [
     {
-      "structure": "splendid_slimes:slimy_rock",
+      "structure": "splendid_slimes:netherrack_pile",
       "weight": 1
     }
   ],
   "placement": {
     "type": "minecraft:random_spread",
-    "salt": 392359033,
-    "spacing": 12,
-    "separation": 9
+    "salt": 1299473,
+    "spacing": 7,
+    "separation": 6
   }
 }
