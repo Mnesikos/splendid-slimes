@@ -29,6 +29,7 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
             EntityAccessor entityAccessor,
             IPluginConfig config
     ) {
+        boolean tamed = false;
         boolean isLargo = entityAccessor.getServerData().contains("SecondaryBreed") && !entityAccessor.getServerData().getString("SecondaryBreed").isEmpty();
         if (entityAccessor.getServerData().contains("Breed")) {
             DynamicHolder<SlimeBreed> slime = getSlimeData(entityAccessor.getServerData().getString("Breed"));
@@ -53,8 +54,10 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
                 }
                 tooltip.append(elements.spacer(14,2));
             }
-
-            if (entityAccessor.getServerData().contains("Happiness")) {
+            if (entityAccessor.getServerData().contains("Tamed")) {
+                tamed = entityAccessor.getServerData().getBoolean("Tamed");
+            }
+            if (tamed && entityAccessor.getServerData().contains("Happiness")) {
                 int happiness = entityAccessor.getServerData().getInt("Happiness");
                 Component happinessComponent;
                 if (happiness >= SplendidSlime.HAPPY_THRESHOLD) {
@@ -67,6 +70,8 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
                     happinessComponent = Component.translatable("entity.splendid_slimes.neutral");
                 }
                 tooltip.add(happinessComponent);
+            } else {
+                tooltip.add(Component.translatable("entity.splendid_slimes.wild").withStyle(ChatFormatting.RED));
             }
         }
     }
@@ -78,6 +83,7 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
         data.putString("SecondaryBreed", slime.getEntityData().get(SplendidSlime.SECONDARY_BREED));
         data.putInt("Happiness", slime.getEntityData().get(SplendidSlime.HAPPINESS));
         data.putInt("EatingCooldown", slime.getEntityData().get(SplendidSlime.EATING_COOLDOWN));
+        data.putBoolean("Tamed", slime.getEntityData().get(SplendidSlime.TAMED));
     }
 
     @Override

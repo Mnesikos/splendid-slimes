@@ -9,5 +9,11 @@
   "favorite_food": {
     "item": "minecraft:purple_bed"
   },
-  "traits": ["floating"]
+  "traits": ["floating"],
+  "innate_effects": [
+    {
+      "effect": "minecraft:slow_falling",
+      "amplifier": 0
+    }
+  ]
 }

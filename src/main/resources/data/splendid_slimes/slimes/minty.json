@@ -26,6 +26,10 @@
     {
       "effect": "minecraft:strength",
       "amplifier": 2
+    },
+    {
+      "effect": "minecraft:slow_falling",
+      "amplifier": 0
     }
   ],
   "positive_emit_effects": [
