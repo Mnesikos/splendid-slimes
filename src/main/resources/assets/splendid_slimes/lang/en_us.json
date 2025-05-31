@@ -9,6 +9,7 @@
   "block.splendid_slimes.slime_spawner.breed_unset": "Use a Slime Spawn Egg to set the Slime Breed.",
   "block.splendid_slimes.slime_spawner.slime_count": "Spawns %s Slimes",
   "config.jade.plugin_splendid_slimes.splendid_slime": "jade slime",
+  "key.categories.splendid_slimes": "Splendid Slimes",
   "key.splendid_slimes.slime_vac_mode": "Change Slime Vac mode",
   "diet.splendid_slimes.all_seeing": "Vegetables",
   "diet.splendid_slimes.bitwise": "Logs",
