@@ -208,7 +208,7 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
         CompoundTag splendidData = new CompoundTag();
         splendidData.put("TopInventory", this.topInventory.serializeNBT());
         splendidData.put("BottomInventory", this.bottomInventory.serializeNBT());
-        splendidData.putInt("plort_press.progress", progress);
+        splendidData.putInt("Progress", progress);
         tag.put(SplendidSlimes.MODID, splendidData);
     }
 
@@ -216,14 +216,14 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
     public void load(CompoundTag pTag) {
         super.load(pTag);
         CompoundTag splendidData = pTag.getCompound(SplendidSlimes.MODID);
-        if(pTag.contains("TopInventory", Tag.TAG_COMPOUND)) {
+        if(splendidData.contains("TopInventory", Tag.TAG_COMPOUND)) {
             this.topInventory.deserializeNBT(splendidData.getCompound("TopInventory"));
         }
 
-        if(pTag.contains("BottomInventory", Tag.TAG_COMPOUND)) {
+        if(splendidData.contains("BottomInventory", Tag.TAG_COMPOUND)) {
             this.bottomInventory.deserializeNBT(splendidData.getCompound("BottomInventory"));
         }
-        progress = splendidData.getInt("plort_press.progress");
+        progress = splendidData.getInt("Progress");
     }
 
 
