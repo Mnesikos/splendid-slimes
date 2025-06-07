@@ -493,7 +493,15 @@ public class SplendidSlime extends SlimeEntityBase {
         int nearbyFriends = this.level().getEntitiesOfClass(SplendidSlime.class, this.getBoundingBox().inflate(7), e -> Objects.equals(e.getSlimeBreed(), this.getSlimeBreed()) || Objects.equals(e.getSlimeBreed(), this.getSlimeBreed())).size();
         if (nearbyFriends >= 3) happinessIncrease += 15;
         if (nearbyFriends > 5) happinessIncrease += 15;
-        if (nearbyFriends > 7) happinessIncrease -= 50;
+        if (nearbyFriends > 7) {
+            happinessIncrease -= 75;
+            for (int i = 0; i < 4; i++) {
+                double d0 = this.random.nextGaussian() * 0.02D;
+                double d1 = this.random.nextGaussian() * 0.02D;
+                double d2 = this.random.nextGaussian() * 0.02D;
+                this.getServer().getLevel(this.level().dimension()).sendParticles(ParticleTypes.ANGRY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 1, d0, d1, d2, 0.2);
+            }
+        }
         this.heal(2);
         this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
         addHappiness(happinessIncrease);

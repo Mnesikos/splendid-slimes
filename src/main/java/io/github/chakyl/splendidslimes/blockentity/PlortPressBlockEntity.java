@@ -107,8 +107,8 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
 
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-        if(cap == ForgeCapabilities.ITEM_HANDLER) {
-            if(side == Direction.DOWN) return this.bottomOptional.cast();
+        if (cap == ForgeCapabilities.ITEM_HANDLER) {
+            if (side == Direction.DOWN) return this.bottomOptional.cast();
             else return this.topOptional.cast();
         }
 
@@ -170,10 +170,9 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
         if (recipe.isEmpty()) return false;
         ItemStack input = recipe.get().getInputItem(getLevel().registryAccess());
         ItemStack output = recipe.get().getOutputItem(getLevel().registryAccess());
-        ItemStack result = recipe.get().getResultItem(getLevel().registryAccess());
         ItemStack inputSlot = this.topInventory.getStackInSlot(0);
         ItemStack outputSlot = this.bottomInventory.getStackInSlot(0);
-        if ((output.isEmpty() && (slotMatches(outputSlot, result) && (canInsertAmountIntoOutputSlot(outputSlot, result.getCount()) && canInsertItemIntoOutputSlot(outputSlot, result)))) || validateFusion(input, inputSlot, output, outputSlot)) {
+        if (validateFusion(input, inputSlot, output, outputSlot)) {
             return true;
         }
         return false;
@@ -216,11 +215,11 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
     public void load(CompoundTag pTag) {
         super.load(pTag);
         CompoundTag splendidData = pTag.getCompound(SplendidSlimes.MODID);
-        if(splendidData.contains("TopInventory", Tag.TAG_COMPOUND)) {
+        if (splendidData.contains("TopInventory", Tag.TAG_COMPOUND)) {
             this.topInventory.deserializeNBT(splendidData.getCompound("TopInventory"));
         }
 
-        if(splendidData.contains("BottomInventory", Tag.TAG_COMPOUND)) {
+        if (splendidData.contains("BottomInventory", Tag.TAG_COMPOUND)) {
             this.bottomInventory.deserializeNBT(splendidData.getCompound("BottomInventory"));
         }
         progress = splendidData.getInt("Progress");

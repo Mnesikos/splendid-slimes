@@ -36,13 +36,15 @@ public class PlortPressingRecipe implements Recipe<SimpleContainer> {
             return false;
         }
         boolean outputMatches = true;
-        if (this.output != null && !output.isEmpty()) outputMatches = greaterThanOrEquals(output, pContainer.getItem(1));
+        if (this.output != null && !output.isEmpty())
+            outputMatches = greaterThanOrEquals(output, pContainer.getItem(1));
         return outputMatches && greaterThanOrEquals(input, pContainer.getItem(0));
     }
 
     private boolean greaterThanOrEquals(ItemStack self, ItemStack other) {
         if (self.isEmpty()) return other.isEmpty();
-        else return !other.isEmpty() && self.getCount() <= other.getCount() && self.getItem() == other.getItem() && self.areShareTagsEqual(other);
+        else
+            return !other.isEmpty() && self.getCount() <= other.getCount() && self.getItem() == other.getItem() && self.areShareTagsEqual(other);
     }
 
     @Override
@@ -96,7 +98,7 @@ public class PlortPressingRecipe implements Recipe<SimpleContainer> {
         @Override
         public PlortPressingRecipe fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {
             ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "result"));
-            ItemStack outputItem = null;
+            ItemStack outputItem = Items.AIR.getDefaultInstance();
             if (pSerializedRecipe.has("output")) {
                 outputItem = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "output"));
             }
@@ -109,7 +111,7 @@ public class PlortPressingRecipe implements Recipe<SimpleContainer> {
 
         @Override
         public @Nullable PlortPressingRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
-            Ingredient recipeIngredient =  Ingredient.fromNetwork(pBuffer);
+            Ingredient recipeIngredient = Ingredient.fromNetwork(pBuffer);
             ItemStack input = pBuffer.readItem();
             ItemStack output = pBuffer.readItem();
             ItemStack result = pBuffer.readItem();

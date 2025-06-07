@@ -2,7 +2,6 @@ package io.github.chakyl.splendidslimes.JEI;
 
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.recipe.PlortPressingRecipe;
-import io.github.chakyl.splendidslimes.recipe.PlortRippingRecipe;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -58,7 +57,8 @@ public class PlortPressingCategory implements IRecipeCategory<PlortPressingRecip
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, PlortPressingRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 17, 1).addItemStack(recipe.getInputItem(null));
-        builder.addSlot(RecipeIngredientRole.INPUT, 17, 43).addItemStack(recipe.getOutputItem(null));
+        if (!recipe.getOutputItem(null).isEmpty())
+            builder.addSlot(RecipeIngredientRole.CATALYST, 17, 43).addItemStack(recipe.getOutputItem(null));
         builder.addSlot(RecipeIngredientRole.OUTPUT, 55, 24).addItemStack(recipe.getResultItem(null));
 
     }

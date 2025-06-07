@@ -19,7 +19,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeManager;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
@@ -58,7 +57,6 @@ public class SplendidSlimesJei implements IModPlugin {
             breedRecipes.add(new PlortRecipe(breed));
         }
         registration.addRecipes(SlimeInfoCategory.TYPE, breedRecipes);
-
     }
 
 
