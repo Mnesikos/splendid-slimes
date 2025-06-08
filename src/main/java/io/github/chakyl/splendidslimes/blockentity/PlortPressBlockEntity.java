@@ -170,9 +170,10 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
         if (recipe.isEmpty()) return false;
         ItemStack input = recipe.get().getInputItem(getLevel().registryAccess());
         ItemStack output = recipe.get().getOutputItem(getLevel().registryAccess());
+        ItemStack result = recipe.get().getResultItem(getLevel().registryAccess());
         ItemStack inputSlot = this.topInventory.getStackInSlot(0);
         ItemStack outputSlot = this.bottomInventory.getStackInSlot(0);
-        if (validateFusion(input, inputSlot, output, outputSlot)) {
+        if ((output.isEmpty() && (slotMatches(outputSlot, result) && (canInsertAmountIntoOutputSlot(outputSlot, result.getCount()) && canInsertItemIntoOutputSlot(outputSlot, result)))) || validateFusion(input, inputSlot, output, outputSlot)) {
             return true;
         }
         return false;
