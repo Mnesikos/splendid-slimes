@@ -94,7 +94,6 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
                 outputItem = results.get(i);
                 break;
             }
-
         }
         Block.popResourceFromFace(level, pos, state.getValue(PlortRippitBlock.FACING).getOpposite(), outputItem.copy());
         level.playSound(null, pos, SoundEvents.FROG_AMBIENT, SoundSource.BLOCKS, 0.7F, 0.95F + level.getRandom().nextFloat() * 0.1F);

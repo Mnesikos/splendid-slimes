@@ -196,10 +196,10 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
     }
 
     private Optional<PlortPressingRecipe> getCurrentRecipe() {
-        SimpleContainer inventory = new SimpleContainer(2);
-        inventory.setItem(0, topInventory.getStackInSlot(0));
-        inventory.setItem(1, bottomInventory.getStackInSlot(0));
-        return this.level.getRecipeManager().getRecipeFor(PlortPressingRecipe.Type.INSTANCE, inventory, level);
+        SimpleContainer newInventory = new SimpleContainer(2);
+        newInventory.setItem(0, topInventory.getStackInSlot(0));
+        newInventory.setItem(1, bottomInventory.getStackInSlot(0));
+        return this.level.getRecipeManager().getRecipeFor(PlortPressingRecipe.Type.INSTANCE, newInventory, level);
     }
 
     @Override

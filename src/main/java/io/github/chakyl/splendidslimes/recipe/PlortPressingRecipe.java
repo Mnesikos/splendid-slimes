@@ -36,7 +36,7 @@ public class PlortPressingRecipe implements Recipe<SimpleContainer> {
             return false;
         }
         boolean outputMatches = true;
-        if (this.output != null && !output.isEmpty())
+        if (this.output != Items.AIR.getDefaultInstance() && this.output != null && !output.isEmpty())
             outputMatches = greaterThanOrEquals(output, pContainer.getItem(1));
         return outputMatches && greaterThanOrEquals(input, pContainer.getItem(0));
     }

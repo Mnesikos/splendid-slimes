@@ -11,9 +11,12 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
 
 public class PlortRippingCategory implements IRecipeCategory<PlortRippingRecipe> {
 
@@ -60,7 +63,14 @@ public class PlortRippingCategory implements IRecipeCategory<PlortRippingRecipe>
         int row = 0;
         for (int i = 0; i < recipe.getResults(null).toArray().length; i++) {
             if (i % 3 == 0) row++;
-            builder.addSlot(RecipeIngredientRole.OUTPUT, 109 + ((i - (row * 3)) * 18), 1 + ((18 * (i / 3)) )).addItemStack(recipe.getResults(null).get(i));
+            int finalI1 = i;
+            builder.addSlot(RecipeIngredientRole.OUTPUT, 109 + ((i - (row * 3)) * 18), 1 + ((18 * (i / 3)))).addItemStack(recipe.getResults(null).get(i)).addRichTooltipCallback((view, tooltip) -> {
+                List<Integer> weights = recipe.getWeights(null);
+                int weightTotal = 0;
+                int currentWeight = weights.get(finalI1);
+                for (Integer weight : weights) weightTotal += weight;
+                tooltip.add(Component.translatable("jei.splendid_slimes.plort_rippit.chance", (int) Math.floor(((double) currentWeight / weightTotal) * 100) + "%").withStyle(ChatFormatting.GREEN));
+            });
         }
     }
 

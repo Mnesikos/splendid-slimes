@@ -109,5 +109,6 @@
   "splendid_slimes.advancement.root.description": "Ranching slimes for resources!",
   "splendid_slimes.advancement.root.title": "Splendid Slimes",
   "jei.splendid_slimes.category.slime_info": "Slime Info",
-  "jei.splendid_slimes.category.slime_info.diet": "Diet"
+  "jei.splendid_slimes.category.slime_info.diet": "Diet",
+  "jei.splendid_slimes.plort_rippit.chance": "Chance: %s"
 }
