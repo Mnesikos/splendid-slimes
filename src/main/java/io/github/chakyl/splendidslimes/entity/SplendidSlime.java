@@ -51,6 +51,7 @@ import static io.github.chakyl.splendidslimes.util.SlimeUtils.*;
 public class SplendidSlime extends SlimeEntityBase {
     public static final EntityDataAccessor<Integer> HAPPINESS = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> EATING_COOLDOWN = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> LAST_ATE = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<String> TARGET_ENTITY = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Integer> PARTICLE_ANIMATION_TICK = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Boolean> TAMED = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.BOOLEAN);
@@ -364,6 +365,14 @@ public class SplendidSlime extends SlimeEntityBase {
         return this.entityData.get(PARTICLE_ANIMATION_TICK);
     }
 
+    public int getLastAte() {
+        return this.entityData.get(LAST_ATE);
+    }
+
+    public void setLastAte(int data) {
+        this.entityData.set(LAST_ATE, data);
+    }
+
     public void setParticleAnimationTick(int data) {
         this.entityData.set(PARTICLE_ANIMATION_TICK, data);
     }
@@ -431,7 +440,7 @@ public class SplendidSlime extends SlimeEntityBase {
         if (edibleMobs == null) return true;
         for (EntityType mobType : edibleMobs) {
             if (pEntity.getType() == mobType) {
-                handleFeed(getFavoriteEntity((EntityType<? extends LivingEntity>) pEntity.getType()));
+                handleFeed(getFavoriteEntity((EntityType<? extends LivingEntity>) pEntity.getType()), null);
             }
         }
         return true;
@@ -447,9 +456,10 @@ public class SplendidSlime extends SlimeEntityBase {
         }
     }
 
-    private void handleFeed(boolean isFavorite) {
+    private void handleFeed(boolean isFavorite, ItemStack food) {
         int happiness = getHappiness();
         int happinessIncrease = isFavorite ? 50 : 25;
+        boolean displayAngerParticles = false;
         if (happiness > FURIOUS_THRESHOLD) {
             ItemStack dropOne = getSlimePlort();
             int size = this.getSize();
@@ -495,6 +505,26 @@ public class SplendidSlime extends SlimeEntityBase {
         if (nearbyFriends > 5) happinessIncrease += 15;
         if (nearbyFriends > 7) {
             happinessIncrease -= 75;
+            displayAngerParticles = true;
+
+        }
+        if (this.hasTrait("photosynthesizing") && !this.level().canSeeSkyFromBelowWater(this.getOnPos())) {
+            displayAngerParticles = true;
+            addHappiness(-40);
+        }
+        // TODO: Make work for entities
+        if (this.hasTrait("picky") && food != null) {
+            SlimeBreed slime = getSlime().get();
+            boolean isPrimary = checkFoods(food, slime.foods());
+            if (this.getLastAte() == 0 && isPrimary || this.getLastAte() == 1 && !isPrimary) {
+                displayAngerParticles = true;
+                happinessIncrease = -60;
+            } else {
+                if (this.getLastAte() == 1) this.setLastAte(0);
+                else this.setLastAte(1);
+            }
+        }
+        if (displayAngerParticles) {
             for (int i = 0; i < 4; i++) {
                 double d0 = this.random.nextGaussian() * 0.02D;
                 double d1 = this.random.nextGaussian() * 0.02D;
@@ -549,7 +579,7 @@ public class SplendidSlime extends SlimeEntityBase {
                     }
                 }
             }
-            if (!atePlort) handleFeed(isFavoriteFood(item.getItem()));
+            if (!atePlort) handleFeed(isFavoriteFood(item.getItem()), item);
             item.setCount(item.getCount() - 1);
             itemEntity.setItem(item);
         }
@@ -639,6 +669,7 @@ public class SplendidSlime extends SlimeEntityBase {
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(HAPPINESS, 500);
+        this.entityData.define(LAST_ATE, 0);
         this.entityData.define(EATING_COOLDOWN, 0);
         this.entityData.define(TARGET_ENTITY, "");
         this.entityData.define(PARTICLE_ANIMATION_TICK, -1);
@@ -650,6 +681,7 @@ public class SplendidSlime extends SlimeEntityBase {
     public void readAdditionalSaveData(@Nonnull CompoundTag nbt) {
         super.readAdditionalSaveData(nbt);
         setEatingCooldown(nbt.getInt("EatingCooldown"));
+        setEatingCooldown(nbt.getInt("LastAte"));
         setHappiness(nbt.getInt("Happiness"));
         setTargetEntity(nbt.getString("TargetEntity"));
         setParticleAnimationTick(nbt.getInt("ParticleAnimationTick"));
@@ -675,6 +707,7 @@ public class SplendidSlime extends SlimeEntityBase {
     public void addAdditionalSaveData(@Nonnull CompoundTag nbt) {
         super.addAdditionalSaveData(nbt);
         nbt.putInt("EatingCooldown", getEatingCooldown());
+        nbt.putInt("LastAte", getLastAte());
         nbt.putInt("Happiness", getHappiness());
         nbt.putString("TargetEntity", getTargetEntity());
         nbt.putInt("ParticleAnimationTick", getParticleAnimationTick());

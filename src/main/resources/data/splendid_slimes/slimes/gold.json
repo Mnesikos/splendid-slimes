@@ -9,5 +9,5 @@
   "favorite_food": {
     "item": "minecraft:copper_ingot"
   },
-  "traits": ["moody"]
+  "traits": ["moody", "picky"]
 }

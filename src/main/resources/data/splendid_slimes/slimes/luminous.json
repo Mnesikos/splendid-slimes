@@ -10,6 +10,7 @@
     { "item": "minecraft:quartz" },
     { "item": "minecraft:smooth_quartz" }
   ],
+  "traits": ["photosynthesizing"],
   "favorite_food": { "item": "minecraft:quartz_block" },
   "negative_emit_effects": [
     {

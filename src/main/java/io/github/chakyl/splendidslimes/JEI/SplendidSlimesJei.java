@@ -42,6 +42,7 @@ public class SplendidSlimesJei implements IModPlugin {
         reg.addRecipeCategories(new PlortRippingCategory(reg.getJeiHelpers().getGuiHelper()));
         reg.addRecipeCategories(new PlortPressingCategory(reg.getJeiHelpers().getGuiHelper()));
         reg.addRecipeCategories(new SlimeInfoCategory(reg.getJeiHelpers().getGuiHelper()));
+        reg.addRecipeCategories(new SlimeTraitsCategory(reg.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
@@ -57,6 +58,14 @@ public class SplendidSlimesJei implements IModPlugin {
             breedRecipes.add(new PlortRecipe(breed));
         }
         registration.addRecipes(SlimeInfoCategory.TYPE, breedRecipes);
+        List<TraitRecipe> traitRecipes = new ArrayList<>();
+        for (SlimeBreed breed : SlimeBreedRegistry.INSTANCE.getValues()) {
+            int traitCount = breed.traits().size();
+            for (int i = 0; i < traitCount; i++) {
+                traitRecipes.add(new TraitRecipe(breed, breed.traits().get(i)));
+            }
+        }
+        registration.addRecipes(SlimeTraitsCategory.TYPE, traitRecipes);
     }
 
 

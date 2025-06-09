@@ -84,7 +84,7 @@ public record SlimeBreed(String breed, MutableComponent name,
                          List<String> attackCommands) implements CodecProvider<SlimeBreed> {
 
     public static final Codec<SlimeBreed> CODEC = new SlimeBreedCodec();
-    public static final List<String> POSSIBLE_TRAITS = Arrays.asList("aquatic", "defiant", "explosive", "feral", "flaming", "floating", "foodporting", "handy", "largoless", "moody", "photosynthesizing", "spiky");
+    public static final List<String> POSSIBLE_TRAITS = Arrays.asList("aquatic", "defiant", "explosive", "feral", "flaming", "floating", "foodporting", "handy", "largoless", "moody", "picky", "photosynthesizing", "spiky");
 
     public SlimeBreed(SlimeBreed other) {
         this(other.breed, other.name, other.hat, other.hatScale, other.hatXOffset, other.hatYOffset, other.hatZOffset, other.particle, other.diet, other.foods, other.favoriteFood, other.entities, other.favoriteEntity, other.hostileToEntities, other.traits, other.innateEffects, other.emitEffectParticle, other.positiveEmitEffects, other.negativeEmitEffects, other.positiveCommands, other.negativeCommands, other.attackCommands);

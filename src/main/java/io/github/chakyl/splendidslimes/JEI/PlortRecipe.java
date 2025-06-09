@@ -15,7 +15,6 @@ public class PlortRecipe {
     public PlortRecipe(SlimeBreed breed) {
         this.slime = breed.getSlimeItem().copy();
         for (Object food : breed.foods()) {
-
             if (food.getClass() == ItemStack.class) this.inputs.add(Ingredient.of((ItemStack) food));
             if (food.getClass() == TagKey.class) this.inputs.add(Ingredient.of((TagKey) food));
         }
