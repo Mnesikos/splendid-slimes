@@ -1,7 +1,6 @@
 package io.github.chakyl.splendidslimes.util;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
 import net.minecraft.nbt.CompoundTag;
@@ -31,6 +30,12 @@ public class SlimeData {
             return SlimeBreedRegistry.INSTANCE.emptyHolder();
         }
         return SlimeBreedRegistry.INSTANCE.holder(new ResourceLocation(resolvedBreed));
+    }
+
+    public static boolean plortIsFromLargoless(String plortTag) {
+        if (plortTag.isEmpty()) return false;
+        DynamicHolder<SlimeBreed> newSlime = SlimeData.getSlimeData(plortTag);
+        return newSlime.isBound() && newSlime.get().traits().contains("largoless");
     }
 
     public static String parseCommand(String command) {

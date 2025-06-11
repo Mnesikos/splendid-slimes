@@ -45,6 +45,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 
+import static io.github.chakyl.splendidslimes.util.SlimeData.plortIsFromLargoless;
 import static io.github.chakyl.splendidslimes.util.SlimeUtils.*;
 
 
@@ -224,15 +225,13 @@ public class SplendidSlime extends SlimeEntityBase {
     public boolean wantsToPickUp(ItemStack pStack) {
         Item pickUpItem = pStack.getItem();
         if (notHungry() && pickUpItem != ModElements.Items.PLORT.get()) return false;
-
         if (!getSlime().isBound()) return false;
         SlimeBreed slime = getSlime().get();
         if (pickUpItem == ModElements.Items.PLORT.get() && pStack.hasTag() && !this.hasTrait("largoless")) {
             CompoundTag plortTag = pStack.getTagElement("plort");
             if (plortTag != null && plortTag.contains("id")) {
                 String id = plortTag.get("id").toString();
-                DynamicHolder<SlimeBreed> newSlime = SlimeData.getSlimeData(id);
-                if (newSlime.isBound() && newSlime.get().traits().contains("largoless")) return false;
+                if (SlimeData.plortIsFromLargoless(id)) return false;
                 return !id.contains(this.getSlimeBreed()) && !(!this.getSlimeSecondaryBreed().isEmpty() && id.contains(this.getSlimeSecondaryBreed()));
             }
         }
@@ -378,7 +377,7 @@ public class SplendidSlime extends SlimeEntityBase {
     }
 
     public UUID getOwnerUUID() {
-        return this.entityData.get(OWNER_UUID).orElse((UUID)null);
+        return this.entityData.get(OWNER_UUID).orElse((UUID) null);
     }
 
     public void setOwnerUUID(@Nullable UUID pUuid) {
@@ -483,7 +482,7 @@ public class SplendidSlime extends SlimeEntityBase {
                 for (Player player : nearbyPlayers) {
                     if (closestPlayer == null) {
                         closestPlayer = player;
-                    } else if (player.distanceTo(this) < closestPlayer.distanceTo(this)){
+                    } else if (player.distanceTo(this) < closestPlayer.distanceTo(this)) {
                         closestPlayer = player;
                     }
                 }
@@ -680,6 +679,9 @@ public class SplendidSlime extends SlimeEntityBase {
     @Override
     public void readAdditionalSaveData(@Nonnull CompoundTag nbt) {
         super.readAdditionalSaveData(nbt);
+        String secondaryBreed = nbt.getString("SecondaryBreed");
+        if (this.hasTrait("largoless")) setSlimeSecondaryBreed("");
+        if (!secondaryBreed.isEmpty() && plortIsFromLargoless(secondaryBreed)) setSlimeSecondaryBreed("");
         setEatingCooldown(nbt.getInt("EatingCooldown"));
         setEatingCooldown(nbt.getInt("LastAte"));
         setHappiness(nbt.getInt("Happiness"));
