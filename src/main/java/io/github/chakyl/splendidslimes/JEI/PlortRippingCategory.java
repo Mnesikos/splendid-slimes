@@ -69,7 +69,7 @@ public class PlortRippingCategory implements IRecipeCategory<PlortRippingRecipe>
                 int weightTotal = 0;
                 int currentWeight = weights.get(finalI1);
                 for (Integer weight : weights) weightTotal += weight;
-                tooltip.add(Component.translatable("jei.splendid_slimes.plort_rippit.chance", (int) Math.floor(((double) currentWeight / weightTotal) * 100) + "%").withStyle(ChatFormatting.GREEN));
+                tooltip.add(Component.translatable("jei.splendid_slimes.plort_rippit.chance", Math.round(((double) currentWeight / weightTotal) * 1000) / 10.0 + "%").withStyle(ChatFormatting.GREEN));
             });
         }
     }

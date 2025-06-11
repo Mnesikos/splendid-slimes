@@ -512,7 +512,7 @@ public class SplendidSlime extends SlimeEntityBase {
             addHappiness(-40);
         }
         // TODO: Make work for entities
-        if (this.hasTrait("picky") && food != null) {
+        if (this.hasTrait("picky") && isLargo() && food != null) {
             SlimeBreed slime = getSlime().get();
             boolean isPrimary = checkFoods(food, slime.foods());
             if (this.getLastAte() == 0 && isPrimary || this.getLastAte() == 1 && !isPrimary) {

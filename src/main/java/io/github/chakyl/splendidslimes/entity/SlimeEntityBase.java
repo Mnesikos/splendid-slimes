@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class SlimeEntityBase extends Slime {
     public static final EntityDataAccessor<String> BREED = SynchedEntityData.defineId(SlimeEntityBase.class, EntityDataSerializers.STRING);
@@ -77,6 +78,10 @@ public class SlimeEntityBase extends Slime {
 
     public String getSlimeSecondaryBreed() {
         return this.entityData.get(SECONDARY_BREED);
+    }
+
+    public boolean isLargo() {
+        return !Objects.equals(this.getSlimeSecondaryBreed(), "");
     }
 
     @Override
