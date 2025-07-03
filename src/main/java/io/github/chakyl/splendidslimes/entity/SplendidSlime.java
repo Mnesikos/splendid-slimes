@@ -197,6 +197,13 @@ public class SplendidSlime extends SlimeEntityBase {
         }
         slime.saveWithoutId(entity);
         nbt.put("entity", entity);
+        nbt.putInt("Happiness", slime.getHappiness());
+        nbt.putInt("LastAte", slime.getLastAte());
+        nbt.putInt("EatingCooldown", slime.getEatingCooldown());
+        if (slime.getOwnerUUID() != null) {
+            nbt.putUUID("Owner", slime.getOwnerUUID());
+        }
+        nbt.putInt("TargetEntity", slime.getEatingCooldown());
         item.setTag(nbt);
         slime.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
     }
@@ -213,7 +220,7 @@ public class SplendidSlime extends SlimeEntityBase {
         return getEatingCooldown() > SLIME_HUNGRY_THRESHOLD;
     }
 
-    private boolean checkFoods(ItemStack pStack, List<Object> foods) {
+    public boolean checkFoods(ItemStack pStack, List<Object> foods) {
         Item pickUpItem = pStack.getItem();
         for (Object food : foods) {
             if (food.getClass() == ItemStack.class && ((ItemStack) food).getItem() == pickUpItem) return true;
@@ -222,9 +229,15 @@ public class SplendidSlime extends SlimeEntityBase {
         return false;
     }
 
+    public boolean isPrimaryFood(ItemStack food) {
+        SlimeBreed slime = this.getSlime().get();
+        return this.checkFoods(food, slime.foods());
+    }
+
     public boolean wantsToPickUp(ItemStack pStack) {
         Item pickUpItem = pStack.getItem();
         if (notHungry() && pickUpItem != ModElements.Items.PLORT.get()) return false;
+        if (pickUpItem == ModElements.Items.SLIME_CANDY.get()) return true;
         if (!getSlime().isBound()) return false;
         SlimeBreed slime = getSlime().get();
         if (pickUpItem == ModElements.Items.PLORT.get() && pStack.hasTag() && !this.hasTrait("largoless")) {
@@ -400,8 +413,8 @@ public class SplendidSlime extends SlimeEntityBase {
     }
 
     public boolean hasTrait(String trait) {
-        DynamicHolder<SlimeBreed> slime = getSlime();
-        DynamicHolder<SlimeBreed> secondarySlime = getSecondarySlime();
+        DynamicHolder<SlimeBreed> slime = this.getSlime();
+        DynamicHolder<SlimeBreed> secondarySlime = this.getSecondarySlime();
         if (slime.isBound()) {
             List<String> traits = slime.get().traits();
             if (traits.contains(trait)) {
@@ -455,10 +468,28 @@ public class SplendidSlime extends SlimeEntityBase {
         }
     }
 
-    private void handleFeed(boolean isFavorite, ItemStack food) {
+    private void handleSlimeCandy() {
+        int happiness = this.getHappiness();
+        int newHappiness;
+        if (happiness < FURIOUS_THRESHOLD) newHappiness = UNHAPPY_THRESHOLD;
+        else if (happiness < UNHAPPY_THRESHOLD) newHappiness = HAPPY_THRESHOLD;
+        else newHappiness = MAX_HAPPINESS;
+        this.setHappiness(newHappiness);
+    }
+
+    public void handleFeed(boolean isFavorite, ItemStack food) {
         int happiness = getHappiness();
         int happinessIncrease = isFavorite ? 50 : 25;
         boolean displayAngerParticles = false;
+        if (food.is(ModElements.Items.SLIME_CANDY.get())) {
+            handleSlimeCandy();
+            for (int i = 0; i < 8; i++) {
+                double d0 = this.random.nextGaussian() * 0.04D;
+                double d1 = this.random.nextGaussian() * 0.04D;
+                double d2 = this.random.nextGaussian() * 0.04D;
+                this.getServer().getLevel(this.level().dimension()).sendParticles(ParticleTypes.NOTE, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 1, d0, d1, d2, 0.2);
+            }
+        }
         if (happiness > FURIOUS_THRESHOLD) {
             ItemStack dropOne = getSlimePlort();
             int size = this.getSize();
@@ -502,7 +533,7 @@ public class SplendidSlime extends SlimeEntityBase {
         int nearbyFriends = this.level().getEntitiesOfClass(SplendidSlime.class, this.getBoundingBox().inflate(7), e -> Objects.equals(e.getSlimeBreed(), this.getSlimeBreed()) || Objects.equals(e.getSlimeBreed(), this.getSlimeBreed())).size();
         if (nearbyFriends >= 3) happinessIncrease += 15;
         if (nearbyFriends > 5) happinessIncrease += 15;
-        if (nearbyFriends > 7) {
+        if (nearbyFriends > 8) {
             happinessIncrease -= 75;
             displayAngerParticles = true;
 
@@ -512,9 +543,8 @@ public class SplendidSlime extends SlimeEntityBase {
             addHappiness(-40);
         }
         // TODO: Make work for entities
-        if (this.hasTrait("picky") && isLargo() && food != null) {
-            SlimeBreed slime = getSlime().get();
-            boolean isPrimary = checkFoods(food, slime.foods());
+        if (this.hasTrait("picky") && this.isLargo() && food != null) {
+            boolean isPrimary = this.isPrimaryFood(food);
             if (this.getLastAte() == 0 && isPrimary || this.getLastAte() == 1 && !isPrimary) {
                 displayAngerParticles = true;
                 happinessIncrease = -60;
@@ -578,7 +608,7 @@ public class SplendidSlime extends SlimeEntityBase {
                     }
                 }
             }
-            if (!atePlort) handleFeed(isFavoriteFood(item.getItem()), item);
+            if (!atePlort) handleFeed(this.isFavoriteFood(item.getItem()), item);
             item.setCount(item.getCount() - 1);
             itemEntity.setItem(item);
         }
@@ -678,12 +708,11 @@ public class SplendidSlime extends SlimeEntityBase {
 
     @Override
     public void readAdditionalSaveData(@Nonnull CompoundTag nbt) {
-        super.readAdditionalSaveData(nbt);
         String secondaryBreed = nbt.getString("SecondaryBreed");
         if (this.hasTrait("largoless")) setSlimeSecondaryBreed("");
         if (!secondaryBreed.isEmpty() && plortIsFromLargoless(secondaryBreed)) setSlimeSecondaryBreed("");
         setEatingCooldown(nbt.getInt("EatingCooldown"));
-        setEatingCooldown(nbt.getInt("LastAte"));
+        setLastAte(nbt.getInt("LastAte"));
         setHappiness(nbt.getInt("Happiness"));
         setTargetEntity(nbt.getString("TargetEntity"));
         setParticleAnimationTick(nbt.getInt("ParticleAnimationTick"));
@@ -702,17 +731,17 @@ public class SplendidSlime extends SlimeEntityBase {
                 this.setTamed(false);
             }
         }
-
+        super.readAdditionalSaveData(nbt);
     }
 
     @Override
     public void addAdditionalSaveData(@Nonnull CompoundTag nbt) {
         super.addAdditionalSaveData(nbt);
-        nbt.putInt("EatingCooldown", getEatingCooldown());
-        nbt.putInt("LastAte", getLastAte());
-        nbt.putInt("Happiness", getHappiness());
-        nbt.putString("TargetEntity", getTargetEntity());
-        nbt.putInt("ParticleAnimationTick", getParticleAnimationTick());
+        nbt.putInt("EatingCooldown", this.getEatingCooldown());
+        nbt.putInt("LastAte", this.getLastAte());
+        nbt.putInt("Happiness", this.getHappiness());
+        nbt.putString("TargetEntity", this.getTargetEntity());
+        nbt.putInt("ParticleAnimationTick", this.getParticleAnimationTick());
         if (this.getOwnerUUID() != null) {
             nbt.putUUID("Owner", this.getOwnerUUID());
         }

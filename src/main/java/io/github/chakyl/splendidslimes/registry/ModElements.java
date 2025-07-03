@@ -6,16 +6,10 @@ import dev.shadowsoffire.placebo.block_entity.TickingBlockEntityType;
 import dev.shadowsoffire.placebo.menu.MenuUtil;
 import dev.shadowsoffire.placebo.registry.DeferredHelper;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
-import io.github.chakyl.splendidslimes.block.PlortPressBlock;
-import io.github.chakyl.splendidslimes.block.PlortRippitBlock;
-import io.github.chakyl.splendidslimes.block.SlimeIncubatorBlock;
-import io.github.chakyl.splendidslimes.block.SlimeSpawnerBlock;
+import io.github.chakyl.splendidslimes.block.*;
 import io.github.chakyl.splendidslimes.block.corral.CorralBlock;
 import io.github.chakyl.splendidslimes.block.corral.CorralPane;
-import io.github.chakyl.splendidslimes.blockentity.PlortPressBlockEntity;
-import io.github.chakyl.splendidslimes.blockentity.PlortRippitBlockEntity;
-import io.github.chakyl.splendidslimes.blockentity.SlimeIncubatorBlockEntity;
-import io.github.chakyl.splendidslimes.blockentity.SlimeSpawnerBlockEntity;
+import io.github.chakyl.splendidslimes.blockentity.*;
 import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
 import io.github.chakyl.splendidslimes.entity.Tarr;
@@ -35,6 +29,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -62,6 +57,7 @@ public class ModElements {
         public static final RegistryObject<Block> SLIME_INCUBATOR = R.block("slime_incubator", () -> new SlimeIncubatorBlock(defaultBehavior.strength(4, 3000).noOcclusion()));
         public static final RegistryObject<Block> PLORT_PRESS = R.block("plort_press", () -> new PlortPressBlock(defaultBehavior.strength(4, 3000).noOcclusion()));
         public static final RegistryObject<Block> PLORT_RIPPIT = R.block("plort_rippit", () -> new PlortRippitBlock(defaultBehavior.strength(4, 3000).noOcclusion()));
+        public static final RegistryObject<Block> SLIME_FEEDER = R.block("slime_feeder", () -> new SlimeFeederBlock(defaultBehavior.strength(4, 3000).noOcclusion()));
         public static final RegistryObject<CorralBlock> CORRAL_BLOCK = R.block("corral_block", () -> new CorralBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.GLASS).strength(4, 3000).noOcclusion().isSuffocating(ALWAYS_FALSE).isViewBlocking(ALWAYS_FALSE)));
         public static final RegistryObject<CorralPane> CORRAL_PANE = R.block("corral_pane", () -> new CorralPane(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.GLASS_PANE).strength(4, 3000).noOcclusion().isSuffocating(ALWAYS_FALSE).isViewBlocking(ALWAYS_FALSE)));
         public static final RegistryObject<Block> SLIME_SPAWNER = R.block("slime_spawner", () -> new SlimeSpawnerBlock(defaultBehavior.strength(4, 3000).noOcclusion()));
@@ -77,8 +73,11 @@ public class ModElements {
                 () -> new TickingBlockEntityType<>(PlortPressBlockEntity::new, ImmutableSet.of(Blocks.PLORT_PRESS.get()), false, true));
         public static final RegistryObject<BlockEntityType<PlortRippitBlockEntity>> PLORT_RIPPIT = R.blockEntity("plort_rippit",
                 () -> new TickingBlockEntityType<>(PlortRippitBlockEntity::new, ImmutableSet.of(Blocks.PLORT_RIPPIT.get()), false, true));
+        public static final RegistryObject<BlockEntityType<SlimeFeederBlockEntity>> SLIME_FEEDER = R.blockEntity("slime_feeder",
+                () -> new TickingBlockEntityType<>(SlimeFeederBlockEntity::new, ImmutableSet.of(Blocks.SLIME_FEEDER.get()), false, true));
         public static final RegistryObject<BlockEntityType<SlimeSpawnerBlockEntity>> SLIME_SPAWNER = R.blockEntity("slime_spawner",
                 () -> new TickingBlockEntityType<>(SlimeSpawnerBlockEntity::new, ImmutableSet.of(ModElements.Blocks.SLIME_SPAWNER.get()), false, true));
+
         private static void bootstrap() {
         }
     }
@@ -87,9 +86,10 @@ public class ModElements {
         public static final RegistryObject<BlockItem> SLIME_INCUBATOR = R.item("slime_incubator", () -> new BlockItem(Blocks.SLIME_INCUBATOR.get(), new Item.Properties()));
         public static final RegistryObject<BlockItem> PLORT_PRESS = R.item("plort_press", () -> new BlockItem(Blocks.PLORT_PRESS.get(), new Item.Properties()));
         public static final RegistryObject<BlockItem> PLORT_RIPPIT = R.item("plort_rippit", () -> new BlockItem(Blocks.PLORT_RIPPIT.get(), new Item.Properties()));
+        public static final RegistryObject<BlockItem> SLIME_FEEDER = R.item("slime_feeder", () -> new BlockItem(Blocks.SLIME_FEEDER.get(), new Item.Properties()));
         public static final RegistryObject<BlockItem> CORRAL_BLOCK = R.item("corral_block", () -> new BlockItem(Blocks.CORRAL_BLOCK.get(), new Item.Properties()));
         public static final RegistryObject<BlockItem> CORRAL_PANE = R.item("corral_pane", () -> new BlockItem(Blocks.CORRAL_PANE.get(), new Item.Properties()));
-        public static final RegistryObject<BlockItem> SLIME_SPAWNER= R.item("slime_spawner", () -> new BlockItem(Blocks.SLIME_SPAWNER.get(), new Item.Properties()));
+        public static final RegistryObject<BlockItem> SLIME_SPAWNER = R.item("slime_spawner", () -> new BlockItem(Blocks.SLIME_SPAWNER.get(), new Item.Properties()));
         public static final RegistryObject<PlortItem> PLORT = R.item("plort", () -> new PlortItem(new Item.Properties().stacksTo(64)));
         public static final RegistryObject<HatItem> HAT = R.item("hat", () -> new HatItem(new Item.Properties().stacksTo(64)));
         public static final RegistryObject<SlimeHeartItem> SLIME_HEART = R.item("slime_heart", () -> new SlimeHeartItem(new Item.Properties().stacksTo(64)));
@@ -97,6 +97,7 @@ public class ModElements {
         public static final RegistryObject<SlimeSpawnEggItem> SPLENDID_SLIME_SPAWN_EGG = R.item("spawn_egg_splendid_slime", () -> new SlimeSpawnEggItem(slimeEntity, 0xff7d9d, 0xff7d9d, new Item.Properties()));
         public static final RegistryObject<ForgeSpawnEggItem> TARR_SPAWN_EGG = R.item("spawn_egg_tarr", () -> new ForgeSpawnEggItem(tarrEntity, 0x2c221c, 0x921f78, new Item.Properties()));
         public static final RegistryObject<Item> TARRTAR = R.item("tarrtar", () -> new Item(new Item.Properties().stacksTo(64)));
+        public static final RegistryObject<Item> SLIME_CANDY = R.item("slime_candy", () -> new Item(new Item.Properties().stacksTo(64).rarity(Rarity.UNCOMMON)));
         public static final RegistryObject<Item> ROCKET_POD = R.item("rocket_pod", () -> new Item(new Item.Properties().stacksTo(64)));
         public static final RegistryObject<SlimeVac> SLIME_VAC = R.item("slime_vac", () -> new SlimeVac(new Item.Properties().stacksTo(1)));
 
@@ -107,7 +108,8 @@ public class ModElements {
     public static class Entities {
         public static final RegistryObject<EntityType<SlimeEntityBase>> SPLENDID_SLIME = slimeEntity;
         public static final RegistryObject<EntityType<SlimeEntityBase>> TARR = tarrEntity;
-        public static final RegistryObject<EntityType<ItemProjectileEntity>> ITEM_PROJECTILE =  R.entity("item_projectile", () -> EntityType.Builder.<ItemProjectileEntity>of(ItemProjectileEntity::new, MobCategory.MISC).build("item_projectile"));
+        public static final RegistryObject<EntityType<ItemProjectileEntity>> ITEM_PROJECTILE = R.entity("item_projectile", () -> EntityType.Builder.<ItemProjectileEntity>of(ItemProjectileEntity::new, MobCategory.MISC).build("item_projectile"));
+
         private static void bootstrap() {
         }
     }

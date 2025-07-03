@@ -69,13 +69,13 @@ public class SlimeInventoryItem extends Item implements ITabFiller {
 
     public static SplendidSlime getSlimeFromItem(CompoundTag data, CompoundTag slimeData, Level level) {
         if (!slimeData.isEmpty() || !data.isEmpty()) {
-                SplendidSlime slimeEntity = new SplendidSlime(ModElements.Entities.SPLENDID_SLIME.get(), level);
-                if (!data.isEmpty()) {
-                    slimeEntity.load(data);
-                } else {
-                    slimeEntity.setSlimeBreed(slimeData.getString("id"));
-                }
-                return slimeEntity;
+            SplendidSlime slimeEntity = new SplendidSlime(ModElements.Entities.SPLENDID_SLIME.get(), level);
+            if (!data.isEmpty()) {
+                slimeEntity.load(data);
+            } else {
+                slimeEntity.setSlimeBreed(slimeData.getString("id"));
+            }
+            return slimeEntity;
         }
         return null;
     }

@@ -3,6 +3,7 @@
   "block.splendid_slimes.corral_pane": "Corral Pane",
   "block.splendid_slimes.plort_press": "Plort Press",
   "block.splendid_slimes.plort_rippit": "Plort Rippit",
+  "block.splendid_slimes.slime_feeder": "Slime Feeder",
   "block.splendid_slimes.slime_incubator": "Slime Incubator",
   "block.splendid_slimes.slime_spawner": "Slime Spawner",
   "block.splendid_slimes.slime_spawner.breed": "Breed: %s Slime",
@@ -62,6 +63,7 @@
   "item.splendid_slimes.spawn_egg_tarr": "Tarr Spawn Egg",
   "item.splendid_slimes.slime_vac": "Slime Vac",
   "item.splendid_slimes.rocket_pod": "Rocket Pod",
+  "item.splendid_slimes.slime_candy": "Slime Candy",
 
   "itemGroup.splendid_slimes": "Splendid Slimes",
 
@@ -142,6 +144,8 @@
   "splendid_slimes.advancement.obtain_press.title": "Im-Pressive Slimes",
   "splendid_slimes.advancement.obtain_rippit.description": "Craft a Plort Rippit to turn Plorts into usable resources",
   "splendid_slimes.advancement.obtain_rippit.title": "Let it Rip!",
+  "splendid_slimes.advancement.obtain_feeder.description": "Craft a Slime Feeder to automatically feed Slimes with tricky diets.",
+  "splendid_slimes.advancement.obtain_feeder.title": "Hungry Hungry Slime-o",
   "splendid_slimes.advancement.root.description": "Ranching slimes for resources!",
   "splendid_slimes.advancement.root.title": "Splendid Slimes",
   "jei.splendid_slimes.category.slime_info": "Slime Info",

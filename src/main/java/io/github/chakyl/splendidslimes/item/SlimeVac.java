@@ -93,6 +93,7 @@ public class SlimeVac extends Item {
                         SplendidSlime.pickupSlime(slime, slimeItem);
                         slime.spawnAtLocation(slimeItem);
                         slime.discard();
+                        break;
                     }
 
                 }
@@ -145,7 +146,7 @@ public class SlimeVac extends Item {
                 if (slimeFired) player.setItemInHand(inverseHand, ItemStack.EMPTY);
                 else if (!player.isCreative()) player.getItemInHand(inverseHand).shrink(1);
                 player.getCooldowns().addCooldown(ModElements.Items.SLIME_VAC.get(), 4);
-                ;
+
                 return InteractionResultHolder.pass(handStack);
             }
             return InteractionResultHolder.pass(handStack);

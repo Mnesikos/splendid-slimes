@@ -11,7 +11,13 @@
   "results": [
     {
       "item": "minecraft:sugar",
-      "count": 4
+      "count": 4,
+      "weight": 99
+    },
+    {
+      "item": "splendid_slimes:slime_candy",
+      "count": 1,
+      "weight": 1
     }
   ]
 }

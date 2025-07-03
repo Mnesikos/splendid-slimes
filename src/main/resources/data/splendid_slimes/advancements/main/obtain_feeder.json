@@ -1,0 +1,38 @@
+{
+  "parent": "splendid_slimes:main/obtain_plort",
+  "criteria": {
+    "slime_feeder": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "splendid_slimes:slime_feeder"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "splendid_slimes.advancement.obtain_feeder.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "splendid_slimes:slime_feeder"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "splendid_slimes.advancement.obtain_feeder.title"
+    }
+  },
+  "requirements": [
+    [
+      "slime_feeder"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
