@@ -24,6 +24,7 @@ public class ModBlockTagGenerator extends BlockTagsProvider {
                         ModElements.Blocks.CORRAL_PANE.get(),
                         ModElements.Blocks.SLIME_INCUBATOR.get(),
                         ModElements.Blocks.PLORT_RIPPIT.get(),
+                        ModElements.Blocks.SLIME_FEEDER.get(),
                         ModElements.Blocks.PLORT_PRESS.get());
 
         this.tag(BlockTags.NEEDS_STONE_TOOL)

@@ -20,6 +20,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         this.dropSelf(ModElements.Blocks.CORRAL_PANE.get());
         this.dropSelf(ModElements.Blocks.PLORT_PRESS.get());
         this.dropSelf(ModElements.Blocks.PLORT_RIPPIT.get());
+        this.dropSelf(ModElements.Blocks.SLIME_FEEDER.get());
         this.dropSelf(ModElements.Blocks.SLIME_INCUBATOR.get());
 
     }
@@ -30,6 +31,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         blocks.add(ModElements.Blocks.CORRAL_PANE.get());
         blocks.add(ModElements.Blocks.PLORT_PRESS.get());
         blocks.add(ModElements.Blocks.PLORT_RIPPIT.get());
+        blocks.add(ModElements.Blocks.SLIME_FEEDER.get());
         blocks.add(ModElements.Blocks.SLIME_INCUBATOR.get());
         return blocks;
     }

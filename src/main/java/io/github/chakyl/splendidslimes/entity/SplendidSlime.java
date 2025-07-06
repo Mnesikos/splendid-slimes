@@ -481,7 +481,7 @@ public class SplendidSlime extends SlimeEntityBase {
         int happiness = getHappiness();
         int happinessIncrease = isFavorite ? 50 : 25;
         boolean displayAngerParticles = false;
-        if (food.is(ModElements.Items.SLIME_CANDY.get())) {
+        if (food != null && food.is(ModElements.Items.SLIME_CANDY.get())) {
             handleSlimeCandy();
             for (int i = 0; i < 8; i++) {
                 double d0 = this.random.nextGaussian() * 0.04D;
