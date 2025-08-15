@@ -5,5 +5,6 @@
   "color": "#cff1f1",
   "diet": "diet.splendid_slimes.weeping",
   "foods": [{ "tag": "forge:fruits" }],
+  "traits": ["weeping"],
   "favorite_food": { "item": "minecraft:glow_berries" }
 }

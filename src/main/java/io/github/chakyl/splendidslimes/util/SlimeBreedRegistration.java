@@ -30,7 +30,7 @@ public class SlimeBreedRegistration {
             duration = jsonElement.getAsJsonObject().get("duration").getAsInt();
         if (jsonElement.getAsJsonObject().has("amplifier"))
             amplifier = jsonElement.getAsJsonObject().get("amplifier").getAsInt();
-        return new MobEffectInstance(postiveEffect, duration, amplifier, isInfinite, false);
+        return new MobEffectInstance(postiveEffect, duration, amplifier, isInfinite, true);
     }
 
     public static String getParticleTypeJson(SimpleParticleType particleType) {

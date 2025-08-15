@@ -8,11 +8,16 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
@@ -20,14 +25,15 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class SlimeUtils {
-    public static MobEffectInstance copyEffect(MobEffectInstance effect) {
-        return new MobEffectInstance(effect.getEffect(), effect.getDuration(), effect.getAmplifier(), effect.isAmbient(), effect.isVisible());
+    public static MobEffectInstance copyEffect(SplendidSlime slime, MobEffectInstance effect) {
+        boolean putrid = slime.hasTrait("putrid");
+        return new MobEffectInstance(effect.getEffect(), effect.getDuration() * (putrid ? effect.getDuration() : 1), effect.getAmplifier() + (putrid ? 1 : 0), effect.isAmbient(), effect.isVisible());
     }
 
     public static void applyEffects(SplendidSlime slime, LivingEntity entity, List<MobEffectInstance> effects, boolean particles) {
         if (particles) slime.setParticleAnimationTick(0);
         for (MobEffectInstance effect : effects) {
-            if (effect != null && entity != null) entity.addEffect(copyEffect(effect));
+            if (effect != null && entity != null) entity.addEffect(copyEffect(slime, effect));
         }
     }
 
@@ -116,5 +122,25 @@ public class SlimeUtils {
                 }
             }
         }
+    }
+
+    public static boolean cry(SplendidSlime slime, Level level) {
+        int x = Mth.floor(slime.getX());
+        int y = Mth.floor(slime.getY());
+        int z = Mth.floor(slime.getZ());
+        BlockState scannedBlockState;
+        int radius = 3;
+        for (int i = 0; i < radius; i++) {
+            for (BlockPos pos : BlockPos.betweenClosed(new BlockPos(x - radius, y - i, z - radius), new BlockPos(x + radius, y + i, z + radius))) {
+                scannedBlockState = level.getBlockState(pos);
+                if (scannedBlockState.getBlock() == Blocks.AIR || scannedBlockState.getFluidState() == Fluids.FLOWING_WATER.defaultFluidState()) {
+                    level.setBlock(pos, Blocks.WATER.defaultBlockState(), 3);
+                    slime.playSound(SoundEvents.GHAST_AMBIENT, 0.4F, 0.2F);
+                    return true;
+                }
+            }
+        }
+        slime.playSound(SoundEvents.GHAST_SCREAM, 0.6F, (float) Math.random());
+        return false;
     }
 }

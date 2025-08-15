@@ -5,6 +5,7 @@ import io.github.chakyl.splendidslimes.SlimyConfig;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import io.github.chakyl.splendidslimes.util.SlimeData;
+import io.github.chakyl.splendidslimes.util.SlimeUtils;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -95,21 +96,20 @@ public class SplendidSlime extends SlimeEntityBase {
         if (!this.level().isClientSide) {
             int happiness = this.getHappiness();
             int eatCooldown = this.getEatingCooldown();
-            if (eatCooldown > 0) {
-                setEatingCooldown(eatCooldown - 1);
+            if (eatCooldown > 0 && this.tickCount % 20 == 0 && this.isOwnerOnline()) {
+                setEatingCooldown(eatCooldown - 20);
             }
             if (this.tickCount == 2) {
                 DynamicHolder<SlimeBreed> slime = this.getSlime();
                 DynamicHolder<SlimeBreed> secondarySlime = this.getSecondarySlime();
                 if (slime.isBound()) applyEffects(this, this, slime.get().innateEffects(), false);
                 if (secondarySlime.isBound()) applyEffects(this, this, secondarySlime.get().innateEffects(), false);
-
             }
 
-            if (this.tickCount % SLIME_EFFECT_COOLDOWN == 0) {
+            if (this.tickCount % SLIME_EFFECT_COOLDOWN == 0 && this.isOwnerOnline()) {
                 DynamicHolder<SlimeBreed> slime = getSlime();
                 if (slime.isBound()) {
-                    if (happiness <= UNHAPPY_THRESHOLD) {
+                    if (happiness <= UNHAPPY_THRESHOLD || (this.hasTrait("inverse") && happiness >= HAPPY_THRESHOLD)) {
                         double chance = 1 - (((happiness + 1.0) / UNHAPPY_THRESHOLD));
                         if (this.random.nextFloat() <= chance) {
                             List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(effectRadius));
@@ -118,7 +118,7 @@ public class SplendidSlime extends SlimeEntityBase {
                             }
                             executeSlimeCommands(this, true, false);
                         }
-                    } else if (happiness >= HAPPY_THRESHOLD) {
+                    } else if (happiness >= HAPPY_THRESHOLD || this.hasTrait("inverse")) {
                         double chance = 1 - (((happiness + 1.0) / HAPPY_THRESHOLD));
                         if (this.random.nextFloat() <= chance) {
                             List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(effectRadius));
@@ -134,7 +134,16 @@ public class SplendidSlime extends SlimeEntityBase {
                     }
                 }
             }
-            if (this.tickCount % 600 == 0) {
+            if (this.tickCount % 600 == 0 && this.isOwnerOnline()) {
+                if (happiness <= FURIOUS_THRESHOLD && this.hasTrait("nuclear")) {
+                    this.level().explode(this, this.getX(), this.getY(), this.getZ(), this.hasTrait("flaming") ? 12f : 16f, this.hasTrait("flaming"), Level.ExplosionInteraction.MOB);
+                    this.kill();
+                }
+                if (this.hasTrait("weeping")) {
+                    if (SlimeUtils.cry(this, this.level())) {
+                        addHappiness(-50);
+                    }
+                }
                 if (this.hasTrait("floating") && this.random.nextFloat() <= 0.65) {
                     this.addEffect(new MobEffectInstance(MobEffects.LEVITATION, this.random.nextIntBetweenInclusive(10, 300), 0, true, false));
                 }
@@ -258,6 +267,10 @@ public class SplendidSlime extends SlimeEntityBase {
         return false;
     }
 
+    public boolean isOwnerOnline() {
+        if (!this.getTamed()) return true;
+        return (level().getPlayerByUUID(this.getOwnerUUID()) != null);
+    }
 
     public ItemStack getSlimePlort() {
         return getSlimePlort(false);
@@ -508,7 +521,7 @@ public class SplendidSlime extends SlimeEntityBase {
         }
         if (!this.getTamed()) {
             Player closestPlayer = null;
-            List<Player> nearbyPlayers = this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(effectRadius * 2));
+            List<Player> nearbyPlayers = this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(effectRadius * 3));
             if (!nearbyPlayers.isEmpty()) {
                 for (Player player : nearbyPlayers) {
                     if (closestPlayer == null) {

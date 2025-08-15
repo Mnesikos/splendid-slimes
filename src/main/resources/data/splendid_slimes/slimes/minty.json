@@ -21,7 +21,7 @@
     "minecraft:cave_spider"
   ],
   "favorite_entity": "minecraft:enderman",
-  "traits": ["feral", "defiant", "floating"],
+  "traits": ["feral", "defiant", "floating", "putrid"],
   "innate_effects": [
     {
       "effect": "minecraft:strength",

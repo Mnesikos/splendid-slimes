@@ -1,6 +1,5 @@
 {
 	"render_type": "minecraft:cutout",
-	"credit": "Made with Blockbench",
 	"textures": {
 		"0": "splendid_slimes:block/plort_press/base",
 		"1": "splendid_slimes:block/plort_press/machine_on",

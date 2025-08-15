@@ -16,6 +16,7 @@
     "minecraft:rabbit",
     "minecraft:sheep"
   ],
+  "traits": ["putrid"],
   "favorite_entity": "minecraft:chicken",
   "hostile_to_entities": [
     "minecraft:villager"
