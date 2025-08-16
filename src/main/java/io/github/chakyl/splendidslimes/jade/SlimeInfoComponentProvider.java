@@ -11,12 +11,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
+import net.minecraftforge.common.UsernameCache;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElementHelper;
+
+import java.util.Objects;
 
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
 
@@ -52,7 +55,7 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
                     if (i >= hunger) plort = ModElements.Items.PLORT.get().getDefaultInstance();
                     tooltip.append(elements.item(plort, 0.5f).size(new Vec2(6, 10)).translate(new Vec2(i, -1)));
                 }
-                tooltip.append(elements.spacer(14,2));
+                tooltip.append(elements.spacer(14, 2));
             }
             if (entityAccessor.getServerData().contains("Tamed")) {
                 tamed = entityAccessor.getServerData().getBoolean("Tamed");
@@ -73,6 +76,9 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
             } else {
                 tooltip.add(Component.translatable("entity.splendid_slimes.wild").withStyle(ChatFormatting.RED));
             }
+            if (tamed && entityAccessor.getPlayer().isCrouching()) {
+                tooltip.add(Component.translatable("entity.splendid_slimes.owner", UsernameCache.getLastKnownUsername(entityAccessor.getServerData().getUUID("Owner"))));
+            }
         }
     }
 
@@ -84,6 +90,7 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
         data.putInt("Happiness", slime.getEntityData().get(SplendidSlime.HAPPINESS));
         data.putInt("EatingCooldown", slime.getEntityData().get(SplendidSlime.EATING_COOLDOWN));
         data.putBoolean("Tamed", slime.getEntityData().get(SplendidSlime.TAMED));
+        data.putUUID("Owner", Objects.requireNonNull(slime.getEntityData().get(SplendidSlime.OWNER_UUID).orElse(null)));
     }
 
     @Override

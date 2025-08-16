@@ -46,6 +46,7 @@
   "entity.splendid_slimes.neutral": "Neutral",
   "entity.splendid_slimes.wild": "Wild",
   "entity.splendid_slimes.hunger": "Hunger: ",
+  "entity.splendid_slimes.owner": "Owner: %s",
 
   "info.splendid_slimes.plort": "Dropped from fed slimes",
   "info.splendid_slimes.slime_heart": "Place in Slime Incubator to grow!",

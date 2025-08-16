@@ -39,6 +39,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
@@ -248,6 +249,7 @@ public class SplendidSlime extends SlimeEntityBase {
         if (notHungry() && pickUpItem != ModElements.Items.PLORT.get()) return false;
         if (pickUpItem == ModElements.Items.SLIME_CANDY.get()) return true;
         if (!getSlime().isBound()) return false;
+        if (pickUpItem instanceof SpawnEggItem) return false;
         SlimeBreed slime = getSlime().get();
         if (pickUpItem == ModElements.Items.PLORT.get() && pStack.hasTag() && !this.hasTrait("largoless")) {
             CompoundTag plortTag = pStack.getTagElement("plort");
@@ -269,7 +271,7 @@ public class SplendidSlime extends SlimeEntityBase {
 
     public boolean isOwnerOnline() {
         if (!this.getTamed()) return true;
-        return (level().getPlayerByUUID(this.getOwnerUUID()) != null);
+        return (this.level().getPlayerByUUID(this.getOwnerUUID()) != null);
     }
 
     public ItemStack getSlimePlort() {
@@ -543,11 +545,11 @@ public class SplendidSlime extends SlimeEntityBase {
                 this.getServer().getLevel(this.level().dimension()).sendParticles(ParticleTypes.NOTE, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 1, d0, d1, d2, 0.2);
             }
         }
-        int nearbyFriends = this.level().getEntitiesOfClass(SplendidSlime.class, this.getBoundingBox().inflate(7), e -> Objects.equals(e.getSlimeBreed(), this.getSlimeBreed()) || Objects.equals(e.getSlimeBreed(), this.getSlimeBreed())).size();
+        int nearbyFriends = this.level().getEntitiesOfClass(SplendidSlime.class, this.getBoundingBox().inflate(7), e -> Objects.equals(e.getSlimeBreed(), this.getSlimeBreed()) || Objects.equals(e.getSlimeSecondaryBreed(), this.getSlimeSecondaryBreed())).size();
         if (nearbyFriends >= 3) happinessIncrease += 15;
         if (nearbyFriends > 5) happinessIncrease += 15;
         if (nearbyFriends > 8) {
-            happinessIncrease -= 75;
+            happinessIncrease -= 120;
             displayAngerParticles = true;
 
         }
@@ -555,15 +557,16 @@ public class SplendidSlime extends SlimeEntityBase {
             displayAngerParticles = true;
             addHappiness(-40);
         }
-        // TODO: Make work for entities
-        if (this.hasTrait("picky") && this.isLargo() && food != null) {
-            boolean isPrimary = this.isPrimaryFood(food);
-            if (this.getLastAte() == 0 && isPrimary || this.getLastAte() == 1 && !isPrimary) {
-                displayAngerParticles = true;
-                happinessIncrease = -60;
-            } else {
-                if (this.getLastAte() == 1) this.setLastAte(0);
-                else this.setLastAte(1);
+        if (this.hasTrait("picky") && this.isLargo()) {
+            if (food != null) {
+                boolean isPrimary = this.isPrimaryFood(food);
+                if (this.getLastAte() == 0 && isPrimary || this.getLastAte() == 1 && !isPrimary) {
+                    displayAngerParticles = true;
+                    happinessIncrease = -60;
+                } else {
+                    if (this.getLastAte() == 1) this.setLastAte(0);
+                    else this.setLastAte(1);
+                }
             }
         }
         if (displayAngerParticles) {
