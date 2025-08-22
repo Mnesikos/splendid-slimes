@@ -86,17 +86,6 @@ public class SlimeVac extends Item {
             for (Entity entity : entities) {
                 Vec3 motVec = player.position().subtract(entity.position()).scale(0.25D);
                 entity.push(motVec.x, motVec.y, motVec.z);
-                if (entity.distanceTo(player) < 2 && entity instanceof SplendidSlime) {
-                    SplendidSlime slime = ((SplendidSlime) entity);
-                    if (slime.getSlimeSecondaryBreed().isEmpty()) {
-                        ItemStack slimeItem = ModElements.Items.SLIME_ITEM.get().getDefaultInstance();
-                        SplendidSlime.pickupSlime(slime, slimeItem);
-                        slime.spawnAtLocation(slimeItem);
-                        slime.discard();
-                        break;
-                    }
-
-                }
             }
 
             return InteractionResultHolder.pass(handStack);

@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -72,14 +73,14 @@ public class SlimeUtils {
     }
 
 
-    private static CommandSourceStack createCommandSourceStack(@Nullable Player pPlayer, Level pLevel, BlockPos pPos, Component displayName) {
+    private static CommandSourceStack createCommandSourceStack(@Nullable Player pPlayer, Entity pEntity, Level pLevel, BlockPos pPos, Component displayName) {
         String s = pPlayer == null ? "Splendid Slime" : pPlayer.getName().getString();
-        Component component = (Component) (pPlayer == null ? displayName : pPlayer.getDisplayName());
-        return new CommandSourceStack(CommandSource.NULL, Vec3.atCenterOf(pPos), Vec2.ZERO, (ServerLevel) pLevel, 2, s, component, pLevel.getServer(), pPlayer);
+        Component component = pPlayer == null ? displayName : pPlayer.getDisplayName();
+        return new CommandSourceStack(CommandSource.NULL, Vec3.atCenterOf(pPos), Vec2.ZERO, (ServerLevel) pLevel, 2, s, component, pLevel.getServer(), pEntity);
     }
 
     public static void runCommands(SplendidSlime splendidSlime, List<String> commands) {
-        CommandSourceStack source = createCommandSourceStack((Player) null, splendidSlime.level(), splendidSlime.getOnPos(), splendidSlime.getDisplayName());
+        CommandSourceStack source = createCommandSourceStack(null, splendidSlime, splendidSlime.level(), splendidSlime.getOnPos(), splendidSlime.getDisplayName());
         source.withEntity(splendidSlime);
         source.withSuppressedOutput();
         for (String command : commands) {
@@ -125,11 +126,12 @@ public class SlimeUtils {
     }
 
     public static boolean cry(SplendidSlime slime, Level level) {
+        if (level.dimensionType().ultraWarm()) return true;
         int x = Mth.floor(slime.getX());
         int y = Mth.floor(slime.getY());
         int z = Mth.floor(slime.getZ());
         BlockState scannedBlockState;
-        int radius = 3;
+        int radius = 2;
         for (int i = 0; i < radius; i++) {
             for (BlockPos pos : BlockPos.betweenClosed(new BlockPos(x - radius, y - i, z - radius), new BlockPos(x + radius, y + i, z + radius))) {
                 scannedBlockState = level.getBlockState(pos);

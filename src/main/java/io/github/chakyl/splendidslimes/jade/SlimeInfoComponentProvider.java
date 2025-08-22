@@ -90,7 +90,7 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
         data.putInt("Happiness", slime.getEntityData().get(SplendidSlime.HAPPINESS));
         data.putInt("EatingCooldown", slime.getEntityData().get(SplendidSlime.EATING_COOLDOWN));
         data.putBoolean("Tamed", slime.getEntityData().get(SplendidSlime.TAMED));
-        data.putUUID("Owner", Objects.requireNonNull(slime.getEntityData().get(SplendidSlime.OWNER_UUID).orElse(null)));
+        if (((SplendidSlime) accessor.getEntity()).getTamed()) data.putUUID("Owner", Objects.requireNonNull(slime.getEntityData().get(SplendidSlime.OWNER_UUID).orElse(null)));
     }
 
     @Override
