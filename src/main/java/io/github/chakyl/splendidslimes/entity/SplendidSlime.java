@@ -197,37 +197,32 @@ public class SplendidSlime extends SlimeEntityBase {
     }
 
     public InteractionResult pickupSlime(Player player) {
-        ItemStack slimeItem = new ItemStack(ModElements.Items.SLIME_ITEM.get());
-        CompoundTag nbt = new CompoundTag();
-        CompoundTag entity = new CompoundTag();
+        this.revive();
+        if (level().isClientSide) {
+            this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
+            return InteractionResult.SUCCESS;
+        }
+
+        CompoundTag slimeItemTags = new CompoundTag();
+        CompoundTag slimeTags = new CompoundTag();
+        this.save(slimeTags);
+        slimeItemTags.put("entity", slimeTags);
         CompoundTag id = new CompoundTag();
         id.putString("id", this.getSlimeBreed());
-        nbt.put("slime", id);
-        entity.putString("entity", EntityType.getKey(this.getType()).toString());
-        if (this.hasCustomName()) {
-            entity.putString("name", this.getCustomName().getString());
-        } else {
-            entity.putString("name", this.getName().getString());
-        }
-        this.saveWithoutId(entity);
-        nbt.put("entity", entity);
-        nbt.putInt("Happiness", this.getHappiness());
-        nbt.putInt("LastAte", this.getLastAte());
-        nbt.putInt("EatingCooldown", this.getEatingCooldown());
-        if (this.getOwnerUUID() != null) {
-            nbt.putUUID("Owner", this.getOwnerUUID());
-        }
-        nbt.putInt("TargetEntity", this.getEatingCooldown());
-        slimeItem.setTag(nbt);
-        this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
+        slimeItemTags.put("slime", id);
+
+        ItemStack slimeItem = new ItemStack(ModElements.Items.SLIME_ITEM.get());
+        slimeItem.setTag(slimeItemTags);
+        this.discard();
+
         if (!player.getInventory().add(slimeItem)) {
             ItemEntity itemEntity = new ItemEntity(this.level(), this.getX(), this.getY() + 0.5, this.getZ(), slimeItem);
             itemEntity.setPickUpDelay(0);
             itemEntity.setDeltaMovement(itemEntity.getDeltaMovement().multiply(0, 1, 0));
             this.level().addFreshEntity(itemEntity);
-        } else player.getInventory().add(slimeItem);
-        this.discard();
-        return InteractionResult.sidedSuccess(true);
+        }
+
+        return InteractionResult.CONSUME;
     }
 
     public EntityType<SlimeEntityBase> getEntityType() {
